@@ -1,0 +1,41 @@
+﻿//// uncomment to run these tests
+//#define L1_ENABLED
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using AudibleApi;
+using AudibleApi.Authorization;
+using BaseLib;
+using FluentAssertions;
+using L1.Tests;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using Moq.Protected;
+using Newtonsoft.Json;
+using TestAudibleApiCommon;
+using TestCommon;
+using static TestAudibleApiCommon.ComputedTestValues;
+
+namespace Authorize_L1
+{
+#if !L1_ENABLED
+	[Ignore]
+#endif
+	[TestClass]
+	public class AuthorizeTests
+	{
+		[TestMethod]
+		public async Task<string> GetRegisterStringAsync()
+		{
+			var auth = new Authorize();
+			var identity = REAL.GetIdentity();
+			var regStr = await auth.RegisterAsync(identity.ExistingAccessToken, identity.Cookies.ToKeyValuePair());
+			return regStr.ToString(Formatting.Indented);
+		}
+	}
+}

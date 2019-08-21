@@ -1,0 +1,32 @@
+{
+  "us": {
+    "countryCode": "us",
+    "domain": "com",
+    "marketPlaceId": "AF2M0KC94RCEA",
+    "language": "en-US"
+  },
+  "uk": {
+    "countryCode": "uk",
+    "domain": "co.uk",
+    "marketPlaceId": "A2I9A3Q2GNFNGQ",
+    "language": "en-GB"
+  },
+  "germany": {
+    "countryCode": "de",
+    "domain": "de",
+    "marketPlaceId": "A2I9A3Q2GNFNGQ",
+    "language": "de-DE"
+  },
+  "france": {
+    "countryCode": "fr",
+    "domain": "fr",
+    "marketPlaceId": "A2728XDNODOQ8T",
+    "language": "fr-FR"
+  },
+  "canada": {
+    "countryCode": "ca",
+    "domain": "ca",
+    "marketPlaceId": "A2CQZ5RBY40XE",
+    "language": "en-CA"
+  }
+}

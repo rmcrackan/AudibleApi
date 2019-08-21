@@ -1,0 +1,70 @@
+using System;
+using AudibleApi;
+using BaseLib;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
+
+namespace ExceptionTests
+{
+    /// <summary>
+    /// identical to other AudibleApiException exceptions (ApiErrorException, InvalidResponseException, InvalidValueException, NotAuthenticatedException) and acts as the unit tests for all of them
+    /// </summary>
+    public class FakeAbstractException : AudibleApiException
+    {
+        public FakeAbstractException(Uri requestUri, JObject jObj) : this(requestUri, jObj, null, null) { }
+        public FakeAbstractException(Uri requestUri, JObject jObj, string message) : this(requestUri, jObj, message, null) { }
+        public FakeAbstractException(Uri requestUri, JObject jObj, string message, Exception innerException) : base(requestUri, jObj, message, innerException) { }
+    }
+
+    [TestClass]
+    public class ctor2params
+    {
+        [TestMethod]
+        public void instantiate()
+        {
+            var uri = new Uri("http://test.com");
+            var jObj = JObject.Parse("{\"a\":1}");
+            var exception = new FakeAbstractException(uri, jObj);
+
+            Assert.AreEqual(exception.RequestUri, uri);
+            Assert.AreEqual(exception.JsonMessage, jObj);
+            Assert.AreEqual(exception.Message, $"Exception of type '{typeof(FakeAbstractException).FullName}' was thrown.");
+            Assert.AreEqual(exception.InnerException, null);
+        }
+    }
+    [TestClass]
+    public class ctor3params
+    {
+        [TestMethod]
+        public void instantiate()
+        {
+            var uri = new Uri("http://test.com");
+            var jObj = JObject.Parse("{\"a\":1}");
+            var message = "my message";
+            var exception = new FakeAbstractException(uri, jObj, message);
+
+            Assert.AreEqual(exception.RequestUri, uri);
+            Assert.AreEqual(exception.JsonMessage, jObj);
+            Assert.AreEqual(exception.Message, message);
+            Assert.AreEqual(exception.InnerException, null);
+        }
+    }
+    [TestClass]
+    public class ctor4params
+    {
+        [TestMethod]
+        public void instantiate()
+        {
+            var uri = new Uri("http://test.com");
+            var jObj = JObject.Parse("{\"a\":1}");
+            var message = "my message";
+            var innerException = new Exception("foo");
+            var exception = new FakeAbstractException(uri, jObj, message, innerException);
+
+            Assert.AreEqual(exception.RequestUri, uri);
+            Assert.AreEqual(exception.JsonMessage, jObj);
+            Assert.AreEqual(exception.Message, message);
+            Assert.AreEqual(exception.InnerException, innerException);
+        }
+    }
+}
