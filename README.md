@@ -8,5 +8,5 @@ Implementation of an Audible API in C#. Aside from the goal of having this be pu
 
 Thanks to these other Audible APIs which I used for reference and whose authors were very responsive and helpful with questions:
 
-https://github.com/omarroth/audible.cr -- Crystal interface for Audible's internal API
+https://github.com/omarroth/audible.cr -- Crystal interface for Audible's internal API  
 https://github.com/mkb79/Audible -- Python interface for Audible's internal API
