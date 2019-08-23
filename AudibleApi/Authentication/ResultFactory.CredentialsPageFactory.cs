@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using BaseLib;
+using Dinah.Core;
 
 namespace AudibleApi.Authentication
 {

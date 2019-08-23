@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using BaseLib;
+using Dinah.Core;
 using Newtonsoft.Json;
 
 namespace AudibleApi

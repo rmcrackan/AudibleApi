@@ -1,6 +1,6 @@
 using System;
 using AudibleApi;
-using BaseLib;
+using Dinah.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 

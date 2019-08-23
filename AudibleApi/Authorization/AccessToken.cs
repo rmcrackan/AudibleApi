@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using BaseLib;
+using Dinah.Core;
 
 namespace AudibleApi.Authorization
 {

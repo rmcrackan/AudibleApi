@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using AudibleApi.Authorization;
-using BaseLib;
+using Dinah.Core;
 
 namespace AudibleApi.Authentication
 {

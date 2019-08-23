@@ -1,5 +1,5 @@
 ﻿using System;
-using BaseLib;
+using Dinah.Core;
 
 namespace AudibleApi
 {

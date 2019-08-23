@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using AudibleApi;
-using BaseLib;
+using Dinah.Core;
 using Moq;
 
 namespace TestAudibleApiCommon

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
-using BaseLib;
+using Dinah.Core;
 
 namespace AudibleApi
 {

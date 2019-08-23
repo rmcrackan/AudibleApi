@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using AudibleApi.Authorization;
-using BaseLib;
+using Dinah.Core;
 
 namespace AudibleApi
 {

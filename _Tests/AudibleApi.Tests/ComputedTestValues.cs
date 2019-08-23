@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using AudibleApi;
 using AudibleApi.Authentication;
 using AudibleApi.Authorization;
-using BaseLib;
+using Dinah.Core;
 using FluentAssertions;
 using L1.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

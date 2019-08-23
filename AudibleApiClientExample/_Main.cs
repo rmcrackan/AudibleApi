@@ -48,7 +48,7 @@ namespace AudibleApiClientExample
 			Console.WriteLine("Email:");
 			var e = Console.ReadLine().Trim();
 			Console.WriteLine("Password:");
-			var pw = BaseLib.ConsoleLib.ConsoleExt.ReadPassword();
+			var pw = Dinah.Core.ConsoleLib.ConsoleExt.ReadPassword();
 			return (e, pw);
 		}
 	}

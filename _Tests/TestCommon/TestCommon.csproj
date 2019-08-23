@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\BaseLib\BaseLib.csproj" />
+    <ProjectReference Include="..\..\Dinah.Core\Dinah.Core.csproj" />
   </ItemGroup>
 
 </Project>

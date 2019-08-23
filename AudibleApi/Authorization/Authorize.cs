@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using BaseLib;
+using Dinah.Core;
 using Newtonsoft.Json.Linq;
 
 // OAuth is authorization, not authentication

@@ -5,7 +5,7 @@ using System;
 using System.Threading.Tasks;
 using AudibleApi;
 using AudibleApi.Authentication;
-using BaseLib;
+using Dinah.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LoginTests_L1

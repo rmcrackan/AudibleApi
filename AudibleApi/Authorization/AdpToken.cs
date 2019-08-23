@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BaseLib;
+using Dinah.Core;
 
 namespace AudibleApi.Authorization
 {

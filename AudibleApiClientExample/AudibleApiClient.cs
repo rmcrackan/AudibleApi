@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AudibleApi;
 using AudibleApi.Authentication;
 using AudibleApi.Authorization;
-using BaseLib;
+using Dinah.Core;
 using Newtonsoft.Json;
 
 namespace AudibleApiClientExample
@@ -63,7 +63,7 @@ namespace AudibleApiClientExample
 						Console.WriteLine("Email:");
 						var emailInput = Console.ReadLine();
 						Console.WriteLine("Password:");
-						var pwInput = BaseLib.ConsoleLib.ConsoleExt.ReadPassword();
+						var pwInput = Dinah.Core.ConsoleLib.ConsoleExt.ReadPassword();
 						loginResult = await credentialsPage.SubmitAsync(emailInput, pwInput);
 						break;
 
@@ -170,7 +170,7 @@ namespace AudibleApiClientExample
 		public Task DownloadBookAsync() => wrapCallAsync(downloadBookAsync);
 		private async Task downloadBookAsync()
 		{
-			using (var progressBar = new BaseLib.ConsoleLib.ProgressBar())
+			using (var progressBar = new Dinah.Core.ConsoleLib.ProgressBar())
 			{
 				var progress = new Progress<DownloadProgress>();
 				progress.ProgressChanged += (_, e) => progressBar.Report(Math.Round((double)(100 * e.BytesReceived) / e.TotalFileSize.Value) / 100);
