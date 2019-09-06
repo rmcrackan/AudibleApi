@@ -2,7 +2,7 @@
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Dinah.Core.Tests
+namespace PluralizerTests
 {
 	[TestClass]
 	public class Pluralize_NET
