@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using AudibleApi.Authorization;
-using Dinah.Core;
+using Dinah.Core.Net.Http;
 using Newtonsoft.Json.Linq;
 
 namespace AudibleApi

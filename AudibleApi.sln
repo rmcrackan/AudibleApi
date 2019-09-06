@@ -5,13 +5,13 @@ VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudibleApi", "AudibleApi\AudibleApi.csproj", "{802FC20E-E6DB-4FDB-B914-E9939656CBC0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dinah.Core", "Dinah.Core\Dinah.Core.csproj", "{2BF8059E-477D-4458-9C94-839EE53ED4C0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dinah.Core", "Dinah.Core (Shared)\Dinah.Core.csproj", "{2BF8059E-477D-4458-9C94-839EE53ED4C0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9A54D81F-14FE-435F-BFE3-DD3EF5D4D739}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dinah.Core.Tests", "_Tests\Dinah.Core.Tests\Dinah.Core.Tests.csproj", "{3AFD982F-3F1D-4B92-A75F-2244E1BC4CB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dinah.Core.Tests", "_Tests\Dinah.Core.Tests (Shared)\Dinah.Core.Tests.csproj", "{3AFD982F-3F1D-4B92-A75F-2244E1BC4CB1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestCommon", "_Tests\TestCommon\TestCommon.csproj", "{FE3B820B-2C36-46C0-816E-1198A3DA58A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestCommon", "_Tests\TestCommon (Shared)\TestCommon.csproj", "{FE3B820B-2C36-46C0-816E-1198A3DA58A2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudibleApiClientExample", "AudibleApiClientExample\AudibleApiClientExample.csproj", "{03CCECAB-15A2-4B5C-8BBE-3D81908D3431}"
 EndProject
@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudibleApi.Tests", "_Tests\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{17D5A9DB-FEEA-4407-BC56-E109C4A318B8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dinah.Core.Demos", "_Demos\Dinah.Core.Demos\Dinah.Core.Demos.csproj", "{EAED0B5C-B07F-44F8-81F9-CB290BD40156}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dinah.Core.Demos", "_Demos\Dinah.Core.Demos (Shared)\Dinah.Core.Demos.csproj", "{EAED0B5C-B07F-44F8-81F9-CB290BD40156}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -3,6 +3,8 @@ using System.Net;
 using System.Net.Http;
 using AudibleApi;
 using Dinah.Core;
+using Dinah.Core.Net;
+using Dinah.Core.Net.Http;
 using Moq;
 
 namespace TestAudibleApiCommon

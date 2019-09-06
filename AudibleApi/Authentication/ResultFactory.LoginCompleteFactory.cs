@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AudibleApi.Authorization;
 using Dinah.Core;
+using Dinah.Core.Net;
+using Dinah.Core.Net.Http;
 
 namespace AudibleApi.Authentication
 {

@@ -9,6 +9,8 @@ using AudibleApi;
 using AudibleApi.Authentication;
 using AudibleApi.Authorization;
 using Dinah.Core;
+using Dinah.Core.Net;
+using Dinah.Core.Net.Http;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;

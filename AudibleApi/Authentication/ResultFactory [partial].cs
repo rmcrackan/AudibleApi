@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Dinah.Core;
+using Dinah.Core.Net;
+using Dinah.Core.Net.Http;
 
 namespace AudibleApi.Authentication
 {
