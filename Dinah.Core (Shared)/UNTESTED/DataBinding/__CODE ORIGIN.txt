@@ -1,2 +1,0 @@
-﻿SortableBindingList
-http://timvw.be/2008/08/02/presenting-the-sortablebindinglistt-take-two/
