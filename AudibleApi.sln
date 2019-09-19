@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dinah.Core.Demos", "..\..\D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestCommon", "..\..\Dinah.Core\_Tests\TestCommon\TestCommon.csproj", "{6FC827E6-AB69-4947-923D-EADF9270105B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitAllRepos", "..\..\GitAllRepos\GitAllRepos\GitAllRepos.csproj", "{86AA00E5-FB12-4A60-AE67-B1DB22D9928B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 		{6FC827E6-AB69-4947-923D-EADF9270105B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FC827E6-AB69-4947-923D-EADF9270105B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FC827E6-AB69-4947-923D-EADF9270105B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86AA00E5-FB12-4A60-AE67-B1DB22D9928B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86AA00E5-FB12-4A60-AE67-B1DB22D9928B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86AA00E5-FB12-4A60-AE67-B1DB22D9928B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86AA00E5-FB12-4A60-AE67-B1DB22D9928B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,6 +70,7 @@ Global
 		{2304F527-91AA-47CF-93DD-77AFAA0C268C} = {9A54D81F-14FE-435F-BFE3-DD3EF5D4D739}
 		{1644B39D-FADA-478F-B7D4-02E31AF92605} = {17D5A9DB-FEEA-4407-BC56-E109C4A318B8}
 		{6FC827E6-AB69-4947-923D-EADF9270105B} = {9A54D81F-14FE-435F-BFE3-DD3EF5D4D739}
+		{86AA00E5-FB12-4A60-AE67-B1DB22D9928B} = {9A54D81F-14FE-435F-BFE3-DD3EF5D4D739}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {33CC528E-77EC-4700-887B-C525E3D991A5}
