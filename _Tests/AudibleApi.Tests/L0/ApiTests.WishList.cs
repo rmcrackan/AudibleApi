@@ -29,7 +29,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task null_param_throws()
 		{
-			api = api ?? await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => api.IsInWishListAsync(null));
 		}
@@ -37,7 +37,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task empty_param_throws()
 		{
-			api = api ?? await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.IsInWishListAsync(""));
 			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.IsInWishListAsync("   "));
@@ -52,7 +52,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task null_param_throws()
 		{
-			api = api ?? await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => api.AddToWishListAsync(null));
 		}
@@ -60,7 +60,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task empty_param_throws()
 		{
-			api = api ?? await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.AddToWishListAsync(""));
 			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.AddToWishListAsync("   "));
@@ -75,7 +75,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task null_param_throws()
 		{
-			api = api ?? await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => api.DeleteFromWishListAsync(null));
 		}
@@ -83,7 +83,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task empty_param_throws()
 		{
-			api = api ?? await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.DeleteFromWishListAsync(""));
 			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.DeleteFromWishListAsync("   "));

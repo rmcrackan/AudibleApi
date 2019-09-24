@@ -59,7 +59,7 @@ namespace ApiTests_L0
         [TestMethod]
         public async Task null_param_throws()
         {
-			api = api ?? await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => api.AdHocNonAuthenticatedGetAsync(null));
         }
@@ -67,7 +67,7 @@ namespace ApiTests_L0
         [TestMethod]
         public async Task empty_param_throws()
         {
-			api = api ?? await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.AdHocNonAuthenticatedGetAsync(""));
             await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.AdHocNonAuthenticatedGetAsync("   "));
@@ -80,7 +80,7 @@ namespace ApiTests_L0
 {""product"":{""asin"":""B07B3BCZ9S"",""sku"":""BK_RAND_006061"",""sku_lite"":""BK_RAND_006061""},""response_groups"":[""always-returned"",""categories"",""sku""]}
 ".Trim();
 
-            api = api ?? await ApiClientMock.GetApiAsync(expected);
+            api ??= await ApiClientMock.GetApiAsync(expected);
 
             var pd = "B07B3BCZ9S";
             var url = $"/1.0/catalog/products/{pd}?response_groups=sku,categories";
@@ -96,7 +96,7 @@ namespace ApiTests_L0
 {""product"":{""asin"":""B01IW9TQPK"",""sku"":""BK_ADBL_027964"",""sku_lite"":""BK_ADBL_027964""},""response_groups"":[""always-returned"",""categories"",""sku""]}
 ".Trim();
 
-            api = api ?? await ApiClientMock.GetApiAsync(expected);
+            api ??= await ApiClientMock.GetApiAsync(expected);
 
             var pd = "B01IW9TQPK";
             var url = $"/1.0/catalog/products/{pd}?response_groups=sku,categories";
@@ -119,7 +119,7 @@ namespace ApiTests_L0
 ...
 ".Trim() + end;
 
-            api = api ?? await ApiClientMock.GetApiAsync(expected);
+            api ??= await ApiClientMock.GetApiAsync(expected);
 
             var catId = "2226658011";
             var url = $"/1.0/catalog/products?category_id={catId}&num_results=3&response_groups=contributors,media,price,product_attrs,product_desc,product_extended_attrs,product_plan_details,sample,sku";
@@ -141,7 +141,7 @@ namespace ApiTests_L0
         [TestMethod]
         public async Task null_param_throws()
         {
-            api = api ?? await ApiClientMock.GetApiAsync("x");
+            api ??= await ApiClientMock.GetApiAsync("x");
 
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => api.AdHocAuthenticatedGetAsync(null));
         }
@@ -149,7 +149,7 @@ namespace ApiTests_L0
         [TestMethod]
         public async Task empty_param_throws()
         {
-            api = api ?? await ApiClientMock.GetApiAsync("x");
+            api ??= await ApiClientMock.GetApiAsync("x");
 
             await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.AdHocAuthenticatedGetAsync(""));
             await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.AdHocAuthenticatedGetAsync("   "));
@@ -162,7 +162,7 @@ namespace ApiTests_L0
 {""product"":{""asin"":""B07B3BCZ9S"",""sku"":""BK_RAND_006061"",""sku_lite"":""BK_RAND_006061""},""response_groups"":[""always-returned"",""categories"",""sku""]}
 ".Trim();
 
-            api = api ?? await ApiClientMock.GetApiAsync(expected);
+            api ??= await ApiClientMock.GetApiAsync(expected);
 
             var pd = "B07B3BCZ9S";
             var url = $"/1.0/catalog/products/{pd}?response_groups=sku,categories";
@@ -178,7 +178,7 @@ namespace ApiTests_L0
             var jsonStart = "{\"items\":";
             var jsonEnd = "}";
 
-            api = api ?? await ApiClientMock.GetApiAsync(LibraryFull);
+            api ??= await ApiClientMock.GetApiAsync(LibraryFull);
 
             var url = "/1.0/library?purchaseAfterDate=01/01/1970";
 

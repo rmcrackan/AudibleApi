@@ -41,7 +41,7 @@ namespace ApiTests_L0
 		// this must remain as a separate public step so ComputedTestValues can rebuild the string
 		public async Task<string> GetResponseAsync()
 		{
-			api = api ?? await ApiClientMock.GetApiAsync(UserProfileValue);
+			api ??= await ApiClientMock.GetApiAsync(UserProfileValue);
 
 			var jObj = await api.UserProfileAsync();
 			var json = jObj.ToString(Formatting.Indented);

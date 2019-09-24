@@ -36,7 +36,7 @@ namespace TestAudibleApiCommon
 			mockSharer
 				.Setup(s => s.GetSharedClient(It.IsAny<Uri>()))
 				.Returns(mockClient.Object);
-			Api = Api ?? new Api(mockIdMaintainer, mockSharer.Object);
+			Api ??= new Api(mockIdMaintainer, mockSharer.Object);
 		}
 	}
 }
