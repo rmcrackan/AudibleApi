@@ -59,16 +59,6 @@ namespace AudibleApiClientExample
 
             while (true)
 			{
-				// new c# 8 patterns:
-				// vehicle switch
-				// {
-				//     Car _ => 2.00m,
-				//     Taxi _ => 3.50m,
-				//     Bus _ => 5.00m,
-				//     DeliveryTruck _ => 10.00m,
-				//     { } => throw new Exception("unknown type");
-				// }
-
 				switch (loginResult)
 				{
 					case CredentialsPage credentialsPage:
