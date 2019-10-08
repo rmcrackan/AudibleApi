@@ -92,13 +92,11 @@ namespace AudibleApiClientExample
 
 		private static async Task<byte[]> downloadImageAsync(Uri imageUri)
 		{
-			using (var client = new HttpClient())
-			using (var contentStream = await client.GetStreamAsync(imageUri))
-			using (var localStream = new MemoryStream())
-			{
-				await contentStream.CopyToAsync(localStream);
-				return localStream.ToArray();
-			}
+			using var client = new HttpClient();
+			using var contentStream = await client.GetStreamAsync(imageUri);
+			using var localStream = new MemoryStream();
+			await contentStream.CopyToAsync(localStream);
+			return localStream.ToArray();
 		}
 
 		private static string getUserCaptchaGuess(byte[] captchaImage)
@@ -172,24 +170,22 @@ namespace AudibleApiClientExample
 		public Task DownloadBookAsync() => wrapCallAsync(downloadBookAsync);
 		private async Task downloadBookAsync()
 		{
-			using (var progressBar = new Dinah.Core.ConsoleLib.ProgressBar())
-			{
-				var progress = new Progress<DownloadProgress>();
-				progress.ProgressChanged += (_, e) => progressBar.Report(Math.Round((double)(100 * e.BytesReceived) / e.TotalFileSize.Value) / 100);
+			using var progressBar = new Dinah.Core.ConsoleLib.ProgressBar();
+			var progress = new Progress<DownloadProgress>();
+			progress.ProgressChanged += (_, e) => progressBar.Report(Math.Round((double)(100 * e.BytesReceived) / e.TotalFileSize.Value) / 100);
 
-				Console.Write("Download book");
-				var finalFile = await _api.DownloadAaxWorkaroundAsync(TINY_BOOK_ASIN, "downloadExample.xyz", progress);
+			Console.Write("Download book");
+			var finalFile = await _api.DownloadAaxWorkaroundAsync(TINY_BOOK_ASIN, "downloadExample.xyz", progress);
 
-				Console.WriteLine(" Done!");
-				Console.WriteLine("final file: " + Path.GetFullPath(finalFile));
+			Console.WriteLine(" Done!");
+			Console.WriteLine("final file: " + Path.GetFullPath(finalFile));
 
-				// benefit of this small delay:
-				// - if you try to delete a file too soon after it's created, the OS isn't done with the creation and you can get an unexpected error
-				// - give progressBar's internal timer time to finish. if timer is disposed before the final message is processed, "100%" will never get a chance to be displayed
-				await Task.Delay(100);
+			// benefit of this small delay:
+			// - if you try to delete a file too soon after it's created, the OS isn't done with the creation and you can get an unexpected error
+			// - give progressBar's internal timer time to finish. if timer is disposed before the final message is processed, "100%" will never get a chance to be displayed
+			await Task.Delay(100);
 
-				File.Delete(finalFile);
-			}
+			File.Delete(finalFile);
 		}
 
 		private async Task wrapCallAsync(Func<Task> fn)

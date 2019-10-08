@@ -44,8 +44,8 @@ namespace ApiTests_L1
 			// Injecting into IdentityMaintainer runs EnsureStateAsync.
 			// Expired token will be updated which will persist to life file.
 			// Dispose will unsubscribe IdentityPersistent from future changes to identity
-			using (var idPersist = new IdentityPersistent(REAL.TokenFilePath))
-				await IdentityMaintainer.CreateAsync(idPersist);
+			using var idPersist = new IdentityPersistent(REAL.TokenFilePath);
+			await IdentityMaintainer.CreateAsync(idPersist);
 		}
 	}
 

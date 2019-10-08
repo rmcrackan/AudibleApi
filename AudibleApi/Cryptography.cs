@@ -86,61 +86,58 @@ namespace AudibleApi
         {
             var dataBytes = Encoding.UTF8.GetBytes(dataString);
 
-            using (var sha256 = new SHA256Managed())
-            using (var rsaCSP = CreateRsaProviderFromPrivateKey(private_key))
-            {
-                var digestion = sha256.ComputeHash(dataBytes);
-                // as string: digestion.Select(x => $"{x:x2}").Aggregate("", (a, b) => a + b);
-                var oid = CryptoConfig.MapNameToOID("SHA256");
-                return rsaCSP.SignHash(digestion, oid);
-            }
-        }
+			using var sha256 = new SHA256Managed();
+			using var rsaCSP = CreateRsaProviderFromPrivateKey(private_key);
+			var digestion = sha256.ComputeHash(dataBytes);
+			// as string: digestion.Select(x => $"{x:x2}").Aggregate("", (a, b) => a + b);
+			var oid = CryptoConfig.MapNameToOID("SHA256");
+			return rsaCSP.SignHash(digestion, oid);
+		}
 
-        // https://stackoverflow.com/a/32150537
-        private static RSACryptoServiceProvider CreateRsaProviderFromPrivateKey(string privateKey)
-        {
-            privateKey = privateKey
-                .Replace("-----BEGIN RSA PRIVATE KEY-----", "")
-                .Replace("-----END RSA PRIVATE KEY-----", "")
-                .Replace("\\n", "")
-                .Trim();
+		// https://stackoverflow.com/a/32150537
+		private static RSACryptoServiceProvider CreateRsaProviderFromPrivateKey(string privateKey)
+		{
+			privateKey = privateKey
+				.Replace("-----BEGIN RSA PRIVATE KEY-----", "")
+				.Replace("-----END RSA PRIVATE KEY-----", "")
+				.Replace("\\n", "")
+				.Trim();
 
-            var privateKeyBits = Convert.FromBase64String(privateKey);
+			var privateKeyBits = Convert.FromBase64String(privateKey);
 
-            var RSA = new RSACryptoServiceProvider();
-            var RSAparams = new RSAParameters();
+			var RSA = new RSACryptoServiceProvider();
+			var RSAparams = new RSAParameters();
 
-            using (BinaryReader binr = new BinaryReader(new MemoryStream(privateKeyBits)))
-            {
-                var twobytes = binr.ReadUInt16();
-                if (twobytes == 0x8130)
-                    binr.ReadByte();
-                else if (twobytes == 0x8230)
-                    binr.ReadInt16();
-                else
-                    throw new Exception("Unexpected value read binr.ReadUInt16()");
+			using var binr = new BinaryReader(new MemoryStream(privateKeyBits));
 
-                twobytes = binr.ReadUInt16();
-                if (twobytes != 0x0102)
-                    throw new Exception("Unexpected version");
+			var twobytes = binr.ReadUInt16();
+			if (twobytes == 0x8130)
+				binr.ReadByte();
+			else if (twobytes == 0x8230)
+				binr.ReadInt16();
+			else
+				throw new Exception("Unexpected value read binr.ReadUInt16()");
 
-                var bt = binr.ReadByte();
-                if (bt != 0x00)
-                    throw new Exception("Unexpected value read binr.ReadByte()");
+			twobytes = binr.ReadUInt16();
+			if (twobytes != 0x0102)
+				throw new Exception("Unexpected version");
 
-                RSAparams.Modulus = binr.ReadBytes(GetIntegerSize(binr));
-                RSAparams.Exponent = binr.ReadBytes(GetIntegerSize(binr));
-                RSAparams.D = binr.ReadBytes(GetIntegerSize(binr));
-                RSAparams.P = binr.ReadBytes(GetIntegerSize(binr));
-                RSAparams.Q = binr.ReadBytes(GetIntegerSize(binr));
-                RSAparams.DP = binr.ReadBytes(GetIntegerSize(binr));
-                RSAparams.DQ = binr.ReadBytes(GetIntegerSize(binr));
-                RSAparams.InverseQ = binr.ReadBytes(GetIntegerSize(binr));
-            }
+			var bt = binr.ReadByte();
+			if (bt != 0x00)
+				throw new Exception("Unexpected value read binr.ReadByte()");
 
-            RSA.ImportParameters(RSAparams);
-            return RSA;
-        }
+			RSAparams.Modulus = binr.ReadBytes(GetIntegerSize(binr));
+			RSAparams.Exponent = binr.ReadBytes(GetIntegerSize(binr));
+			RSAparams.D = binr.ReadBytes(GetIntegerSize(binr));
+			RSAparams.P = binr.ReadBytes(GetIntegerSize(binr));
+			RSAparams.Q = binr.ReadBytes(GetIntegerSize(binr));
+			RSAparams.DP = binr.ReadBytes(GetIntegerSize(binr));
+			RSAparams.DQ = binr.ReadBytes(GetIntegerSize(binr));
+			RSAparams.InverseQ = binr.ReadBytes(GetIntegerSize(binr));
+
+			RSA.ImportParameters(RSAparams);
+			return RSA;
+		}
 
         private static int GetIntegerSize(BinaryReader binr)
         {
