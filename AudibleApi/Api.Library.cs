@@ -96,8 +96,8 @@ namespace AudibleApi
 					return;
 				}
 
-				if (value < 0)
-					throw new ArgumentException($"{nameof(PageNumber)} must be 0 or greater");
+				if (value < 1)
+					throw new ArgumentException($"{nameof(PageNumber)} must be 1 or greater");
 
 				_page = value;
 			}
