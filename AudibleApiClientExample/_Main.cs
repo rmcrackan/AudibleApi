@@ -7,7 +7,7 @@ namespace AudibleApiClientExample
     class _Main
 	{
 		// store somewhere that can't accidentally be added to git
-		static string loginFilePath => Path.Combine(
+		public static string loginFilePath => Path.Combine(
 			Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
 			"SECRET LOGIN.txt");
 
@@ -15,11 +15,13 @@ namespace AudibleApiClientExample
 		{
 			fixPathInAppSettings();
 
-			var (email, password) = getCredentials();
+			var client = await AudibleApiClient.CreateClientAsync();
 
-			var client = await AudibleApiClient.CreateClientAsync(email, password);
-            await client.PrintLibraryAsync();
-        }
+			//// use client
+			//await client.PrintLibraryAsync();
+			//await client.DownloadBookAsync();
+			//await client.DocumentLibraryResponseGroupOptionsAsync();
+		}
 
 		static void fixPathInAppSettings()
 		{
@@ -31,25 +33,6 @@ namespace AudibleApiClientExample
 				// ClientSettings is special. setting a property will also save the new value to file; no other action needed
 				settings.IdentityFilePath = fullPath;
 			}
-		}
-
-		static (string email, string password) getCredentials()
-		{
-			if (File.Exists(loginFilePath))
-			{
-				var pwParts = File.ReadAllLines(loginFilePath);
-				var email = pwParts[0];
-				var password = pwParts[1];
-
-				if (!string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(password))
-					return (email, password);
-			}
-
-			Console.WriteLine("Email:");
-			var e = Console.ReadLine().Trim();
-			Console.WriteLine("Password:");
-			var pw = Dinah.Core.ConsoleLib.ConsoleExt.ReadPassword();
-			return (e, pw);
 		}
 	}
 }

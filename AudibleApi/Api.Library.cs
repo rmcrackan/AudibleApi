@@ -141,6 +141,7 @@ namespace AudibleApi
 			ProductPlanDetails = 1 << 14,
 			[Description("product_plans")]
 			ProductPlans = 1 << 15,
+			/// <summary>"provided_review" is null unless used with "rating"</summary>
 			[Description("provided_review")]
 			ProvidedReview = 1 << 16,
 			[Description("rating")]
@@ -156,7 +157,9 @@ namespace AudibleApi
 			[Description("series")]
 			Series = 1 << 22,
 			[Description("sku")]
-			Sku = 1 << 23
+			Sku = 1 << 23,
+			// https://stackoverflow.com/questions/7467722
+			ALL_OPTIONS = ~(1 << 24)
 		}
 		public ResponseGroupOptions ResponseGroups { get; set; }
 
