@@ -23,6 +23,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestCommon", "..\..\Dinah.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitAllRepos", "..\..\GitAllRepos\GitAllRepos\GitAllRepos.csproj", "{86AA00E5-FB12-4A60-AE67-B1DB22D9928B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudibleApiDTOs", "AudibleApiDTOs\AudibleApiDTOs.csproj", "{BE04606E-FF55-480F-8286-9351FE41BE08}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudibleApiDTOs.Tests", "_Tests\AudibleApiDTOs.Tests\AudibleApiDTOs.Tests.csproj", "{187999DE-B048-47AF-94E1-628F96276A25}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +65,14 @@ Global
 		{86AA00E5-FB12-4A60-AE67-B1DB22D9928B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86AA00E5-FB12-4A60-AE67-B1DB22D9928B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86AA00E5-FB12-4A60-AE67-B1DB22D9928B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE04606E-FF55-480F-8286-9351FE41BE08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE04606E-FF55-480F-8286-9351FE41BE08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE04606E-FF55-480F-8286-9351FE41BE08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE04606E-FF55-480F-8286-9351FE41BE08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{187999DE-B048-47AF-94E1-628F96276A25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{187999DE-B048-47AF-94E1-628F96276A25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{187999DE-B048-47AF-94E1-628F96276A25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{187999DE-B048-47AF-94E1-628F96276A25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -71,6 +83,7 @@ Global
 		{1644B39D-FADA-478F-B7D4-02E31AF92605} = {17D5A9DB-FEEA-4407-BC56-E109C4A318B8}
 		{6FC827E6-AB69-4947-923D-EADF9270105B} = {9A54D81F-14FE-435F-BFE3-DD3EF5D4D739}
 		{86AA00E5-FB12-4A60-AE67-B1DB22D9928B} = {9A54D81F-14FE-435F-BFE3-DD3EF5D4D739}
+		{187999DE-B048-47AF-94E1-628F96276A25} = {9A54D81F-14FE-435F-BFE3-DD3EF5D4D739}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {33CC528E-77EC-4700-887B-C525E3D991A5}
