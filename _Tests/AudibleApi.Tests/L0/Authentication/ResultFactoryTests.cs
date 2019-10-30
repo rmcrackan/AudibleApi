@@ -66,32 +66,32 @@ namespace Authentic.ResultFactoryTests
 
 		[TestMethod]
 		public async Task null_systemDateTime_throws()
-			=> await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(ApiClientMock.GetClient(), null, new HttpResponseMessage { Content = new StringContent("x") }, new Dictionary<string, string>()));
+			=> await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(ApiHttpClientMock.GetClient(), null, new HttpResponseMessage { Content = new StringContent("x") }, new Dictionary<string, string>()));
 
 		[TestMethod]
 		public async Task null_response_throws()
-			=> await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(ApiClientMock.GetClient(), StaticSystemDateTime.Past, null, new Dictionary<string, string>()));
+			=> await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, null, new Dictionary<string, string>()));
 
 		[TestMethod]
         public async Task null_content_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentException>(() => new ConcreteResultFactory().CreateResultAsync(ApiClientMock.GetClient(), StaticSystemDateTime.Past, new HttpResponseMessage(), new Dictionary<string, string>()));
+            => await Assert.ThrowsExceptionAsync<ArgumentException>(() => new ConcreteResultFactory().CreateResultAsync(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, new HttpResponseMessage(), new Dictionary<string, string>()));
 
         [TestMethod]
         public async Task null_inputs_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(ApiClientMock.GetClient(), StaticSystemDateTime.Past, new HttpResponseMessage { Content = new StringContent("x") }, null));
+            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, new HttpResponseMessage { Content = new StringContent("x") }, null));
 
         [TestMethod]
         public async Task false_IsMatch_throws()
         {
             var badMatch = "x";
-            await Assert.ThrowsExceptionAsync<LoginFailedException>(() => new ConcreteResultFactory().CreateResultAsync(ApiClientMock.GetClient(), StaticSystemDateTime.Past, new HttpResponseMessage { Content = new StringContent(badMatch) }, new Dictionary<string, string>())
+            await Assert.ThrowsExceptionAsync<LoginFailedException>(() => new ConcreteResultFactory().CreateResultAsync(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, new HttpResponseMessage { Content = new StringContent(badMatch) }, new Dictionary<string, string>())
             );
         }
 
         [TestMethod]
         public async Task valid_returns_null()
         {
-            var result = await new ConcreteResultFactory().CreateResultAsync(ApiClientMock.GetClient(), StaticSystemDateTime.Past, new HttpResponseMessage { Content = new StringContent("IsMatch") }, new Dictionary<string, string>());
+            var result = await new ConcreteResultFactory().CreateResultAsync(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, new HttpResponseMessage { Content = new StringContent("IsMatch") }, new Dictionary<string, string>());
             result.Should().BeNull();
         }
     }

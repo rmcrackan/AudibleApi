@@ -166,10 +166,10 @@ namespace StackBlockerTests_L1_Pass
 	}
 
 	[TestClass]
-	public class ApiClient_ctor
+	public class ApiHttpClient_ctor
 	{
 		[TestMethod]
 		public void access_from_L1_passes()
-			=> ApiClient.Create();
+			=> ApiHttpClient.Create();
 	}
 }

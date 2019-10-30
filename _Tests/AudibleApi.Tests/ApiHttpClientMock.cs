@@ -10,18 +10,18 @@ using TestCommon;
 
 namespace TestAudibleApiCommon
 {
-	public static class ApiClientMock
+	public static class ApiHttpClientMock
 	{
-		public static ApiClient GetClient(string handlerReturnString = null, HttpStatusCode statusCode = HttpStatusCode.OK)
+		public static ApiHttpClient GetClient(string handlerReturnString = null, HttpStatusCode statusCode = HttpStatusCode.OK)
 		{
 			var handler = GetHandler(handlerReturnString, statusCode);
-			return ApiClient.Create(handler);
+			return ApiHttpClient.Create(handler);
 		}
 
-		public static ApiClient GetClient(HttpResponseMessage response)
+		public static ApiHttpClient GetClient(HttpResponseMessage response)
 		{
 			var handler = GetHandler(response);
-			return ApiClient.Create(handler);
+			return ApiHttpClient.Create(handler);
 		}
 
 		public static HttpClientHandler GetHandler(string handlerReturnString = null, HttpStatusCode statusCode = HttpStatusCode.OK)

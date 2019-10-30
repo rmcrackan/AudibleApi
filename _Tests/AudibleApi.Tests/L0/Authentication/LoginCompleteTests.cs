@@ -24,6 +24,6 @@ namespace Authentic.LoginCompleteTests
     {
         [TestMethod]
         public void null_identity_throws()
-            => Assert.ThrowsException<ArgumentNullException>(() => new LoginComplete(ApiClientMock.GetClient(), StaticSystemDateTime.Past, "x", null));
+            => Assert.ThrowsException<ArgumentNullException>(() => new LoginComplete(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, "x", null));
     }
 }

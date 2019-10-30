@@ -29,7 +29,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task null_param_throws()
 		{
-			api ??= await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => api.IsInWishListAsync(null));
 		}
@@ -37,7 +37,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task empty_param_throws()
 		{
-			api ??= await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.IsInWishListAsync(""));
 			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.IsInWishListAsync("   "));
@@ -52,7 +52,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task null_param_throws()
 		{
-			api ??= await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => api.AddToWishListAsync(null));
 		}
@@ -60,7 +60,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task empty_param_throws()
 		{
-			api ??= await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.AddToWishListAsync(""));
 			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.AddToWishListAsync("   "));
@@ -75,7 +75,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task null_param_throws()
 		{
-			api ??= await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => api.DeleteFromWishListAsync(null));
 		}
@@ -83,7 +83,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task empty_param_throws()
 		{
-			api ??= await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.DeleteFromWishListAsync(""));
 			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.DeleteFromWishListAsync("   "));
@@ -115,7 +115,7 @@ namespace ApiTests_L0.Sealed
 
 			var mock = HttpMock.CreateMockHttpClientHandler(response);
 
-			var api = await ApiClientMock.GetApiAsync(mock.Object);
+			var api = await ApiHttpClientMock.GetApiAsync(mock.Object);
 
 			var result = await api.IsInWishListAsync("172137406X");
 			result.Should().BeFalse();
@@ -142,7 +142,7 @@ namespace ApiTests_L0.Sealed
                 ")
 			};
 
-			var api = await ApiClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
+			var api = await ApiHttpClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
 
 			var result = await api.IsInWishListAsync("172137406X");
 			result.Should().BeFalse();
@@ -164,7 +164,7 @@ namespace ApiTests_L0.Sealed
                 ")
 			};
 
-			var api = await ApiClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
+			var api = await ApiHttpClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
 
 			var result = await api.IsInWishListAsync("172137406X");
 			result.Should().BeTrue();
@@ -183,7 +183,7 @@ namespace ApiTests_L0.Sealed
 				Content = new StringContent("{}")
 			};
 
-			var api = await ApiClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
+			var api = await ApiHttpClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
 
 			var ex = await Assert.ThrowsExceptionAsync<ApiErrorException>(() => api.AddToWishListAsync("172137406X"));
 			ex.Message.Should().Be($"Add to Wish List failed. Invalid status code. Code: {HttpStatusCode.BadRequest}");
@@ -199,7 +199,7 @@ namespace ApiTests_L0.Sealed
 			};
 			response.Headers.Location = new Uri("/foo", UriKind.Relative);
 
-			var api = await ApiClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
+			var api = await ApiHttpClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
 
 			var ex = await Assert.ThrowsExceptionAsync<ApiErrorException>(() => api.AddToWishListAsync("172137406X"));
 			ex.Message.Should().Be("Add to Wish List failed. Bad location. Location: /foo");
@@ -215,7 +215,7 @@ namespace ApiTests_L0.Sealed
 			};
 			response.Headers.Location = new Uri("/1.0/wishlist/172137406X", UriKind.Relative);
 
-			var api = await ApiClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
+			var api = await ApiHttpClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
 
 			await api.AddToWishListAsync("172137406X");
 		}
@@ -233,7 +233,7 @@ namespace ApiTests_L0.Sealed
 				Content = new StringContent("{}")
 			};
 
-			var api = await ApiClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
+			var api = await ApiHttpClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
 
 			var ex = await Assert.ThrowsExceptionAsync<ApiErrorException>(() => api.DeleteFromWishListAsync("172137406X"));
 			ex.Message.Should().Be($"Delete from Wish List failed. Invalid status code. Code: {HttpStatusCode.BadRequest}. Asin: 172137406X");
@@ -248,7 +248,7 @@ namespace ApiTests_L0.Sealed
 				Content = new StringContent("{}")
 			};
 
-			var api = await ApiClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
+			var api = await ApiHttpClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
 
 			await api.DeleteFromWishListAsync("172137406X");
 		}

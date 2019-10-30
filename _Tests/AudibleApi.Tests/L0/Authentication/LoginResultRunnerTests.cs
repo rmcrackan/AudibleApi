@@ -30,11 +30,11 @@ namespace Authentic.LoginResultRunnerTests
 
 		[TestMethod]
 		public async Task null_systemDateTime_throws()
-			=> await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => LoginResultRunner.GetResultsPageAsync(ApiClientMock.GetClient(), null, new Dictionary<string, string>()));
+			=> await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => LoginResultRunner.GetResultsPageAsync(ApiHttpClientMock.GetClient(), null, new Dictionary<string, string>()));
 
 		[TestMethod]
         public async Task null_inputs_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => LoginResultRunner.GetResultsPageAsync(ApiClientMock.GetClient(), StaticSystemDateTime.Past, null));
+            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => LoginResultRunner.GetResultsPageAsync(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, null));
 
         [TestMethod]
         public async Task returns_CredentialsPage()
@@ -42,7 +42,7 @@ namespace Authentic.LoginResultRunnerTests
             var response
                 = "<input name='email' value='e' />"
                 + "<input name='password' value='pw' />";
-            var client = ApiClientMock.GetClient(response);
+            var client = ApiHttpClientMock.GetClient(response);
             var result = await LoginResultRunner.GetResultsPageAsync(client, StaticSystemDateTime.Past, new Dictionary<string, string>());
             var page = result as CredentialsPage;
             page.Should().NotBeNull();
@@ -56,7 +56,7 @@ namespace Authentic.LoginResultRunnerTests
                 + "<input name='password' value='pw' />"
                 + "<input name='use_image_captcha' value='true' />"
                 + "<img src='http://a.com/foo.png' alt='Visual CAPTCHA image, continue down for an audio option.' />";
-            var client = ApiClientMock.GetClient(response);
+            var client = ApiHttpClientMock.GetClient(response);
             var result = await LoginResultRunner.GetResultsPageAsync(client, StaticSystemDateTime.Past, new Dictionary<string, string> { ["password"] = "pw" });
             var page = result as CaptchaPage;
             page.Should().NotBeNull();
@@ -66,7 +66,7 @@ namespace Authentic.LoginResultRunnerTests
         public async Task returns_TwoFactorAuthenticationPage()
         {
             var response = "<input name='otpCode' value='2fa' />";
-            var client = ApiClientMock.GetClient(response);
+            var client = ApiHttpClientMock.GetClient(response);
             var result = await LoginResultRunner.GetResultsPageAsync(client, StaticSystemDateTime.Past, new Dictionary<string, string>());
             var page = result as TwoFactorAuthenticationPage;
             page.Should().NotBeNull();
@@ -81,7 +81,7 @@ namespace Authentic.LoginResultRunnerTests
             response.Headers.Add("Set-Cookie", "session-id=123-456-789; Domain=.amazon.com; Expires=Thu, 30-Jun-2039 19:07:14 GMT; Path=/");
             response.Headers.Add("Set-Cookie", "session-id-time=987654321; Domain=.amazon.com; Expires=Thu, 30-Jun-2039 19:07:14 GMT; Path=/");
 
-            var client = ApiClientMock.GetClient(response);
+            var client = ApiHttpClientMock.GetClient(response);
             var result = await LoginResultRunner.GetResultsPageAsync(client, StaticSystemDateTime.Past, new Dictionary<string, string>());
             var page = result as LoginComplete;
             page.Should().NotBeNull();

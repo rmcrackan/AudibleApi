@@ -55,7 +55,7 @@ namespace Authentic.ResultFactoryTests.CredentialsPageFactoryTests
             var body
                 = "<input name='email' value='zzz' />"
                 + "<input name='password' />";
-            var credentialsPage = await ResultFactory.CredentialsPage.CreateResultAsync(ApiClientMock.GetClient(), StaticSystemDateTime.Past, new HttpResponseMessage { Content = new StringContent(body) }, new Dictionary<string, string>()) as CredentialsPage;
+            var credentialsPage = await ResultFactory.CredentialsPage.CreateResultAsync(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, new HttpResponseMessage { Content = new StringContent(body) }, new Dictionary<string, string>()) as CredentialsPage;
 
             var inputs = credentialsPage.GetInputsReadOnly();
             inputs.Count.Should().Be(2);

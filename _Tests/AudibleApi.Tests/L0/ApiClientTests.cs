@@ -17,14 +17,14 @@ using TestAudibleApiCommon;
 using TestCommon;
 using static AuthorizationShared.Shared;
 
-namespace ApiClientTests
+namespace ApiHttpClientTests
 {
 	[TestClass]
 	public class Create
 	{
 		[TestMethod]
 		public void access_from_L0_throws()
-			=> Assert.ThrowsException<MethodAccessException>(() => ApiClient.Create());
+			=> Assert.ThrowsException<MethodAccessException>(() => ApiHttpClient.Create());
 	}
 
 	[TestClass]
@@ -32,7 +32,7 @@ namespace ApiClientTests
 	{
 		[TestMethod]
 		public void null_param_throws()
-			=> Assert.ThrowsException<ArgumentNullException>(() => ApiClient.Create(null));
+			=> Assert.ThrowsException<ArgumentNullException>(() => ApiHttpClient.Create(null));
 
 		[TestMethod]
 		public void has_cookies_throws()
@@ -42,13 +42,13 @@ namespace ApiClientTests
 				CookieContainer = new CookieContainer()
 			};
 			httpClientHandler.CookieContainer.Add(new Cookie("foo", "bar", "/", "a.com"));
-			Assert.ThrowsException<ArgumentException>(() => ApiClient.Create(httpClientHandler));
+			Assert.ThrowsException<ArgumentException>(() => ApiHttpClient.Create(httpClientHandler));
 		}
 
 		[TestMethod]
 		public void sets_cookie_jar()
-			=> ApiClient
-				.Create(ApiClientMock.GetHandler())
+			=> ApiHttpClient
+				.Create(ApiHttpClientMock.GetHandler())
 				.CookieJar
 				.Should().NotBeNull();
 
@@ -57,11 +57,11 @@ namespace ApiClientTests
 		{
 			// ensure handler incl ApiMessageHandler
 
-			var handler = ApiClientMock.GetHandler(new JObject
+			var handler = ApiHttpClientMock.GetHandler(new JObject
 			{
 				{ "message", "Invalid response group" }
 			}.ToString());
-			var client = ApiClient.Create(handler);
+			var client = ApiHttpClient.Create(handler);
 			await Assert.ThrowsExceptionAsync<InvalidResponseException>(() => client.GetAsync(new Uri("http://a.com")));
 		}
 	}

@@ -93,15 +93,15 @@ namespace Authentic.ResultFactoryTests.LoginCompleteFactoryTests
             //response.Headers.Add("Set-Cookie", "session-id=139-1488065-0277455; Domain=.amazon.com; Expires=Thu, 30-Jun-2039 19:07:14 GMT; Path=/");
             //response.Headers.Add("Set-Cookie", "session-id-time=2193073634l; Domain=.amazon.com; Expires=Thu, 30-Jun-2039 19:07:14 GMT; Path=/");
 
-			var apiClient = ApiClientMock.GetClient(response);
+			var apiHttpClient = ApiHttpClientMock.GetClient(response);
 			var sysDateTime = StaticSystemDateTime.Past;
 			var inputs = new Dictionary<string, string>();
 
-			apiClient.CookieJar.Add(new Cookie { Name = "session-id", Value = "139-1488065-0277455", Domain = ".amazon.com", Expires = DateTime.Parse("Thu, 30-Jun-2039 19:07:14 GMT"), Path = "/" });
-			apiClient.CookieJar.Add(new Cookie { Name = "session-id-time", Value = "2193073634l", Domain = ".amazon.com", Expires = DateTime.Parse("Thu, 30-Jun-2039 19:07:14 GMT"), Path = "/" });
+			apiHttpClient.CookieJar.Add(new Cookie { Name = "session-id", Value = "139-1488065-0277455", Domain = ".amazon.com", Expires = DateTime.Parse("Thu, 30-Jun-2039 19:07:14 GMT"), Path = "/" });
+			apiHttpClient.CookieJar.Add(new Cookie { Name = "session-id-time", Value = "2193073634l", Domain = ".amazon.com", Expires = DateTime.Parse("Thu, 30-Jun-2039 19:07:14 GMT"), Path = "/" });
 
 			var loginComplete = await ResultFactory.LoginComplete.CreateResultAsync(
-				apiClient,
+				apiHttpClient,
 				sysDateTime,
 				response,
 				inputs

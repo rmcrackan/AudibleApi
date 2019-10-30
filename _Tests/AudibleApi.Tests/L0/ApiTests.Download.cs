@@ -30,7 +30,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task null_param_throws()
 		{
-			api ??= await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => api.GetDownloadLinkAsync(null));
 		}
@@ -38,7 +38,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task empty_param_throws()
 		{
-			api ??= await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.GetDownloadLinkAsync(""));
 			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.GetDownloadLinkAsync("   "));
@@ -53,7 +53,7 @@ namespace ApiTests_L0
 				Content = new StringContent(msg)
 			};
 
-			api ??= await ApiClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
+			api ??= await ApiHttpClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
 
 			await Assert.ThrowsExceptionAsync<ApiErrorException>(() => api.GetDownloadLinkAsync("0X0X0X0XXX"));
 		}
@@ -69,7 +69,7 @@ namespace ApiTests_L0
 				Content = new StringContent(msg)
 			};
 
-			api ??= await ApiClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
+			api ??= await ApiHttpClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
 
 			var link = await api.GetDownloadLinkAsync("172137406X");
 			link.Should().BeNull();
@@ -92,7 +92,7 @@ namespace ApiTests_L0
 				Content = new StringContent(msg)
 			};
 
-			api ??= await ApiClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
+			api ??= await ApiHttpClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
 
 			await Assert.ThrowsExceptionAsync<ApiErrorException>(() => api.GetDownloadLinkAsync("B07D84P11M"));
 		}
@@ -106,7 +106,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task null_params_throw()
 		{
-			api ??= await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => api.DownloadPartAsync("foo", null));
 			await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => api.DownloadPartAsync(null, "foo"));
@@ -115,7 +115,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task blank_param_throws()
 		{
-			api ??= await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.DownloadPartAsync("", "foo"));
 			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.DownloadPartAsync("   ", "foo"));
@@ -135,7 +135,7 @@ namespace ApiTests_L0
 				Content = new StringContent(msg)
 			};
 
-			api ??= await ApiClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
+			api ??= await ApiHttpClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
 
 			var temp = System.IO.Path.Combine(
 				System.IO.Path.GetTempPath(),
@@ -161,7 +161,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task null_param_throws()
 		{
-			api ??= await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => api.GetDownloadablePartsAsync(null));
 		}
@@ -169,7 +169,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task blank_param_throws()
 		{
-			api ??= await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.GetDownloadablePartsAsync(""));
 			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.GetDownloadablePartsAsync("   "));
@@ -184,7 +184,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task null_asin_throws()
 		{
-			api ??= await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentNullException>(
 				() => api.DownloadAsync(null, "file"));
@@ -193,7 +193,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task blank_asin_throws()
 		{
-			api ??= await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentException>(
 				() => api.DownloadAsync("", "file"));
@@ -204,7 +204,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task null_file_throws()
 		{
-			api ??= await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentNullException>(
 				() => api.DownloadAsync("asin", null));
@@ -213,7 +213,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task blank_file_throws()
 		{
-			api ??= await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentException>(
 				() => api.DownloadAsync("asin", ""));
@@ -233,7 +233,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task null_asin_throws()
 		{
-			api ??= await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentNullException>(
 				() => api.DownloadAaxWorkaroundAsync(null, "file"));
@@ -242,7 +242,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task blank_asin_throws()
 		{
-			api ??= await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentException>(
 				() => api.DownloadAaxWorkaroundAsync("", "file"));
@@ -253,7 +253,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task null_file_throws()
 		{
-			api ??= await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentNullException>(
 				() => api.DownloadAaxWorkaroundAsync("asin", null));
@@ -262,7 +262,7 @@ namespace ApiTests_L0
 		[TestMethod]
 		public async Task blank_file_throws()
 		{
-			api ??= await ApiClientMock.GetApiAsync("x");
+			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
 			await Assert.ThrowsExceptionAsync<ArgumentException>(
 				() => api.DownloadAaxWorkaroundAsync("asin", ""));
@@ -289,7 +289,7 @@ namespace ApiTests_L0.Sealed
 				Content = new StringContent(msg)
 			};
 
-			var api = await ApiClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
+			var api = await ApiHttpClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
 
 			await Assert.ThrowsExceptionAsync<ApiErrorException>(() => api.GetDownloadLinkAsync("172137406X"));
 		}
@@ -306,7 +306,7 @@ namespace ApiTests_L0.Sealed
 				Content = new StringContent(msg)
 			};
 
-			var api = await ApiClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
+			var api = await ApiHttpClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
 
 			var link = await api.GetDownloadLinkAsync("B07L162HDY");
 			link.Should().Be(downloadLink);
@@ -350,7 +350,7 @@ namespace ApiTests_L0.Sealed
 				// 2nd return: file bytes
 				.ReturnsAsync(fileBytesResponse);
 
-			var api = await ApiClientMock.GetApiAsync(handlerMock.Object);
+			var api = await ApiHttpClientMock.GetApiAsync(handlerMock.Object);
 
 			var path = System.IO.Path.GetTempPath();
 			var filenameNoExt = Guid.NewGuid().ToString();
@@ -414,7 +414,7 @@ namespace ApiTests_L0.Sealed
   ]
 }
 ".Trim();
-			var api = await ApiClientMock.GetApiAsync(bookDetails);
+			var api = await ApiHttpClientMock.GetApiAsync(bookDetails);
 
 			var partsIEnum = await api.GetDownloadablePartsAsync(harryPotterAsin);
 
@@ -495,7 +495,7 @@ namespace ApiTests_L0.Sealed
   ]
 }}
 ".Trim();
-			var api = await ApiClientMock.GetApiAsync(bookDetails);
+			var api = await ApiHttpClientMock.GetApiAsync(bookDetails);
 
 			var partsIEnum = await api.GetDownloadablePartsAsync(sherlockHolmesAsin);
 
@@ -880,7 +880,7 @@ namespace ApiTests_L0.Sealed
 					.ReturnsAsync(fileBytesResponse);
 			}
 
-			var api = await ApiClientMock.GetApiAsync(handlerMock.Object);
+			var api = await ApiHttpClientMock.GetApiAsync(handlerMock.Object);
 			return api;
 		}
 	}
@@ -961,7 +961,7 @@ namespace ApiTests_L0.Sealed
 					_2ndResponse = downloadResponse
 				};
 
-				var api = await ApiClientMock.GetApiAsync(lazyMockHandler);
+				var api = await ApiHttpClientMock.GetApiAsync(lazyMockHandler);
 				var finalFile = await api.DownloadAaxWorkaroundAsync("asin", "file.xyz");
 
 				finalFile.Should().Be(expectedFinalFilename);

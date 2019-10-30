@@ -24,7 +24,7 @@ namespace Authentic.CredentialsPageTests
     {
         private CredentialsPage getPage()
 			=> new CredentialsPage(
-				ApiClientMock.GetClient(),
+				ApiHttpClientMock.GetClient(),
 				StaticSystemDateTime.Past,
 				"body");
 
@@ -56,7 +56,7 @@ namespace Authentic.CredentialsPageTests
             var responseToCaptureRequest = new HttpResponseMessage();
 
 			var page = new CredentialsPage(
-				ApiClientMock.GetClient(responseToCaptureRequest),
+				ApiHttpClientMock.GetClient(responseToCaptureRequest),
 				StaticSystemDateTime.Past,
 				"body");
 			await Assert.ThrowsExceptionAsync<LoginFailedException>(() => page.SubmitAsync("e", "pw"));

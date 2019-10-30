@@ -9,7 +9,7 @@ namespace TestAudibleApiCommon
 {
     public class MockIdMaintainer : IdentityMaintainer
 	{
-		public MockIdMaintainer() : this(GetIdentity_Future(), ApiClientMock.GetHandler()) { }
+		public MockIdMaintainer() : this(GetIdentity_Future(), ApiHttpClientMock.GetHandler()) { }
 		public MockIdMaintainer(IIdentity identity, HttpMessageHandler handler)
 			: base(
 			identity,

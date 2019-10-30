@@ -26,25 +26,25 @@ namespace Authentic.CaptchaPageTests
     {
         [TestMethod]
         public void null_img_throws()
-            => Assert.ThrowsException<ArgumentNullException>(() => new CaptchaPage(ApiClientMock.GetClient(), StaticSystemDateTime.Past, "body", null, "pw"));
+            => Assert.ThrowsException<ArgumentNullException>(() => new CaptchaPage(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, "body", null, "pw"));
 
         [TestMethod]
         public void null_password_throws()
-            => Assert.ThrowsException<ArgumentNullException>(() => new CaptchaPage(ApiClientMock.GetClient(), StaticSystemDateTime.Past, "body", new Uri("http://a.com"), null));
+            => Assert.ThrowsException<ArgumentNullException>(() => new CaptchaPage(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, "body", new Uri("http://a.com"), null));
 
         [TestMethod]
         public void blank_password_throws()
         {
-            Assert.ThrowsException<ArgumentException>(() => new CaptchaPage(ApiClientMock.GetClient(), StaticSystemDateTime.Past, "body", new Uri("http://a.com"), ""));
+            Assert.ThrowsException<ArgumentException>(() => new CaptchaPage(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, "body", new Uri("http://a.com"), ""));
 
-            Assert.ThrowsException<ArgumentException>(() => new CaptchaPage(ApiClientMock.GetClient(), StaticSystemDateTime.Past, "body", new Uri("http://a.com"), "   "));
+            Assert.ThrowsException<ArgumentException>(() => new CaptchaPage(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, "body", new Uri("http://a.com"), "   "));
         }
 
         [TestMethod]
         public void valid_create()
         {
 			var uri = new Uri("http://a.com");
-			var page = new CaptchaPage(ApiClientMock.GetClient(), StaticSystemDateTime.Past, "<input name='a' value='z'>", uri, "pw");
+			var page = new CaptchaPage(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, "<input name='a' value='z'>", uri, "pw");
 
             page.CaptchaImage.Should().Be(uri);
 
@@ -59,7 +59,7 @@ namespace Authentic.CaptchaPageTests
     public class SubmitAsync
     {
         private CaptchaPage getPage()
-			=> new CaptchaPage(ApiClientMock.GetClient(), StaticSystemDateTime.Past, "body", new Uri("http://a.com"), "pw");
+			=> new CaptchaPage(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, "body", new Uri("http://a.com"), "pw");
 
 		[TestMethod]
         public async Task null_param_throws()
@@ -76,7 +76,7 @@ namespace Authentic.CaptchaPageTests
         public async Task valid_param_calls_GetResultsPageAsync()
         {
             var responseToCaptureRequest = new HttpResponseMessage();
-			var page = new CaptchaPage(ApiClientMock.GetClient(responseToCaptureRequest), StaticSystemDateTime.Past, "body", new Uri("http://a.com"), "pw");
+			var page = new CaptchaPage(ApiHttpClientMock.GetClient(responseToCaptureRequest), StaticSystemDateTime.Past, "body", new Uri("http://a.com"), "pw");
 
 			await Assert.ThrowsExceptionAsync<LoginFailedException>(() => page.SubmitAsync("GUESS1"));
 

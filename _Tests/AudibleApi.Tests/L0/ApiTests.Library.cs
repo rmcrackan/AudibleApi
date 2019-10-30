@@ -42,7 +42,7 @@ namespace ApiTests_L0
 		// this must remain as a separate public step so ComputedTestValues can rebuild the string
 		public async Task<string> GetResponseAsync()
 		{
-			api ??= await ApiClientMock.GetApiAsync(LibraryFull);
+			api ??= await ApiHttpClientMock.GetApiAsync(LibraryFull);
 
 			var response = await api.GetLibraryAsync();
 			var json = response.ToString(Formatting.None);
@@ -80,7 +80,7 @@ namespace ApiTests_L0
 				SortBy = LibraryOptions.SortByOptions.TitleDesc
 			};
 
-			api ??= await ApiClientMock.GetApiAsync(LibraryWithOptions);
+			api ??= await ApiHttpClientMock.GetApiAsync(LibraryWithOptions);
 
 			var response = await api.GetLibraryAsync(libraryOptions);
 			var json = response.ToString(Formatting.None);
@@ -109,7 +109,7 @@ namespace ApiTests_L0
 		// this must remain as a separate public step so ComputedTestValues can rebuild the string
 		public async Task<string> GetResponseAsync()
 		{
-			api ??= await ApiClientMock.GetApiAsync(LibraryBookWithResponseGroups);
+			api ??= await ApiHttpClientMock.GetApiAsync(LibraryBookWithResponseGroups);
 
 			var harryPotterAsin = "B017V4IM1G";
 			var response = await api.GetLibraryBookAsync(harryPotterAsin, LibraryOptions.ResponseGroupOptions.Relationships);

@@ -17,7 +17,7 @@ namespace AudibleApi.Authentication
 
 		private ISystemDateTime _systemDateTime { get; }
 
-		public Authenticate() : this(ApiClient.Create(), new SystemDateTime())
+		public Authenticate() : this(ApiHttpClient.Create(), new SystemDateTime())
 			=> StackBlocker.ApiTestBlocker();
 
 		public Authenticate(IHttpClient client, ISystemDateTime systemDateTime)

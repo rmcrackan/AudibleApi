@@ -35,14 +35,14 @@ namespace LoginTests_L0
 		[TestMethod]
 		public void has_cookies_throws()
 		{
-			var client = ApiClient.Create(ApiClientMock.GetHandler());
+			var client = ApiHttpClient.Create(ApiHttpClientMock.GetHandler());
 			client.CookieJar.Add(new Cookie("foo", "bar", "/", "a.com"));
 			Assert.ThrowsException<ArgumentException>(() => new Authenticate(client, new Mock<ISystemDateTime>().Object));
 		}
 
 		[TestMethod]
 		public void null_systemDateTime_throws()
-			=> Assert.ThrowsException<ArgumentNullException>(() => new Authenticate(ApiClient.Create(ApiClientMock.GetHandler()), null));
+			=> Assert.ThrowsException<ArgumentNullException>(() => new Authenticate(ApiHttpClient.Create(ApiHttpClientMock.GetHandler()), null));
     }
 
     [TestClass]
@@ -50,7 +50,7 @@ namespace LoginTests_L0
     {
         private Authenticate GetLogin(HttpClientHandler handler)
         {
-			var client = ApiClient.Create(handler);
+			var client = ApiHttpClient.Create(handler);
 			var login = new Authenticate(client, new Mock<ISystemDateTime>().Object)
 			{
 				MaxLoadSessionCookiesTrips = 3

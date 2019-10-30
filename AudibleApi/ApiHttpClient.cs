@@ -7,13 +7,13 @@ using Dinah.Core.Net.Http;
 
 namespace AudibleApi
 {
-	public class ApiClient : HttpClient, IHttpClient
+	public class ApiHttpClient : HttpClient, IHttpClient
 	{
 		public CookieContainer CookieJar { get; } = new CookieContainer();
 
-		private ApiClient(HttpMessageHandler handler) : base(handler) { }
+		private ApiHttpClient(HttpMessageHandler handler) : base(handler) { }
 
-		public static ApiClient Create()
+		public static ApiHttpClient Create()
 		{
 			StackBlocker.ApiTestBlocker();
 
@@ -24,7 +24,7 @@ namespace AudibleApi
 			};
 			return create(innerHander);
 		}
-		public static ApiClient Create(HttpClientHandler innerHandler)
+		public static ApiHttpClient Create(HttpClientHandler innerHandler)
 		{
 			if (innerHandler is null)
 				throw new ArgumentNullException(nameof(innerHandler));
@@ -35,10 +35,10 @@ namespace AudibleApi
 			return create(innerHandler);
 		}
 
-		private static ApiClient create(HttpClientHandler innerHandler)
+		private static ApiHttpClient create(HttpClientHandler innerHandler)
 		{
 			var handler = new ApiMessageHandler { InnerHandler = innerHandler };
-			var client = new ApiClient(handler);
+			var client = new ApiHttpClient(handler);
 
 			// manually handle 3xx redirects
 			innerHandler.AllowAutoRedirect = false;
