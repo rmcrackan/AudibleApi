@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudibleApi", "AudibleApi\Au
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9A54D81F-14FE-435F-BFE3-DD3EF5D4D739}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudibleApiClientExample", "AudibleApiClientExample\AudibleApiClientExample.csproj", "{03CCECAB-15A2-4B5C-8BBE-3D81908D3431}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudibleApi.Tests", "_Tests\AudibleApi.Tests\AudibleApi.Tests.csproj", "{47899E9B-FE2B-48F5-8A4A-3E315FC97D57}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{17D5A9DB-FEEA-4407-BC56-E109C4A318B8}"
@@ -27,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudibleApiDTOs", "AudibleAp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudibleApiDTOs.Tests", "_Tests\AudibleApiDTOs.Tests\AudibleApiDTOs.Tests.csproj", "{187999DE-B048-47AF-94E1-628F96276A25}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AudibleApiClientExample", "_Demos\AudibleApiClientExample\AudibleApiClientExample.csproj", "{B4C5E0B3-A4AE-4360-B416-743E6DE44CC1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,10 +37,6 @@ Global
 		{802FC20E-E6DB-4FDB-B914-E9939656CBC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{802FC20E-E6DB-4FDB-B914-E9939656CBC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{802FC20E-E6DB-4FDB-B914-E9939656CBC0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{03CCECAB-15A2-4B5C-8BBE-3D81908D3431}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{03CCECAB-15A2-4B5C-8BBE-3D81908D3431}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{03CCECAB-15A2-4B5C-8BBE-3D81908D3431}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{03CCECAB-15A2-4B5C-8BBE-3D81908D3431}.Release|Any CPU.Build.0 = Release|Any CPU
 		{47899E9B-FE2B-48F5-8A4A-3E315FC97D57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{47899E9B-FE2B-48F5-8A4A-3E315FC97D57}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47899E9B-FE2B-48F5-8A4A-3E315FC97D57}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -73,6 +69,10 @@ Global
 		{187999DE-B048-47AF-94E1-628F96276A25}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{187999DE-B048-47AF-94E1-628F96276A25}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{187999DE-B048-47AF-94E1-628F96276A25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4C5E0B3-A4AE-4360-B416-743E6DE44CC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4C5E0B3-A4AE-4360-B416-743E6DE44CC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4C5E0B3-A4AE-4360-B416-743E6DE44CC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4C5E0B3-A4AE-4360-B416-743E6DE44CC1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -84,6 +84,7 @@ Global
 		{6FC827E6-AB69-4947-923D-EADF9270105B} = {9A54D81F-14FE-435F-BFE3-DD3EF5D4D739}
 		{86AA00E5-FB12-4A60-AE67-B1DB22D9928B} = {9A54D81F-14FE-435F-BFE3-DD3EF5D4D739}
 		{187999DE-B048-47AF-94E1-628F96276A25} = {9A54D81F-14FE-435F-BFE3-DD3EF5D4D739}
+		{B4C5E0B3-A4AE-4360-B416-743E6DE44CC1} = {17D5A9DB-FEEA-4407-BC56-E109C4A318B8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {33CC528E-77EC-4700-887B-C525E3D991A5}

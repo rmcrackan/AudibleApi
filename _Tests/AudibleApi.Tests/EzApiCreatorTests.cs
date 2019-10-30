@@ -21,19 +21,11 @@ using Newtonsoft.Json.Linq;
 namespace EzApiCreatorTests_L0
 {
 	[TestClass]
-	public class GetApiAsync_string
+	public class GetApiAsync
 	{
 		[TestMethod]
 		public async Task access_from_L0_throws()
-			=> await Assert.ThrowsExceptionAsync<MethodAccessException>(() => EzApiCreator.GetApiAsync("file"));
-	}
-
-	[TestClass]
-	public class GetApiAsync_string_identity
-	{
-		[TestMethod]
-		public async Task access_from_L0_throws()
-			=> await Assert.ThrowsExceptionAsync<MethodAccessException>(() => EzApiCreator.GetApiAsync("file", new Mock<IIdentity>().Object));
+			=> await Assert.ThrowsExceptionAsync<MethodAccessException>(() => EzApiCreator.GetApiAsync(null, null, null));
 	}
 }
 

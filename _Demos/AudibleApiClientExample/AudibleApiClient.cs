@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using AudibleApi;
-using AudibleApi.Authentication;
-using AudibleApi.Authorization;
 using Dinah.Core;
 using Dinah.Core.Net.Http;
 using Newtonsoft.Json;
@@ -16,140 +13,14 @@ namespace AudibleApiClientExample
 {
 	public class AudibleApiClient
 	{
-		#region initialize api
-		public const string APP_SETTINGS = "appsettings.json";
-		private Api _api;
-
-		private static ClientSettings settings;
+		public Api _api;
 
 		private AudibleApiClient() { }
-		public async static Task<AudibleApiClient> CreateClientAsync()
+		public async static Task<AudibleApiClient> CreateClientAsync(string identityFilePath)
 		{
-			settings = ClientSettings.FromFile(APP_SETTINGS);
-
-			restoreLocale();
-
-			Api api;
-			try
-			{
-				api = await EzApiCreator.GetApiAsync(settings.IdentityFilePath);
-			}
-			catch
-			{
-				var inMemoryIdentity = await loginAsync();
-				api = await EzApiCreator.GetApiAsync(settings.IdentityFilePath, inMemoryIdentity);
-			}
-
+			var api = await EzApiCreator.GetApiAsync(identityFilePath, new LoginCallback());
 			return new AudibleApiClient { _api = api };
 		}
-
-		private static void restoreLocale()
-		{
-			if (settings.LocaleCountryCode != null)
-				Localization.SetLocale(settings.LocaleCountryCode);
-		}
-
-		// LOGIN PATTERN
-		// - Start with Authenticate. Submit email + pw
-		// - Each step in the login process will return a LoginResult
-		// - Each result which has required user input has a SubmitAsync method
-		// - The final LoginComplete result returns "Identity" -- in-memory authorization items
-		private static async Task<IIdentity> loginAsync()
-		{
-			var (email, password) = getCredentials();
-
-			var login = new Authenticate();
-			var loginResult = await login.SubmitCredentialsAsync(email, password);
-
-			while (true)
-			{
-				switch (loginResult)
-				{
-					case CredentialsPage credentialsPage:
-						Console.WriteLine("Email:");
-						var emailInput = Console.ReadLine();
-						Console.WriteLine("Password:");
-						var pwInput = Dinah.Core.ConsoleLib.ConsoleExt.ReadPassword();
-						loginResult = await credentialsPage.SubmitAsync(emailInput, pwInput);
-						break;
-
-					case CaptchaPage captchaResult:
-						var imageBytes = await downloadImageAsync(captchaResult.CaptchaImage);
-						var guess = getUserCaptchaGuess(imageBytes);
-						loginResult = await captchaResult.SubmitAsync(guess);
-						break;
-
-					case TwoFactorAuthenticationPage _2fa:
-						Console.WriteLine("Two-Step Verification code:");
-						var _2faCode = Console.ReadLine();
-						loginResult = await _2fa.SubmitAsync(_2faCode);
-						break;
-
-					case LoginComplete final:
-						return final.Identity;
-
-					default:
-						throw new Exception("Unknown LoginResult");
-				}
-			}
-		}
-
-		static (string email, string password) getCredentials()
-		{
-			if (File.Exists(_Main.loginFilePath))
-			{
-				var pwParts = File.ReadAllLines(_Main.loginFilePath);
-				var email = pwParts[0];
-				var password = pwParts[1];
-
-				if (!string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(password))
-					return (email, password);
-			}
-
-			Console.WriteLine("Email:");
-			var e = Console.ReadLine().Trim();
-			Console.WriteLine("Password:");
-			var pw = Dinah.Core.ConsoleLib.ConsoleExt.ReadPassword();
-			return (e, pw);
-		}
-
-		private static async Task<byte[]> downloadImageAsync(Uri imageUri)
-		{
-			using var client = new HttpClient();
-			using var contentStream = await client.GetStreamAsync(imageUri);
-			using var localStream = new MemoryStream();
-			await contentStream.CopyToAsync(localStream);
-			return localStream.ToArray();
-		}
-
-		private static string getUserCaptchaGuess(byte[] captchaImage)
-		{
-			var tempFileName = Path.Combine(Path.GetTempPath(), "audible_api_captcha_" + Guid.NewGuid() + ".jpg");
-
-			try
-			{
-				File.WriteAllBytes(tempFileName, captchaImage);
-
-				var processStartInfo = new System.Diagnostics.ProcessStartInfo
-				{
-					Verb = string.Empty,
-					UseShellExecute = true,
-					CreateNoWindow = true,
-					FileName = tempFileName
-				};
-				System.Diagnostics.Process.Start(processStartInfo);
-
-				Console.WriteLine("CAPTCHA answer: ");
-				var guess = Console.ReadLine();
-				return guess;
-			}
-			finally
-			{
-				if (File.Exists(tempFileName))
-					File.Delete(tempFileName);
-			}
-		}
-		#endregion
 
 		#region api call examples
 		// Mimi's Adventure (3m)
@@ -216,7 +87,7 @@ namespace AudibleApiClientExample
 
 		/// <summary>Generate report. Summarizes which fields are exposed by each library ResponseGroupOption enum</summary>
 		public Task DocumentLibraryResponseGroupOptionsAsync() => wrapCallAsync(documentLibraryResponseGroupOptionsAsync);
-		public async Task documentLibraryResponseGroupOptionsAsync()
+		private async Task documentLibraryResponseGroupOptionsAsync()
 		{
 			using var sharedReportStringWriter = new StreamWriter("report.txt");
 
