@@ -44,7 +44,7 @@ namespace ApiTests_L0
 	{
 		[TestMethod]
 		public void null_identity_throws()
-			=> Assert.ThrowsException<ArgumentNullException>(() => new Api(null, new Mock<IClientSharer>().Object));
+			=> Assert.ThrowsException<ArgumentNullException>(() => new Api(null, new Mock<IHttpClientSharer>().Object));
 
 		[TestMethod]
 		public void null_sharer_throws()

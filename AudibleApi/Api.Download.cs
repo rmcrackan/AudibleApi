@@ -194,7 +194,7 @@ namespace AudibleApi
 			var codec = "LC_64_22050_stereo";
 
 			// note: this method requires a DIFFERENT client
-			var client = _sharer.GetSharedClient(
+			var client = _sharer.GetSharedHttpClient(
 				new Uri("https://cde-ta-g7g.amazon.com"));
 
 			// REQUEST 1: GET DOWNLOAD LINK

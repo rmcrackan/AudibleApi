@@ -5,8 +5,8 @@ using Dinah.Core.Net.Http;
 
 namespace AudibleApi
 {
-	public interface IClientSharer
+	public interface IHttpClientSharer
 	{
-		ISealedHttpClient GetSharedClient(Uri target);
+		ISealedHttpClient GetSharedHttpClient(Uri target);
 	}
 }

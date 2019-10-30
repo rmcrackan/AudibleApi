@@ -172,7 +172,7 @@ namespace Authoriz.IdentityMaintainerTests
 			var log = new List<string>();
 			var identity = Identity.FromJson(json);
 			identity.Updated += (_, __) => log.Add("saved");
-			var sharer = new ClientSharer(handler);
+			var sharer = new HttpClientSharer(handler);
 			var systemDateTime = StaticSystemDateTime.Past;
 			var maintainer = await IdentityMaintainer.CreateAsync(
 				identity,

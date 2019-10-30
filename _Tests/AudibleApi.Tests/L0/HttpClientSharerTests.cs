@@ -18,14 +18,14 @@ using TestAudibleApiCommon;
 using TestCommon;
 using static AuthorizationShared.Shared;
 
-namespace ClientSharerTests
+namespace HttpClientSharerTests
 {
 	[TestClass]
 	public class ctor
 	{
 		[TestMethod]
 		public void access_from_L0_throws()
-			=> Assert.ThrowsException<MethodAccessException>(() => new ClientSharer());
+			=> Assert.ThrowsException<MethodAccessException>(() => new HttpClientSharer());
 	}
 
 	[TestClass]
@@ -33,25 +33,25 @@ namespace ClientSharerTests
 	{
 		[TestMethod]
 		public void null_param_throws()
-			=> Assert.ThrowsException<ArgumentNullException>(() => new ClientSharer(null));
+			=> Assert.ThrowsException<ArgumentNullException>(() => new HttpClientSharer(null));
 	}
 
 	[TestClass]
-	public class GetSharedClient
+	public class GetSharedHttpClient
 	{
 		public static HttpMessageHandler newHandler(Action action)
 			=> HttpMock.CreateMockHttpClientHandler(action).Object;
 
 		[TestMethod]
 		public void null_param_throws()
-			=> Assert.ThrowsException<ArgumentNullException>(() => new ClientSharer(newHandler(() => { })).GetSharedClient(null));
+			=> Assert.ThrowsException<ArgumentNullException>(() => new HttpClientSharer(newHandler(() => { })).GetSharedHttpClient(null));
 
 		[TestMethod]
 		public async Task uses_SharedMessageHandler()
 		{
 			var log = new List<string>();
-			var settings = new ClientSharer(newHandler(() => log.Add("send")));
-			var client = settings.GetSharedClient(Resources.AmazonApiUri);
+			var settings = new HttpClientSharer(newHandler(() => log.Add("send")));
+			var client = settings.GetSharedHttpClient(Resources.AmazonApiUri);
 
 			var httpClient = client as HttpClient;
 			httpClient.BaseAddress.AbsoluteUri.Should().Be("https://api.amazon.com/");
@@ -64,10 +64,10 @@ namespace ClientSharerTests
 		[TestMethod]
 		public void returned_instances_are_equal()
 		{
-			var settings = new ClientSharer(newHandler(() => { }));
+			var settings = new HttpClientSharer(newHandler(() => { }));
 
-			var client1 = settings.GetSharedClient(Resources.AmazonApiUri);
-			var client2 = settings.GetSharedClient(Resources.AmazonApiUri);
+			var client1 = settings.GetSharedHttpClient(Resources.AmazonApiUri);
+			var client2 = settings.GetSharedHttpClient(Resources.AmazonApiUri);
 
 			client1.Should().Be(client2);
 		}

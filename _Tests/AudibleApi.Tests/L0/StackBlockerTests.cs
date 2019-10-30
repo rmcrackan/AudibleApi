@@ -130,11 +130,11 @@ namespace StackBlockerTests_L1_Pass
 	}
 
 	[TestClass]
-	public class ClientSharer_ctor
+	public class HttpClientSharer_ctor
 	{
 		[TestMethod]
 		public void access_from_L1_passes()
-			=> new ClientSharer();
+			=> new HttpClientSharer();
 	}
 
 	[TestClass]

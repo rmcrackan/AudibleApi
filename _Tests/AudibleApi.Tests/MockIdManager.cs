@@ -14,7 +14,7 @@ namespace TestAudibleApiCommon
 			: base(
 			identity,
 			new Authorize(
-				new ClientSharer(handler),
+				new HttpClientSharer(handler),
 				StaticSystemDateTime.Past),
 			StaticSystemDateTime.Past)
 		{ }

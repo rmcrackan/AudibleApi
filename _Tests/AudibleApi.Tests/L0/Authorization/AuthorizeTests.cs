@@ -36,7 +36,7 @@ namespace Authoriz.AuthorizeTests
 
 		[TestMethod]
 		public void null_systemDateTime_throws()
-			=> Assert.ThrowsException<ArgumentNullException>(() => new Authorize(new Mock<IClientSharer>().Object, null));
+			=> Assert.ThrowsException<ArgumentNullException>(() => new Authorize(new Mock<IHttpClientSharer>().Object, null));
 	}
 
     [TestClass]
@@ -44,7 +44,7 @@ namespace Authoriz.AuthorizeTests
     {
         [TestMethod]
         public async Task null_param_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new Authorize(new Mock<IClientSharer>().Object, new Mock<ISystemDateTime>().Object).ExtractAccessTokenAsync(null));
+            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new Authorize(new Mock<IHttpClientSharer>().Object, new Mock<ISystemDateTime>().Object).ExtractAccessTokenAsync(null));
 
         [TestMethod]
         public async Task parse_response()
@@ -53,7 +53,7 @@ namespace Authoriz.AuthorizeTests
 
             var response = new HttpResponseMessage { Content = new StringContent(RefreshTokenResponse) };
 
-            var accessToken = await new Authorize(new ClientSharer(handler), StaticSystemDateTime.Past).ExtractAccessTokenAsync(response);
+            var accessToken = await new Authorize(new HttpClientSharer(handler), StaticSystemDateTime.Past).ExtractAccessTokenAsync(response);
 
             accessToken.TokenValue.Should().Be(AccessTokenValue);
 
@@ -69,7 +69,7 @@ namespace Authoriz.AuthorizeTests
         public async Task null_token_throws()
 		{
 			var handler = ApiHttpClientMock.GetHandler();
-			var auth = new Authorize(new ClientSharer(handler), StaticSystemDateTime.Past);
+			var auth = new Authorize(new HttpClientSharer(handler), StaticSystemDateTime.Past);
 
 			await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => auth.RegisterAsync(null, new List<KeyValuePair<string, string>>()));
         }
@@ -78,7 +78,7 @@ namespace Authoriz.AuthorizeTests
         public async Task null_cookies_throws()
 		{
 			var handler = ApiHttpClientMock.GetHandler();
-			var auth = new Authorize(new ClientSharer(handler), StaticSystemDateTime.Past);
+			var auth = new Authorize(new HttpClientSharer(handler), StaticSystemDateTime.Past);
 
 			var accessToken = new AccessToken("Atna|", DateTime.MinValue);
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => auth.RegisterAsync(accessToken, null));
@@ -88,7 +88,7 @@ namespace Authoriz.AuthorizeTests
         public async Task empty_cookies_throws()
 		{
 			var handler = ApiHttpClientMock.GetHandler();
-			var auth = new Authorize(new ClientSharer(handler), StaticSystemDateTime.Past);
+			var auth = new Authorize(new HttpClientSharer(handler), StaticSystemDateTime.Past);
 
 			var accessToken = new AccessToken("Atna|", DateTime.MinValue);
             await Assert.ThrowsExceptionAsync<ArgumentException>(() => auth.RegisterAsync(accessToken, new Dictionary<string,string>()));
@@ -110,7 +110,7 @@ namespace Authoriz.AuthorizeTests
                     ItExpr.IsAny<CancellationToken>()
                 )
                 .ThrowsAsync(new RegistrationException());
-			var auth = new Authorize(new ClientSharer(handlerMock.Object), StaticSystemDateTime.Past);
+			var auth = new Authorize(new HttpClientSharer(handlerMock.Object), StaticSystemDateTime.Past);
 
 			var accessToken = new AccessToken("Atna|", DateTime.MinValue);
             await Assert.ThrowsExceptionAsync<RegistrationException>(() => auth.RegisterAsync(accessToken, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>() }));
@@ -124,7 +124,7 @@ namespace Authoriz.AuthorizeTests
         public async Task null_token_throws()
 		{
 			var handler = ApiHttpClientMock.GetHandler();
-			var auth = new Authorize(new ClientSharer(handler), StaticSystemDateTime.Past);
+			var auth = new Authorize(new HttpClientSharer(handler), StaticSystemDateTime.Past);
 
 			await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => auth.DeregisterAsync(null, new List<KeyValuePair<string, string>>()));
         }
@@ -133,7 +133,7 @@ namespace Authoriz.AuthorizeTests
         public async Task null_cookies_throws()
 		{
 			var handler = ApiHttpClientMock.GetHandler();
-			var auth = new Authorize(new ClientSharer(handler), StaticSystemDateTime.Past);
+			var auth = new Authorize(new HttpClientSharer(handler), StaticSystemDateTime.Past);
 
 			var accessToken = new AccessToken("Atna|", DateTime.MinValue);
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => auth.DeregisterAsync(accessToken, null));
@@ -155,7 +155,7 @@ namespace Authoriz.AuthorizeTests
                     ItExpr.IsAny<CancellationToken>()
                 )
                 .ThrowsAsync(new RegistrationException());
-			var auth = new Authorize(new ClientSharer(handlerMock.Object), StaticSystemDateTime.Past);
+			var auth = new Authorize(new HttpClientSharer(handlerMock.Object), StaticSystemDateTime.Past);
 
 			var accessToken = new AccessToken("Atna|", DateTime.MinValue);
             await Assert.ThrowsExceptionAsync<RegistrationException>(() => auth.DeregisterAsync(accessToken, new List<KeyValuePair<string, string>>()));
@@ -169,7 +169,7 @@ namespace Authoriz.AuthorizeTests
         public async Task null_param_throws()
 		{
 			var handler = ApiHttpClientMock.GetHandler();
-			var auth = new Authorize(new ClientSharer(handler), StaticSystemDateTime.Past);
+			var auth = new Authorize(new HttpClientSharer(handler), StaticSystemDateTime.Past);
 
 			await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => auth.RefreshAccessTokenAsync(null));
         }

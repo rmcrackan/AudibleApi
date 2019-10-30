@@ -32,9 +32,9 @@ namespace TestAudibleApiCommon
 				.Callback<HttpRequestMessage>(m => logRequest(m));
 
 			var mockIdMaintainer = new MockIdMaintainer();
-			var mockSharer = new Mock<IClientSharer>();
+			var mockSharer = new Mock<IHttpClientSharer>();
 			mockSharer
-				.Setup(s => s.GetSharedClient(It.IsAny<Uri>()))
+				.Setup(s => s.GetSharedHttpClient(It.IsAny<Uri>()))
 				.Returns(mockClient.Object);
 			Api ??= new Api(mockIdMaintainer, mockSharer.Object);
 		}

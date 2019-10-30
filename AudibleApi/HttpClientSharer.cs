@@ -8,11 +8,11 @@ using Dinah.Core.Net.Http;
 
 namespace AudibleApi
 {
-	public class ClientSharer : IClientSharer
+	public class HttpClientSharer : IHttpClientSharer
 	{
 		private HttpMessageHandler _sharedMessageHandler { get; }
 
-		public ClientSharer()
+		public HttpClientSharer()
 		{
 			StackBlocker.ApiTestBlocker();
 
@@ -26,13 +26,13 @@ namespace AudibleApi
 			};
 			_sharedMessageHandler = handler;
 		}
-		public ClientSharer(HttpMessageHandler sharedMessageHandler)
+		public HttpClientSharer(HttpMessageHandler sharedMessageHandler)
 		{
 			_sharedMessageHandler = sharedMessageHandler ?? throw new ArgumentNullException(nameof(sharedMessageHandler));
 		}
 
 		private Dictionary<Uri, ISealedHttpClient> _sharedUrls { get; } = new Dictionary<Uri, ISealedHttpClient>();
-		public ISealedHttpClient GetSharedClient(Uri uri)
+		public ISealedHttpClient GetSharedHttpClient(Uri uri)
 		{
 			if (uri is null)
 				throw new ArgumentNullException(nameof(uri));

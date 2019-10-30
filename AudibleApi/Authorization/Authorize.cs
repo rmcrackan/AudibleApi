@@ -40,14 +40,14 @@ namespace AudibleApi.Authorization
 
 		private ISystemDateTime _systemDateTime { get; }
 
-		private IClientSharer _sharer { get; }
+		private IHttpClientSharer _sharer { get; }
 		private ISealedHttpClient _client
-			=> _sharer.GetSharedClient(Resources.AmazonApiUri);
+			=> _sharer.GetSharedHttpClient(Resources.AmazonApiUri);
 
-		public Authorize() : this(new ClientSharer(), new SystemDateTime())
+		public Authorize() : this(new HttpClientSharer(), new SystemDateTime())
 			=> StackBlocker.ApiTestBlocker();
 
-		public Authorize(IClientSharer sharer, ISystemDateTime systemDateTime)
+		public Authorize(IHttpClientSharer sharer, ISystemDateTime systemDateTime)
 		{
 			_sharer = sharer ?? throw new ArgumentNullException(nameof(sharer));
 			_systemDateTime = systemDateTime ?? throw new ArgumentNullException(nameof(systemDateTime));

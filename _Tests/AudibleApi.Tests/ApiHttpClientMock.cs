@@ -43,7 +43,7 @@ namespace TestAudibleApiCommon
 		public static async Task<Api> GetApiAsync(HttpClientHandler handler)
 		{
 			var idMgr = AuthorizationShared.Shared.GetIdentity_Future();
-			var sharer = new ClientSharer(handler);
+			var sharer = new HttpClientSharer(handler);
 			var systemDateTime = StaticSystemDateTime.Past;
 			var authorize = new Authorize(sharer, systemDateTime);
 			var maintainer = await IdentityMaintainer.CreateAsync(idMgr, authorize, systemDateTime);
