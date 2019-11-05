@@ -32,7 +32,7 @@ namespace AudibleApiClientExample
 		// Sherlock Holmes (62h 52m)
 		public const string HUGE_BOOK_ASIN = "B06WLMWF2S";
 
-		public const string AD_HOC_ASIN = "B074ZMDT31";
+		public const string AD_HOC_ASIN = "B07D4KZVXL";
 
 		public Task PrintLibraryAsync() => wrapCallAsync(printLibraryAsync);
 		private async Task printLibraryAsync()
@@ -69,7 +69,7 @@ namespace AudibleApiClientExample
 		{
 			using var progressBar = new Dinah.Core.ConsoleLib.ProgressBar();
 			var progress = new Progress<DownloadProgress>();
-			progress.ProgressChanged += (_, e) => progressBar.Report(Math.Round((double)(100 * e.BytesReceived) / e.TotalFileSize.Value) / 100);
+			progress.ProgressChanged += (_, e) => progressBar.Report(Math.Round((double)(100 * e.BytesReceived) / e.TotalBytesToReceive.Value) / 100);
 
 			Console.Write("Download book");
 			var finalFile = await _api.DownloadAaxWorkaroundAsync(TINY_BOOK_ASIN, "downloadExample.xyz", progress);
@@ -176,6 +176,15 @@ namespace AudibleApiClientExample
 			foreach (var kvp in properties)
 				sw.WriteLine($"{kvp.Key}");
 			sw.WriteLine();
+		}
+
+		public Task DeserializeSingleBookAsync() => wrapCallAsync(deserializeSingleBookAsync);
+		private async Task deserializeSingleBookAsync()
+		{
+			var bookResult = await _api.GetLibraryBookAsync(AD_HOC_ASIN, LibraryOptions.ResponseGroupOptions.ALL_OPTIONS);
+			var bookResultString = bookResult.ToString();
+			var bookResultJson = AudibleApiDTOs.LibraryApiV10.FromJson(bookResultString);
+			var bookResultItem = bookResultJson.Item;
 		}
 
 		private async Task wrapCallAsync(Func<Task> fn)

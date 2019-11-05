@@ -15,6 +15,42 @@
 // Status is not optional. remove "?" from type
 // RuntimeLengthMin type: int?
 // rename Author class to Person
+/*
+add this to generated code to allow for episodes
+
+LibraryApiV10 add
+		[JsonProperty("item")]
+		public Item Item { get; set; }
+
+enum Root
+add ShortsCurated, ShortsSandbox
+
+RootConverter
+ReadJson add
+    case "ShortsCurated":
+        return Root.ShortsCurated;
+    case "ShortsSandbox":
+        return Root.ShortsSandbox;
+WriteJson add
+    case Root.ShortsCurated:
+        serializer.Serialize(writer, "ShortsCurated");
+        return;
+    case Root.ShortsSandbox:
+        serializer.Serialize(writer, "ShortsSandbox");
+        return;
+
+enum ContentDeliveryType
+add SinglePartIssue
+
+ContentDeliveryTypeConverter
+ReadJson add
+    case "SinglePartIssue":
+        return ContentDeliveryType.SinglePartIssue;
+WriteJson add
+    case ContentDeliveryType.SinglePartIssue:
+        serializer.Serialize(writer, "SinglePartIssue");
+        return;
+*/
 
 using System;
 using System.Linq;
@@ -33,7 +69,7 @@ namespace AudibleApiDTOs
 		public string ProductId => Asin;
 		public int LengthInMinutes => RuntimeLengthMin ?? 0;
 		public string Description => PublisherSummary;
-		public bool Episodes
+		public bool IsEpisodes
 			=> Relationships?.Any(r => r.RelationshipToProduct == RelationshipToProduct.Child && r.RelationshipType == RelationshipType.Episode)
 			?? false;
 		public string PictureId => ProductImages?.PictureId;
@@ -61,8 +97,6 @@ namespace AudibleApiDTOs
 		public Ladder[] Categories => CategoryLadders?.FirstOrDefault()?.Ladder ?? new Ladder[0];
 		public Ladder ParentCategory => Categories?.FirstOrDefault();
 		public Ladder ChildCategory => Categories.Length > 1 ? Categories[1] : null;
-
-		// LibraryDTO.DownloadBookLink will be handled differently. see api.DownloadAaxWorkaroundAsync(asin)
 
 		public override string ToString() => $"[{ProductId}] {Title}";
 	}

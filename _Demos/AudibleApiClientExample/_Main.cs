@@ -20,12 +20,16 @@ namespace AudibleApiClientExample
 			// put this location into appsettings.json in build dir. remember to escape back-slashes
 			// save file
 
-			var client = await AudibleApiClient.CreateClientAsync("appsettings.json");
+			var settings = File.ReadAllText("appsettings.json");
+			var jObj = Newtonsoft.Json.Linq.JObject.Parse(settings);
+			var IdentityFilePath = jObj.Value<string>("IdentityFilePath");
+			var client = await AudibleApiClient.CreateClientAsync(IdentityFilePath);
 
 			//// use client
 			//await client.PrintLibraryAsync();
 			//await client.DownloadBookAsync();
 			//await client.DocumentLibraryResponseGroupOptionsAsync();
+			await client.DeserializeSingleBookAsync();
 		}
 	}
 }

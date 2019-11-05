@@ -190,14 +190,19 @@ namespace AudibleApi
 			validateNotBlank(asin, nameof(asin));
 			validateNotBlank(destinationFilePath, nameof(destinationFilePath));
 
-			// can also get codec options from /1.0/library/{asin}?response_groups=product_attrs,relationships
-			var codec = "LC_64_22050_stereo";
+			// REQUEST 1: GET CODEC
+			var getCodec = await GetLibraryBookAsync(asin, LibraryOptions.ResponseGroupOptions.ProductAttrs | LibraryOptions.ResponseGroupOptions.Relationships);
+			//var codec = (string)getCodec["item"]["available_codecs"][0]["enhanced_codec"];
+			var codec = AudibleApiDTOs.LibraryApiV10.FromJson(getCodec.ToString())
+				.Item
+				.AvailableCodecs
+				.First()
+				.EnhancedCodec;
 
 			// note: this method requires a DIFFERENT client
-			var client = _sharer.GetSharedHttpClient(
-				new Uri("https://cde-ta-g7g.amazon.com"));
+			var client = _sharer.GetSharedHttpClient(new Uri("https://cde-ta-g7g.amazon.com"));
 
-			// REQUEST 1: GET DOWNLOAD LINK
+			// REQUEST 2: GET DOWNLOAD LINK
 			var requestUri = $"/FionaCDEServiceEngine/FSDownloadContent?type=AUDI&currentTransportMethod=WIFI&key={asin}&codec={codec}";
 			var response = await AdHocAuthenticatedGetAsync(requestUri, client);
 			if (response.StatusCode != HttpStatusCode.Found)
@@ -210,7 +215,7 @@ namespace AudibleApi
 				$"{cdsRoot}com",
 				$"{cdsRoot}{Localization.CurrentLocale.Domain}");
 
-			// REQUEST 2: DOWNLOAD FILE
+			// REQUEST 3: DOWNLOAD FILE
 			var filename = await client.DownloadFileAsync(downloadUrl, destinationFilePath, progress);
 
 			return filename;

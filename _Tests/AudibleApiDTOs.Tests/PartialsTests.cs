@@ -51,27 +51,27 @@ namespace PartialsTests
 		public void Description_value() => new Item { PublisherSummary = "foo" }.Description.Should().Be("foo");
 
 		[TestMethod]
-		public void Episodes_Relationships_null() => new Item { Relationships = null }.Episodes.Should().BeFalse();
+		public void IsEpisodes_Relationships_null() => new Item { Relationships = null }.IsEpisodes.Should().BeFalse();
 		[TestMethod]
-		public void Episodes_Relationships_empty() => new Item { Relationships = new Relationship[0] }.Episodes.Should().BeFalse();
+		public void IsEpisodes_Relationships_empty() => new Item { Relationships = new Relationship[0] }.IsEpisodes.Should().BeFalse();
 		[TestMethod]
-		public void Episodes_no_child() => new Item
+		public void IsEpisodes_no_child() => new Item
 		{
 			Relationships = new Relationship[]
 			{
 				new Relationship { RelationshipType = RelationshipType.Episode }
 			}
-		}.Episodes.Should().BeFalse();
+		}.IsEpisodes.Should().BeFalse();
 		[TestMethod]
-		public void Episodes_no_episode() => new Item
+		public void IsEpisodes_no_episode() => new Item
 		{
 			Relationships = new Relationship[]
 			{
 				new Relationship { RelationshipToProduct = RelationshipToProduct.Child }
 			}
-		}.Episodes.Should().BeFalse();
+		}.IsEpisodes.Should().BeFalse();
 		[TestMethod]
-		public void Episodes_true() => new Item
+		public void IsEpisodes_true() => new Item
 		{
 			Relationships = new Relationship[]
 			{
@@ -81,7 +81,7 @@ namespace PartialsTests
 					RelationshipToProduct = RelationshipToProduct.Child
 				}
 			}
-		}.Episodes.Should().BeTrue();
+		}.IsEpisodes.Should().BeTrue();
 
 		string uriPath => "http://x/t.c";
 		Uri uri => new Uri(uriPath);

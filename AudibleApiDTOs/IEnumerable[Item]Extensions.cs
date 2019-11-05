@@ -35,6 +35,7 @@ namespace AudibleApiDTOs
 			=> items
 			?.Where(i => i.Series != null)
 			.SelectMany(i => i.Series)
+			// if series is present, Name and Id must both be non-null. don't use Elvis operator in DistinctBy()
 			.DistinctBy(s => new { s.SeriesName, s.SeriesId });
 
 		public static IEnumerable<Ladder[]> GetCategoryPairsDistinct(this IEnumerable<Item> items)

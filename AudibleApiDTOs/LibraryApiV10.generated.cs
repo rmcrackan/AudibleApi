@@ -18,6 +18,9 @@ namespace AudibleApiDTOs
 		[JsonProperty("items")]
 		public Item[] Items { get; set; }
 
+		[JsonProperty("item")]
+		public Item Item { get; set; }
+
 		[JsonProperty("response_groups")]
 		public string[] ResponseGroups { get; set; }
 	}
@@ -601,9 +604,9 @@ namespace AudibleApiDTOs
 
 	public enum Name { Aax, Aax22_32, Aax22_64, Aax44_128, Aax44_64, Format4, Mp422_32, Mp422_64, Mp444_128, Mp444_64, Piff22_32, Piff22_64, Piff44_128, Piff44_64 };
 
-	public enum Root { EditorsPicks, ExploreBy, Genres, InstitutionsHpMarketing, RodizioBuckets, RodizioGenres, ShortsPrime };
+	public enum Root { EditorsPicks, ExploreBy, Genres, InstitutionsHpMarketing, RodizioBuckets, RodizioGenres, ShortsPrime, ShortsCurated, ShortsSandbox };
 
-	public enum ContentDeliveryType { MultiPartBook, Periodical, SinglePartBook };
+	public enum ContentDeliveryType { MultiPartBook, Periodical, SinglePartBook, SinglePartIssue };
 
 	public enum ContentType { Episode, Lecture, Meditation, Misc, Performance, Product, RadioTvProgram, Show, Speech };
 
@@ -945,6 +948,10 @@ namespace AudibleApiDTOs
 					return Root.RodizioGenres;
 				case "ShortsPrime":
 					return Root.ShortsPrime;
+				case "ShortsCurated":
+					return Root.ShortsCurated;
+				case "ShortsSandbox":
+					return Root.ShortsSandbox;
 			}
 			throw new Exception("Cannot unmarshal type Root");
 		}
@@ -980,6 +987,12 @@ namespace AudibleApiDTOs
 				case Root.ShortsPrime:
 					serializer.Serialize(writer, "ShortsPrime");
 					return;
+				case Root.ShortsCurated:
+					serializer.Serialize(writer, "ShortsCurated");
+					return;
+				case Root.ShortsSandbox:
+					serializer.Serialize(writer, "ShortsSandbox");
+					return;
 			}
 			throw new Exception("Cannot marshal type Root");
 		}
@@ -1003,6 +1016,8 @@ namespace AudibleApiDTOs
 					return ContentDeliveryType.Periodical;
 				case "SinglePartBook":
 					return ContentDeliveryType.SinglePartBook;
+				case "SinglePartIssue":
+					return ContentDeliveryType.SinglePartIssue;
 			}
 			throw new Exception("Cannot unmarshal type ContentDeliveryType");
 		}
@@ -1025,6 +1040,9 @@ namespace AudibleApiDTOs
 					return;
 				case ContentDeliveryType.SinglePartBook:
 					serializer.Serialize(writer, "SinglePartBook");
+					return;
+				case ContentDeliveryType.SinglePartIssue:
+					serializer.Serialize(writer, "SinglePartIssue");
 					return;
 			}
 			throw new Exception("Cannot marshal type ContentDeliveryType");
