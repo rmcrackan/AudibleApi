@@ -3,7 +3,7 @@
 // library api with all response_groups
 // https://app.quicktype.io/
 // left pane:
-//   name=LibraryApiV10
+//   name=LibraryDtoV10
 //   paste in full output of library api with all response_groups
 // right pane:
 //   namespace: AudibleApiDTOs
@@ -15,13 +15,9 @@
 // Status is not optional. remove "?" from type
 // RuntimeLengthMin type: int?
 // rename Author class to Person
+// class Serialize: add partial
 /*
 add this to generated code to allow for episodes
-
-LibraryApiV10 add
-		[JsonProperty("item")]
-		public Item Item { get; set; }
-
 enum Root
 add ShortsCurated, ShortsSandbox
 
@@ -60,7 +56,7 @@ namespace AudibleApiDTOs
 	/// <summary>
 	/// Audible API. GET /1.0/library , GET /1.0/library/{asin}
 	/// </summary>
-	public partial class LibraryApiV10
+	public partial class LibraryDtoV10
 	{
 		public override string ToString() => $"{Items?.Length ?? 0} {nameof(Items)}, {ResponseGroups?.Length ?? 0} {nameof(ResponseGroups)}";
 	}

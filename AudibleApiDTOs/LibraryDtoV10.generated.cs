@@ -4,7 +4,7 @@
 //
 //    using DTOs;
 //
-//    var libraryApiV10 = LibraryApiV10.FromJson(jsonString);
+//    var LibraryDtoV10 = LibraryDtoV10.FromJson(jsonString);
 
 namespace AudibleApiDTOs
 {
@@ -13,13 +13,10 @@ namespace AudibleApiDTOs
 	using Newtonsoft.Json;
 	using Newtonsoft.Json.Converters;
 
-	public partial class LibraryApiV10
+	public partial class LibraryDtoV10
 	{
 		[JsonProperty("items")]
 		public Item[] Items { get; set; }
-
-		[JsonProperty("item")]
-		public Item Item { get; set; }
 
 		[JsonProperty("response_groups")]
 		public string[] ResponseGroups { get; set; }
@@ -638,14 +635,14 @@ namespace AudibleApiDTOs
 
 	public enum ThesaurusSubjectKeyword { AdventurersExplorers, AlternateHistory, Comedians, Contemporary, Dramatizations, EasternReligions, LaConfidential, LiteratureAndFiction, Medicine, Spirituality, StandupComedy, Storytelling, SwordSorcery, Workouts };
 
-	public partial class LibraryApiV10
+	public partial class LibraryDtoV10
 	{
-		public static LibraryApiV10 FromJson(string json) => JsonConvert.DeserializeObject<LibraryApiV10>(json, AudibleApiDTOs.Converter.Settings);
+		public static LibraryDtoV10 FromJson(string json) => JsonConvert.DeserializeObject<LibraryDtoV10>(json, AudibleApiDTOs.Converter.Settings);
 	}
 
-	public static class Serialize
+	public static partial class Serialize
 	{
-		public static string ToJson(this LibraryApiV10 self) => JsonConvert.SerializeObject(self, AudibleApiDTOs.Converter.Settings);
+		public static string ToJson(this LibraryDtoV10 self) => JsonConvert.SerializeObject(self, AudibleApiDTOs.Converter.Settings);
 	}
 
 	internal static class Converter

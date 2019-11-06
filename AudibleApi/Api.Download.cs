@@ -193,7 +193,7 @@ namespace AudibleApi
 			// REQUEST 1: GET CODEC
 			var getCodec = await GetLibraryBookAsync(asin, LibraryOptions.ResponseGroupOptions.ProductAttrs | LibraryOptions.ResponseGroupOptions.Relationships);
 			//var codec = (string)getCodec["item"]["available_codecs"][0]["enhanced_codec"];
-			var codec = AudibleApiDTOs.LibraryApiV10.FromJson(getCodec.ToString())
+			var codec = AudibleApiDTOs.BookDtoV10.FromJson(getCodec.ToString())
 				.Item
 				.AvailableCodecs
 				.First()

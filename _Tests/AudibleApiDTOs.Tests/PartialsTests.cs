@@ -8,20 +8,20 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace PartialsTests
 {
 	[TestClass]
-	public class LibraryApiV10_ToString
+	public class LibraryDtoV10_ToString
 	{
 		//public override string ToString() => $"{Items.Length} {nameof(Items)}, {ResponseGroups.Length} {nameof(ResponseGroups)}";
 		[TestMethod]
 		public void only_null()
-			=> new LibraryApiV10 { Items = null, ResponseGroups = null }.ToString().Should().Be("0 Items, 0 ResponseGroups");
+			=> new LibraryDtoV10 { Items = null, ResponseGroups = null }.ToString().Should().Be("0 Items, 0 ResponseGroups");
 
 		[TestMethod]
 		public void only_empty()
-			=> new LibraryApiV10 { Items = new Item[0], ResponseGroups = new string[0] }.ToString().Should().Be("0 Items, 0 ResponseGroups");
+			=> new LibraryDtoV10 { Items = new Item[0], ResponseGroups = new string[0] }.ToString().Should().Be("0 Items, 0 ResponseGroups");
 
 		[TestMethod]
 		public void has_items()
-			=> new LibraryApiV10 { Items = new[] { new Item(), new Item() }, ResponseGroups = new[] { "a", "b" } }.ToString().Should().Be("2 Items, 2 ResponseGroups");
+			=> new LibraryDtoV10 { Items = new[] { new Item(), new Item() }, ResponseGroups = new[] { "a", "b" } }.ToString().Should().Be("2 Items, 2 ResponseGroups");
 	}
 
 	[TestClass]

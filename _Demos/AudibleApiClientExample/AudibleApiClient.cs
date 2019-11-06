@@ -183,7 +183,7 @@ namespace AudibleApiClientExample
 		{
 			var bookResult = await _api.GetLibraryBookAsync(AD_HOC_ASIN, LibraryOptions.ResponseGroupOptions.ALL_OPTIONS);
 			var bookResultString = bookResult.ToString();
-			var bookResultJson = AudibleApiDTOs.LibraryApiV10.FromJson(bookResultString);
+			var bookResultJson = AudibleApiDTOs.BookDtoV10.FromJson(bookResultString);
 			var bookResultItem = bookResultJson.Item;
 		}
 
