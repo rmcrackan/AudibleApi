@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AudibleApiDTOs;
 using Dinah.Core;
 using Dinah.Core.Net.Http;
 using Newtonsoft.Json;
@@ -190,14 +191,17 @@ namespace AudibleApi
 			validateNotBlank(asin, nameof(asin));
 			validateNotBlank(destinationFilePath, nameof(destinationFilePath));
 
+			var codecPreferenceOrder = new[] { EnhancedCodec.Lc128_44100_Stereo, EnhancedCodec.Lc64_44100_Stereo, EnhancedCodec.Lc64_22050_Stereo, EnhancedCodec.Lc32_22050_Stereo, EnhancedCodec.Aax, EnhancedCodec.Mp444128, EnhancedCodec.Mp44464, EnhancedCodec.Mp42264, EnhancedCodec.Mp42232, EnhancedCodec.Piff44128, EnhancedCodec.Piff4464, EnhancedCodec.Piff2232, EnhancedCodec.Piff2264 };
+
 			// REQUEST 1: GET CODEC
-			var getCodec = await GetLibraryBookAsync(asin, LibraryOptions.ResponseGroupOptions.ProductAttrs | LibraryOptions.ResponseGroupOptions.Relationships);
-			//var codec = (string)getCodec["item"]["available_codecs"][0]["enhanced_codec"];
-			var codec = AudibleApiDTOs.BookDtoV10.FromJson(getCodec.ToString())
+			var bookJObj = await GetLibraryBookAsync(asin, LibraryOptions.ResponseGroupOptions.ProductAttrs | LibraryOptions.ResponseGroupOptions.Relationships);
+			var codecs = BookDtoV10.FromJson(bookJObj.ToString())
 				.Item
 				.AvailableCodecs
-				.First()
-				.EnhancedCodec;
+				.Select(ac => ac.EnhancedCodec);
+			// since Intersect() doesn't guarantee order, do not use it here
+			var codecEnum = codecPreferenceOrder.FirstOrDefault(p => codecs.Contains(p));
+			var codec = Serialize.ToJson(codecEnum).Trim('"');
 
 			// note: this method requires a DIFFERENT client
 			var client = _sharer.GetSharedHttpClient(new Uri("https://cde-ta-g7g.amazon.com"));
