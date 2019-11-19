@@ -20,14 +20,18 @@ namespace L1.Tests
 					var identityFilePath = jObject["IdentityFilePath"];
 					var path = identityFilePath.Value<string>();
 					if (!File.Exists(path))
-						throw new FileNotFoundException();
+					{
+						path = Path.Combine("L1", path);
+						if (!File.Exists(path))
+							throw new FileNotFoundException();
+					}
 					return path;
 				}
 				catch
 				{
 					var lines = new List<string>
 					{
-						$"Error! {nameof(APP_SETTINGS)} not found. To fix this error, copy the client's appsettings IdentityFilePath entry into the L1's appsettings IdentityFilePath entry"
+						$"Error! {nameof(APP_SETTINGS)} not found.\r\nTo fix this error, copy the client's appsettings IdentityFilePath entry into the L1's appsettings IdentityFilePath entry. If Libation is on this computer, the path is probably %LibationFiles%\\IdentityTokens.json"
 					};
 
 					throw new Exception(string.Join("\r\n", lines));

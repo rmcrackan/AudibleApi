@@ -144,7 +144,7 @@ namespace AudibleApi.Authorization
 		}
 
 		static char[] chars { get; } = new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-		static Random random = new Random();
+		static Random random { get; } = new Random();
 		/// <summary>
 		/// Generates a random text (str + int) with a length of 40 chars.
 		/// Use of random serial prevents unregister device by other users with same 'device_serial'
