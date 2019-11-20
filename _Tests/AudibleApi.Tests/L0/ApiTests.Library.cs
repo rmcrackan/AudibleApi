@@ -100,7 +100,7 @@ namespace ApiTests_L0
 
 			var jsonStart = "{\"item\":";
 			var jsonEnd = @"
-""response_groups"":[""relationships"",""always-returned""]}
+""response_groups"":[""relationships"",""always-returned"",""product_attrs""]}
 ".Trim();
 			json.Should().StartWith(jsonStart);
 			json.Should().EndWith(jsonEnd);
@@ -112,7 +112,7 @@ namespace ApiTests_L0
 			api ??= await ApiHttpClientMock.GetApiAsync(LibraryBookWithResponseGroups);
 
 			var harryPotterAsin = "B017V4IM1G";
-			var response = await api.GetLibraryBookAsync(harryPotterAsin, LibraryOptions.ResponseGroupOptions.Relationships);
+			var response = await api.GetLibraryBookAsync(harryPotterAsin, LibraryOptions.ResponseGroupOptions.ProductAttrs | LibraryOptions.ResponseGroupOptions.Relationships);
 			var json = response.ToString(Formatting.None);
 			return json;
 		}

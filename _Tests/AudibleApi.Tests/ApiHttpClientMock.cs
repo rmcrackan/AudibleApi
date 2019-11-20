@@ -14,29 +14,19 @@ namespace TestAudibleApiCommon
 	{
 		public static ApiHttpClient GetClient(string handlerReturnString = null, HttpStatusCode statusCode = HttpStatusCode.OK)
 		{
-			var handler = GetHandler(handlerReturnString, statusCode);
+			var handler = HttpMock.GetHandler(handlerReturnString, statusCode);
 			return ApiHttpClient.Create(handler);
 		}
 
 		public static ApiHttpClient GetClient(HttpResponseMessage response)
 		{
-			var handler = GetHandler(response);
+			var handler = HttpMock.GetHandler(response);
 			return ApiHttpClient.Create(handler);
 		}
 
-		public static HttpClientHandler GetHandler(string handlerReturnString = null, HttpStatusCode statusCode = HttpStatusCode.OK)
-			 => HttpMock.CreateMockHttpClientHandler
-				(
-				handlerReturnString ?? "foo",
-				statusCode
-				).Object;
-
-		public static HttpClientHandler GetHandler(HttpResponseMessage response)
-			=> HttpMock.CreateMockHttpClientHandler(response).Object;
-
 		public static async Task<Api> GetApiAsync(string handlerReturnString)
 		{
-			var handler = GetHandler(handlerReturnString);
+			var handler = HttpMock.GetHandler(handlerReturnString);
 			return await GetApiAsync(handler);
 		}
 

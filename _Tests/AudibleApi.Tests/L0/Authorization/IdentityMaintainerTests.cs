@@ -123,7 +123,7 @@ namespace Authoriz.IdentityMaintainerTests
 		[TestMethod]
 		public async Task no_refresh_needed()
 		{
-			var handler = ApiHttpClientMock.GetHandler();
+			var handler = HttpMock.GetHandler();
 			var now = StaticSystemDateTime.Past.UtcNow;
 
 			// with testing time, don't assume greater accuracy than ms
@@ -145,7 +145,7 @@ namespace Authoriz.IdentityMaintainerTests
 		[TestMethod]
 		public async Task with_refresh()
 		{
-			var handler = ApiHttpClientMock.GetHandler(RefreshTokenResponse);
+			var handler = HttpMock.GetHandler(RefreshTokenResponse);
 			var now = StaticSystemDateTime.Past.UtcNow;
 
 			// with testing time, don't assume greater accuracy than ms
@@ -203,7 +203,7 @@ namespace Authoriz.IdentityMaintainerTests
 		[TestMethod]
 		public async Task valid_parse_invokes_update_event()
 		{
-			var handler = ApiHttpClientMock.GetHandler(AuthenticateResponse);
+			var handler = HttpMock.GetHandler(AuthenticateResponse);
 			var log = new List<string>();
 
 			var idMgr = Identity.FromJson(IdentityJson_Future);
@@ -222,7 +222,7 @@ namespace Authoriz.IdentityMaintainerTests
 		[TestMethod]
 		public async Task failure_throws()
 		{
-			var handler = ApiHttpClientMock.GetHandler(AuthenticateResponse, HttpStatusCode.GatewayTimeout);
+			var handler = HttpMock.GetHandler(AuthenticateResponse, HttpStatusCode.GatewayTimeout);
 			var idMgr = Identity.FromJson(IdentityJson_Future);
 			var maintainer = new MockIdMaintainer(idMgr, handler);
 
@@ -232,7 +232,7 @@ namespace Authoriz.IdentityMaintainerTests
 		[TestMethod]
 		public async Task success_clears_values()
 		{
-			var handler = ApiHttpClientMock.GetHandler(AuthenticateResponse);
+			var handler = HttpMock.GetHandler(AuthenticateResponse);
 			var log = new List<string>();
 
 			var idMgr = Identity.FromJson(IdentityJson_Future);
@@ -268,7 +268,7 @@ namespace Authoriz.IdentityMaintainerTests
 		[TestMethod]
 		public async Task current_token_noop()
 		{
-			var handler = ApiHttpClientMock.GetHandler();
+			var handler = HttpMock.GetHandler();
 			var log = new List<string>();
 
 			var idMgr = Identity.FromJson(IdentityJson_Future);
@@ -288,7 +288,7 @@ namespace Authoriz.IdentityMaintainerTests
 				@"""access_token"": """,
 				@"""access_token"": ""Atna|FOO"
 			);
-			var handler = ApiHttpClientMock.GetHandler(response);
+			var handler = HttpMock.GetHandler(response);
 
 			// init w/expired token
 			var log = new List<string>();
@@ -322,7 +322,7 @@ namespace Authoriz.IdentityMaintainerTests
 
 			// copied from RefreshAccessTokenAsync.current_token_noop
 
-			var handler = ApiHttpClientMock.GetHandler();
+			var handler = HttpMock.GetHandler();
 			var log = new List<string>();
 
 			var idMgr = Identity.FromJson(IdentityJson_Future);
@@ -346,7 +346,7 @@ namespace Authoriz.IdentityMaintainerTests
 				@"""access_token"": """,
 				@"""access_token"": ""Atna|FOO"
 			);
-			var handler = ApiHttpClientMock.GetHandler(response);
+			var handler = HttpMock.GetHandler(response);
 
 			// init w/expired token
 			var log = new List<string>();

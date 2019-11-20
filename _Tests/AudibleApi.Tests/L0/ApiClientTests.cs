@@ -48,7 +48,7 @@ namespace ApiHttpClientTests
 		[TestMethod]
 		public void sets_cookie_jar()
 			=> ApiHttpClient
-				.Create(ApiHttpClientMock.GetHandler())
+				.Create(HttpMock.GetHandler())
 				.CookieJar
 				.Should().NotBeNull();
 
@@ -57,7 +57,7 @@ namespace ApiHttpClientTests
 		{
 			// ensure handler incl ApiMessageHandler
 
-			var handler = ApiHttpClientMock.GetHandler(new JObject
+			var handler = HttpMock.GetHandler(new JObject
 			{
 				{ "message", "Invalid response group" }
 			}.ToString());

@@ -3,13 +3,14 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AudibleApi;
 using AudibleApi.Authorization;
+using TestCommon;
 using static AuthorizationShared.Shared;
 
 namespace TestAudibleApiCommon
 {
     public class MockIdMaintainer : IdentityMaintainer
 	{
-		public MockIdMaintainer() : this(GetIdentity_Future(), ApiHttpClientMock.GetHandler()) { }
+		public MockIdMaintainer() : this(GetIdentity_Future(), HttpMock.GetHandler()) { }
 		public MockIdMaintainer(IIdentity identity, HttpMessageHandler handler)
 			: base(
 			identity,

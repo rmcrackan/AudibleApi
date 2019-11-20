@@ -37,8 +37,8 @@ namespace AudibleApi
 		/// </returns>
 		public async Task<IEnumerable<string>> DownloadAsync(string asin, string file, IProgress<DownloadProgress> progress = null)
 		{
-			validateNotBlank(asin, nameof(asin));
-			validateNotBlank(file, nameof(file));
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(file, nameof(file));
 
 			var asins = (await GetDownloadablePartsAsync(asin)).ToList();
 
@@ -81,7 +81,7 @@ namespace AudibleApi
 		/// <returns>All ASINs to download, in order</returns>
 		public async Task<IEnumerable<string>> GetDownloadablePartsAsync(string asin)
 		{
-			validateNotBlank(asin, nameof(asin));
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
 
 			var bookDetails = await GetLibraryBookAsync(asin, LibraryOptions.ResponseGroupOptions.Relationships);
 
@@ -110,7 +110,7 @@ namespace AudibleApi
 		/// Eg: file=foo.abc, downloadfile=bar.xyz, return=foo.xyz</returns>
 		public async Task<string> DownloadPartAsync(string asin, string file, IProgress<DownloadProgress> progress = null)
         {
-			validateNotBlank(file, nameof(file));
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(file, nameof(file));
 
             var downloadLink = await GetDownloadLinkAsync(asin);
             if (downloadLink == null)
@@ -132,7 +132,7 @@ namespace AudibleApi
 			// this method has the potential to return files of the new .aaxc format which is currently un-broken and cannot be decrypted
 			//
 
-			validateNotBlank(asin, nameof(asin));
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
 
             var body = new JObject
             {
@@ -188,12 +188,27 @@ namespace AudibleApi
 			// https://cds.audible.com/download?asin=B06WLMWF2S&cust_id=zLKehcc-_2JBt-P-KqVn4VoWpfv3fqLyDVJ5SBPqXD1lCzjHSSzHBtW1I2wd&codec=LC_64_22050_stereo&source=audible_iPhone&type=AUDI
 			#endregion
 
-			validateNotBlank(asin, nameof(asin));
-			validateNotBlank(destinationFilePath, nameof(destinationFilePath));
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(destinationFilePath, nameof(destinationFilePath));
+
+			var codec = await GetCodecAsync(asin);
+
+			// note: remainder of this method requires a DIFFERENT client
+			var client = Sharer.GetSharedHttpClient(new Uri("https://cde-ta-g7g.amazon.com"));
+
+			var downloadUrl = await GetDownloadLinkAsync(client, asin, codec);
+
+			var filename = await client.DownloadFileAsync(downloadUrl, destinationFilePath, progress);
+
+			return filename;
+		}
+
+		public async Task<string> GetCodecAsync(string asin)
+		{
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
 
 			var codecPreferenceOrder = new[] { EnhancedCodec.Lc128_44100_Stereo, EnhancedCodec.Lc64_44100_Stereo, EnhancedCodec.Lc64_22050_Stereo, EnhancedCodec.Lc32_22050_Stereo, EnhancedCodec.Aax, EnhancedCodec.Mp444128, EnhancedCodec.Mp44464, EnhancedCodec.Mp42264, EnhancedCodec.Mp42232, EnhancedCodec.Piff44128, EnhancedCodec.Piff4464, EnhancedCodec.Piff2232, EnhancedCodec.Piff2264 };
 
-			// REQUEST 1: GET CODEC
 			var bookJObj = await GetLibraryBookAsync(asin, LibraryOptions.ResponseGroupOptions.ProductAttrs | LibraryOptions.ResponseGroupOptions.Relationships);
 			var codecs = BookDtoV10.FromJson(bookJObj.ToString())
 				.Item
@@ -202,11 +217,15 @@ namespace AudibleApi
 			// since Intersect() doesn't guarantee order, do not use it here
 			var codecEnum = codecPreferenceOrder.FirstOrDefault(p => codecs.Contains(p));
 			var codec = Serialize.ToJson(codecEnum).Trim('"');
+			return codec;
+		}
 
-			// note: this method requires a DIFFERENT client
-			var client = _sharer.GetSharedHttpClient(new Uri("https://cde-ta-g7g.amazon.com"));
+		public async Task<string> GetDownloadLinkAsync(ISealedHttpClient client, string asin, string codec)
+		{
+			ArgumentValidator.EnsureNotNull(client, nameof(client));
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(codec, nameof(codec));
 
-			// REQUEST 2: GET DOWNLOAD LINK
 			var requestUri = $"/FionaCDEServiceEngine/FSDownloadContent?type=AUDI&currentTransportMethod=WIFI&key={asin}&codec={codec}";
 			var response = await AdHocAuthenticatedGetAsync(requestUri, client);
 			if (response.StatusCode != HttpStatusCode.Found)
@@ -219,18 +238,7 @@ namespace AudibleApi
 				$"{cdsRoot}com",
 				$"{cdsRoot}{Localization.CurrentLocale.Domain}");
 
-			// REQUEST 3: DOWNLOAD FILE
-			var filename = await client.DownloadFileAsync(downloadUrl, destinationFilePath, progress);
-
-			return filename;
-		}
-
-		private static void validateNotBlank(string value, string paramName)
-		{
-			if (value is null)
-				throw new ArgumentNullException(paramName);
-			if (string.IsNullOrWhiteSpace(value))
-				throw new ArgumentException();
+			return downloadUrl;
 		}
 	}
 }

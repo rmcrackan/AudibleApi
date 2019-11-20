@@ -35,14 +35,14 @@ namespace LoginTests_L0
 		[TestMethod]
 		public void has_cookies_throws()
 		{
-			var client = ApiHttpClient.Create(ApiHttpClientMock.GetHandler());
+			var client = ApiHttpClient.Create(HttpMock.GetHandler());
 			client.CookieJar.Add(new Cookie("foo", "bar", "/", "a.com"));
 			Assert.ThrowsException<ArgumentException>(() => new Authenticate(client, new Mock<ISystemDateTime>().Object));
 		}
 
 		[TestMethod]
 		public void null_systemDateTime_throws()
-			=> Assert.ThrowsException<ArgumentNullException>(() => new Authenticate(ApiHttpClient.Create(ApiHttpClientMock.GetHandler()), null));
+			=> Assert.ThrowsException<ArgumentNullException>(() => new Authenticate(ApiHttpClient.Create(HttpMock.GetHandler()), null));
     }
 
     [TestClass]

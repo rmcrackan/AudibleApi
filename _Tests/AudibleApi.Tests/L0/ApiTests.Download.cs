@@ -137,8 +137,8 @@ namespace ApiTests_L0
 
 			api ??= await ApiHttpClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
 
-			var temp = System.IO.Path.Combine(
-				System.IO.Path.GetTempPath(),
+			var temp = Path.Combine(
+				Path.GetTempPath(),
 				Guid.NewGuid().ToString() + ".aax");
 
 			var asinNotInLibrary = "172137406X";
@@ -146,7 +146,7 @@ namespace ApiTests_L0
 			var filename = await api.DownloadPartAsync(asinNotInLibrary, temp);
 			filename.Should().BeNull();
 			await Task.Delay(100);
-			System.IO.File.Exists(temp).Should().BeFalse();
+			File.Exists(temp).Should().BeFalse();
 		}
 
 		// actually an error in GetDownloadLinkAsync. see its unit tests
@@ -276,7 +276,7 @@ namespace ApiTests_L0
 namespace ApiTests_L0.Sealed
 {
 	[TestClass]
-	public class GetDownloadLinkAsync
+	public class GetDownloadLinkAsync_asin
 	{
 		[TestMethod]
 		public async Task unknown_status_code()
@@ -352,10 +352,10 @@ namespace ApiTests_L0.Sealed
 
 			var api = await ApiHttpClientMock.GetApiAsync(handlerMock.Object);
 
-			var path = System.IO.Path.GetTempPath();
+			var path = Path.GetTempPath();
 			var filenameNoExt = Guid.NewGuid().ToString();
-			var badFileName = System.IO.Path.Combine(path, filenameNoExt + badExt);
-			var goodFileName = System.IO.Path.Combine(path, filenameNoExt + goodExt);
+			var badFileName = Path.Combine(path, filenameNoExt + badExt);
+			var goodFileName = Path.Combine(path, filenameNoExt + goodExt);
 
 			try
 			{
@@ -363,13 +363,13 @@ namespace ApiTests_L0.Sealed
 				await Task.Delay(100);
 
 				// verify file "download", incl corrected extension
-				System.IO.File.Exists(goodFileName);
+				File.Exists(goodFileName);
 				var fileinfo = new System.IO.FileInfo(goodFileName);
 				fileinfo.MD5().Should().Be(md5);
 			}
 			finally
 			{
-				System.IO.File.Delete(goodFileName);
+				File.Delete(goodFileName);
 			}
 		}
 	}
@@ -551,9 +551,9 @@ namespace ApiTests_L0.Sealed
 ".Trim();
 			var api = await setupDownloads(bookDetails, 1);
 
-			var path = System.IO.Path.GetTempPath();
+			var path = Path.GetTempPath();
 			var filenameNoExt = Guid.NewGuid().ToString();
-			var fileName = System.IO.Path.Combine(path, filenameNoExt + ".aax");
+			var fileName = Path.Combine(path, filenameNoExt + ".aax");
 
 			try
 			{
@@ -563,11 +563,11 @@ namespace ApiTests_L0.Sealed
 				downloadedFiles.Count.Should().Be(1);
 				downloadedFiles[0].Should().Be(fileName);
 
-				System.IO.File.Exists(fileName);
+				File.Exists(fileName);
 			}
 			finally
 			{
-				System.IO.File.Delete(fileName);
+				File.Delete(fileName);
 			}
 		}
 
@@ -638,16 +638,16 @@ namespace ApiTests_L0.Sealed
 ".Trim();
 			var api = await setupDownloads(bookDetails, 6);
 
-			var path = System.IO.Path.GetTempPath();
+			var path = Path.GetTempPath();
 			var filenameNoExt = Guid.NewGuid().ToString();
-			var inputFileName = System.IO.Path.Combine(path, filenameNoExt + ".aax");
+			var inputFileName = Path.Combine(path, filenameNoExt + ".aax");
 
-			var fileName1 = System.IO.Path.Combine(path, filenameNoExt + "(1).aax");
-			var fileName2 = System.IO.Path.Combine(path, filenameNoExt + "(2).aax");
-			var fileName3 = System.IO.Path.Combine(path, filenameNoExt + "(3).aax");
-			var fileName4 = System.IO.Path.Combine(path, filenameNoExt + "(4).aax");
-			var fileName5 = System.IO.Path.Combine(path, filenameNoExt + "(5).aax");
-			var fileName6 = System.IO.Path.Combine(path, filenameNoExt + "(6).aax");
+			var fileName1 = Path.Combine(path, filenameNoExt + "(1).aax");
+			var fileName2 = Path.Combine(path, filenameNoExt + "(2).aax");
+			var fileName3 = Path.Combine(path, filenameNoExt + "(3).aax");
+			var fileName4 = Path.Combine(path, filenameNoExt + "(4).aax");
+			var fileName5 = Path.Combine(path, filenameNoExt + "(5).aax");
+			var fileName6 = Path.Combine(path, filenameNoExt + "(6).aax");
 
 			try
 			{
@@ -663,21 +663,21 @@ namespace ApiTests_L0.Sealed
 				downloadedFiles[5].Should().Be(fileName6);
 
 				// verify file "downloads"
-				System.IO.File.Exists(fileName1);
-				System.IO.File.Exists(fileName2);
-				System.IO.File.Exists(fileName3);
-				System.IO.File.Exists(fileName4);
-				System.IO.File.Exists(fileName5);
-				System.IO.File.Exists(fileName6);
+				File.Exists(fileName1);
+				File.Exists(fileName2);
+				File.Exists(fileName3);
+				File.Exists(fileName4);
+				File.Exists(fileName5);
+				File.Exists(fileName6);
 			}
 			finally
 			{
-				System.IO.File.Delete(fileName1);
-				System.IO.File.Delete(fileName2);
-				System.IO.File.Delete(fileName3);
-				System.IO.File.Delete(fileName4);
-				System.IO.File.Delete(fileName5);
-				System.IO.File.Delete(fileName6);
+				File.Delete(fileName1);
+				File.Delete(fileName2);
+				File.Delete(fileName3);
+				File.Delete(fileName4);
+				File.Delete(fileName5);
+				File.Delete(fileName6);
 			}
 		}
 
@@ -780,20 +780,20 @@ namespace ApiTests_L0.Sealed
 ".Trim();
 			var api = await setupDownloads(bookDetails, 10);
 
-			var path = System.IO.Path.GetTempPath();
+			var path = Path.GetTempPath();
 			var filenameNoExt = Guid.NewGuid().ToString();
-			var inputFileName = System.IO.Path.Combine(path, filenameNoExt + ".aax");
+			var inputFileName = Path.Combine(path, filenameNoExt + ".aax");
 
-			var fileName1 = System.IO.Path.Combine(path, filenameNoExt + "(01).aax");
-			var fileName2 = System.IO.Path.Combine(path, filenameNoExt + "(02).aax");
-			var fileName3 = System.IO.Path.Combine(path, filenameNoExt + "(03).aax");
-			var fileName4 = System.IO.Path.Combine(path, filenameNoExt + "(04).aax");
-			var fileName5 = System.IO.Path.Combine(path, filenameNoExt + "(05).aax");
-			var fileName6 = System.IO.Path.Combine(path, filenameNoExt + "(06).aax");
-			var fileName7 = System.IO.Path.Combine(path, filenameNoExt + "(07).aax");
-			var fileName8 = System.IO.Path.Combine(path, filenameNoExt + "(08).aax");
-			var fileName9 = System.IO.Path.Combine(path, filenameNoExt + "(09).aax");
-			var fileName10 = System.IO.Path.Combine(path, filenameNoExt + "(10).aax");
+			var fileName1 = Path.Combine(path, filenameNoExt + "(01).aax");
+			var fileName2 = Path.Combine(path, filenameNoExt + "(02).aax");
+			var fileName3 = Path.Combine(path, filenameNoExt + "(03).aax");
+			var fileName4 = Path.Combine(path, filenameNoExt + "(04).aax");
+			var fileName5 = Path.Combine(path, filenameNoExt + "(05).aax");
+			var fileName6 = Path.Combine(path, filenameNoExt + "(06).aax");
+			var fileName7 = Path.Combine(path, filenameNoExt + "(07).aax");
+			var fileName8 = Path.Combine(path, filenameNoExt + "(08).aax");
+			var fileName9 = Path.Combine(path, filenameNoExt + "(09).aax");
+			var fileName10 = Path.Combine(path, filenameNoExt + "(10).aax");
 
 			try
 			{
@@ -813,29 +813,29 @@ namespace ApiTests_L0.Sealed
 				downloadedFiles[9].Should().Be(fileName10);
 
 				// verify file "downloads"
-				System.IO.File.Exists(fileName1);
-				System.IO.File.Exists(fileName2);
-				System.IO.File.Exists(fileName3);
-				System.IO.File.Exists(fileName4);
-				System.IO.File.Exists(fileName5);
-				System.IO.File.Exists(fileName6);
-				System.IO.File.Exists(fileName7);
-				System.IO.File.Exists(fileName8);
-				System.IO.File.Exists(fileName9);
-				System.IO.File.Exists(fileName10);
+				File.Exists(fileName1);
+				File.Exists(fileName2);
+				File.Exists(fileName3);
+				File.Exists(fileName4);
+				File.Exists(fileName5);
+				File.Exists(fileName6);
+				File.Exists(fileName7);
+				File.Exists(fileName8);
+				File.Exists(fileName9);
+				File.Exists(fileName10);
 			}
 			finally
 			{
-				System.IO.File.Delete(fileName1);
-				System.IO.File.Delete(fileName2);
-				System.IO.File.Delete(fileName3);
-				System.IO.File.Delete(fileName4);
-				System.IO.File.Delete(fileName5);
-				System.IO.File.Delete(fileName6);
-				System.IO.File.Delete(fileName7);
-				System.IO.File.Delete(fileName8);
-				System.IO.File.Delete(fileName9);
-				System.IO.File.Delete(fileName10);
+				File.Delete(fileName1);
+				File.Delete(fileName2);
+				File.Delete(fileName3);
+				File.Delete(fileName4);
+				File.Delete(fileName5);
+				File.Delete(fileName6);
+				File.Delete(fileName7);
+				File.Delete(fileName8);
+				File.Delete(fileName9);
+				File.Delete(fileName10);
 			}
 		}
 
@@ -888,97 +888,63 @@ namespace ApiTests_L0.Sealed
 	[TestClass]
 	public class DownloadAaxWorkaroundAsync
 	{
+		// no need to unit test the DownloadAaxWorkaroundAsync workflow as long as all parts of algo are unit tested
+		[TestMethod]
+		public void noop() { }
+	}
+
+	[TestClass]
+	public class GetCodecAsync
+	{
+		public Api api { get; set; }
+
+		[TestMethod]
+		public async Task get_codec()
+		{
+			api ??= await ApiHttpClientMock.GetApiAsync(LibraryBookWithResponseGroups);
+
+			var harryPotterAsin = "B017V4IM1G";
+			var codec = await api.GetCodecAsync(harryPotterAsin);
+
+			codec.Should().Be("LC_64_22050_stereo");
+		}
+	}
+
+	[TestClass]
+	public class GetDownloadLinkAsync_client_asin_codec
+	{
 		[TestMethod]
 		public async Task status_code_fails()
 		{
 			var mock = new ApiCallTester("tester returns StatusCode OK");
 			var api = mock.Api;
-			await Assert.ThrowsExceptionAsync<Exception>(() => api.DownloadAaxWorkaroundAsync("asin", "file"));
+			var client = api.Sharer.GetSharedHttpClient(new Uri("http://t.co"));
+
+			await Assert.ThrowsExceptionAsync<Exception>(() => api.GetDownloadLinkAsync(client, "asin", "file"));
 		}
-
-		class myLazyMockHandler : HttpClientHandler
-		{
-			public HttpResponseMessage _1stResponse;
-			public HttpResponseMessage _2ndResponse;
-
-			public HttpRequestMessage _2ndRequest { get; private set; }
-
-			int count = 0;
-
-			protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-			{
-				count++;
-
-				if (count == 1)
-					return Task.FromResult(_1stResponse);
-
-				if (count == 2)
-				{
-					_2ndRequest = request;
-					return Task.FromResult(_2ndResponse);
-				}
-
-				throw new NotImplementedException();
-			}
-		}
-
-		//1st
-		//  SendAsync(HttpRequestMessage)
-		//    response.StatusCode != HttpStatusCode.Found
-		//    origDownloadLink = response.Headers.Location.AbsoluteUri;
-		//
-		// localize
-		//
-		//2nd
-		//  GetAsync(string localizedDownloadLink, HttpCompletionOption)
 
 		[TestMethod]
-		public async Task omnibus_unit_test()
+		public async Task valid()
 		{
-			// single test for many intertwined parts
-			// - download link returned
-			// - download link localized
-			// - 2nd response w/filename
-			// - returned final filename
-			// - verify file created
-
-			var expectedFinalFilename = "file.aax";
 			try
 			{
 				Localization.SetLocale(Localization.LocaleNames.UK);
 
-				// RESPONSE 1: download link
-				var linkResponse = new HttpResponseMessage { StatusCode = HttpStatusCode.Found };
-				linkResponse.Headers.Location = new Uri("https://cds.audible.com/downloadme?a=1");
+				var response = new HttpResponseMessage { StatusCode = HttpStatusCode.Found };
+				response.Headers.Location = new Uri("https://cds.audible.com/downloadme?a=1");
 
-				var downloadResponse = new HttpResponseMessage
-				{ Content = new ByteArrayContent(Convert.FromBase64String("dGVzdA==")) };
-				downloadResponse.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment") { FileName = "foo_ep6.aax" };
+				var handler = HttpMock.GetHandler(response);
+				var api = await ApiHttpClientMock.GetApiAsync(handler);
 
-				var lazyMockHandler = new myLazyMockHandler
-				{
-					_1stResponse = linkResponse,
-					_2ndResponse = downloadResponse
-				};
+				var client = api.Sharer.GetSharedHttpClient(new Uri("http://t.co"));
 
-				var api = await ApiHttpClientMock.GetApiAsync(lazyMockHandler);
-				var finalFile = await api.DownloadAaxWorkaroundAsync("asin", "file.xyz");
+				var downloadLink = await api.GetDownloadLinkAsync(client, "asin", "file.xyz");
 
-				finalFile.Should().Be(expectedFinalFilename);
-
-				File.Exists(expectedFinalFilename).Should().BeTrue();
-
-				lazyMockHandler._2ndRequest
-					.RequestUri.AbsoluteUri
-					.Should().Be("https://cds.audible.co.uk/downloadme?a=1");
+				downloadLink.Should().Be("https://cds.audible.co.uk/downloadme?a=1");
 			}
 			finally
 			{
-				await Task.Delay(100);
-
 				Localization.SetLocale(Localization.LocaleNames.US);
-				if (File.Exists(expectedFinalFilename))
-					File.Delete(expectedFinalFilename);
 			}
 		}
 	}

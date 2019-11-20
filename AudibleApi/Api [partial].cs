@@ -12,24 +12,24 @@ namespace AudibleApi
     // - throw strongly typed exceptions
     public partial class Api
     {
-		private IHttpClientSharer _sharer { get; }
+		public IHttpClientSharer Sharer { get; }
         private IIdentityMaintainer _identityMaintainer { get; }
 
         private ISealedHttpClient _client
-            => _sharer.GetSharedHttpClient(Resources.AudibleApiUri);
+            => Sharer.GetSharedHttpClient(Resources.AudibleApiUri);
 
 		public Api(IIdentityMaintainer identityMaintainer)
 		{
 			StackBlocker.ApiTestBlocker();
 
 			_identityMaintainer = identityMaintainer ?? throw new ArgumentNullException(nameof(identityMaintainer));
-			_sharer = new HttpClientSharer();
+			Sharer = new HttpClientSharer();
 		}
 
 		public Api(IIdentityMaintainer identityMaintainer, IHttpClientSharer sharer)
 		{
 			_identityMaintainer = identityMaintainer ?? throw new ArgumentNullException(nameof(identityMaintainer));
-			_sharer = sharer ?? throw new ArgumentNullException(nameof(sharer));
+			Sharer = sharer ?? throw new ArgumentNullException(nameof(sharer));
 		}
 
 		public async Task<JObject> AdHocNonAuthenticatedGetAsync(string requestUri)
