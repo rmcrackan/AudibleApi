@@ -2,9 +2,9 @@
 //
 // To parse this JSON data, add NuGet 'Newtonsoft.Json' then do:
 //
-//    using DTOs;
+//    using AudibleApiDTOs;
 //
-//    var LibraryDtoV10 = LibraryDtoV10.FromJson(jsonString);
+//    var libraryDtoV10 = LibraryDtoV10.FromJson(jsonString);
 
 namespace AudibleApiDTOs
 {
