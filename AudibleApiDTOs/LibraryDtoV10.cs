@@ -16,37 +16,7 @@
 // RuntimeLengthMin type: int?
 // rename Author class to Person
 // class Serialize: add partial
-/*
-add this to generated code to allow for episodes
-enum Root
-add ShortsCurated, ShortsSandbox
-
-RootConverter
-ReadJson add
-    case "ShortsCurated":
-        return Root.ShortsCurated;
-    case "ShortsSandbox":
-        return Root.ShortsSandbox;
-WriteJson add
-    case Root.ShortsCurated:
-        serializer.Serialize(writer, "ShortsCurated");
-        return;
-    case Root.ShortsSandbox:
-        serializer.Serialize(writer, "ShortsSandbox");
-        return;
-
-enum ContentDeliveryType
-add SinglePartIssue
-
-ContentDeliveryTypeConverter
-ReadJson add
-    case "SinglePartIssue":
-        return ContentDeliveryType.SinglePartIssue;
-WriteJson add
-    case ContentDeliveryType.SinglePartIssue:
-        serializer.Serialize(writer, "SinglePartIssue");
-        return;
-*/
+// lots of manually edited enum stuff
 
 using System;
 using System.Linq;
@@ -69,7 +39,7 @@ namespace AudibleApiDTOs
 			=> Relationships?.Any(r => r.RelationshipToProduct == RelationshipToProduct.Child && r.RelationshipType == RelationshipType.Episode)
 			?? false;
 		public string PictureId => ProductImages?.PictureId;
-		public string SupplementUrl => PdfUrl?.AbsoluteUri; // item.PdfUrl == item.PdfLink
+		public string SupplementUrl => PdfUrl?.AbsoluteUri;
 		public DateTime DateAdded => PurchaseDate.UtcDateTime;
 
 		public float Product_OverallStars => Convert.ToSingle(Rating?.OverallDistribution.DisplayStars ?? 0);

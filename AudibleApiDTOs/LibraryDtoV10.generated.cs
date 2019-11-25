@@ -177,9 +177,6 @@ namespace AudibleApiDTOs
 		[JsonProperty("part_number")]
 		public object PartNumber { get; set; }
 
-		[JsonProperty("pdf_link")]
-		public Uri PdfLink { get; set; }
-
 		[JsonProperty("pdf_url")]
 		public Uri PdfUrl { get; set; }
 
@@ -383,7 +380,7 @@ namespace AudibleApiDTOs
 		public object CustomerVote { get; set; }
 
 		[JsonProperty("format")]
-		public CustomerReviewFormat? Format { get; set; }
+		public ProvidedReviewFormat? Format { get; set; }
 
 		[JsonProperty("guided_responses")]
 		public GuidedResponse[] GuidedResponses { get; set; }
@@ -600,14 +597,14 @@ namespace AudibleApiDTOs
 	public enum AvailableCodecFormat { Enhanced, Format4 };
 
 	public enum Name { Aax, Aax22_32, Aax22_64, Aax44_128, Aax44_64, Format4, Mp422_32, Mp422_64, Mp444_128, Mp444_64, Piff22_32, Piff22_64, Piff44_128, Piff44_64 };
-
+	
 	public enum Root { EditorsPicks, ExploreBy, Genres, InstitutionsHpMarketing, RodizioBuckets, RodizioGenres, ShortsPrime, ShortsCurated, ShortsSandbox };
 
 	public enum ContentDeliveryType { MultiPartBook, Periodical, SinglePartBook, SinglePartIssue };
 
-	public enum ContentType { Episode, Lecture, Meditation, Misc, Performance, Product, RadioTvProgram, Show, Speech };
+	public enum ContentType { Episode, Lecture, Meditation, Misc, NewspaperMagazine, Performance, Product, RadioTvProgram, Show, Speech };
 
-	public enum CustomerReviewFormat { Freeform, Guided };
+	public enum ProvidedReviewFormat { Freeform, Guided };
 
 	public enum QuestionType { Genre, Misc, Overall, Performance, Story };
 
@@ -617,7 +614,7 @@ namespace AudibleApiDTOs
 
 	public enum OriginMarketplace { Af2M0Kc94Rcea };
 
-	public enum OriginType { AudibleChannels, AudibleComplimentaryOriginal, Purchase };
+	public enum OriginType { AudibleChannels, AudibleComplimentaryOriginal, Purchase, Subscription };
 
 	public enum PlanName { AyceRomance, ComplimentaryOriginalMemberBenefit, Radio, Rodizio, SpecialBenefit };
 
@@ -633,7 +630,7 @@ namespace AudibleApiDTOs
 
 	public enum Status { Active };
 
-	public enum ThesaurusSubjectKeyword { AdventurersExplorers, AlternateHistory, Comedians, Contemporary, Dramatizations, EasternReligions, LaConfidential, LiteratureAndFiction, Medicine, Spirituality, StandupComedy, Storytelling, SwordSorcery, Workouts };
+	public enum ThesaurusSubjectKeyword { AdventurersExplorers, AlternateHistory, Comedians, Contemporary, Dramatizations, EasternReligions, LaConfidential, LiteratureAndFiction, Medicine, Spirituality, StandupComedy, Storytelling, SwordSorcery, Workouts, Terrorism };
 
 	public partial class LibraryDtoV10
 	{
@@ -659,7 +656,7 @@ namespace AudibleApiDTOs
 				RootConverter.Singleton,
 				ContentDeliveryTypeConverter.Singleton,
 				ContentTypeConverter.Singleton,
-				CustomerReviewFormatConverter.Singleton,
+				ProvidedReviewFormatConverter.Singleton,
 				QuestionTypeConverter.Singleton,
 				FormatTypeConverter.Singleton,
 				LanguageConverter.Singleton,
@@ -1093,6 +1090,8 @@ namespace AudibleApiDTOs
 					return ContentType.Episode;
 				case "Lecture":
 					return ContentType.Lecture;
+				case "Newspaper / Magazine":
+					return ContentType.NewspaperMagazine;
 				case "Meditation":
 					return ContentType.Meditation;
 				case "Misc":
@@ -1127,6 +1126,9 @@ namespace AudibleApiDTOs
 				case ContentType.Lecture:
 					serializer.Serialize(writer, "Lecture");
 					return;
+				case ContentType.NewspaperMagazine:
+					serializer.Serialize(writer, "Newspaper / Magazine");
+					return;
 				case ContentType.Meditation:
 					serializer.Serialize(writer, "Meditation");
 					return;
@@ -1155,9 +1157,9 @@ namespace AudibleApiDTOs
 		public static readonly ContentTypeConverter Singleton = new ContentTypeConverter();
 	}
 
-	internal class CustomerReviewFormatConverter : JsonConverter
+	internal class ProvidedReviewFormatConverter : JsonConverter
 	{
-		public override bool CanConvert(Type t) => t == typeof(CustomerReviewFormat) || t == typeof(CustomerReviewFormat?);
+		public override bool CanConvert(Type t) => t == typeof(ProvidedReviewFormat) || t == typeof(ProvidedReviewFormat?);
 
 		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
 		{
@@ -1166,11 +1168,11 @@ namespace AudibleApiDTOs
 			switch (value)
 			{
 				case "Freeform":
-					return CustomerReviewFormat.Freeform;
+					return ProvidedReviewFormat.Freeform;
 				case "Guided":
-					return CustomerReviewFormat.Guided;
+					return ProvidedReviewFormat.Guided;
 			}
-			throw new Exception("Cannot unmarshal type CustomerReviewFormat");
+			throw new Exception("Cannot unmarshal type ProvidedReviewFormat");
 		}
 
 		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
@@ -1180,20 +1182,20 @@ namespace AudibleApiDTOs
 				serializer.Serialize(writer, null);
 				return;
 			}
-			var value = (CustomerReviewFormat)untypedValue;
+			var value = (ProvidedReviewFormat)untypedValue;
 			switch (value)
 			{
-				case CustomerReviewFormat.Freeform:
+				case ProvidedReviewFormat.Freeform:
 					serializer.Serialize(writer, "Freeform");
 					return;
-				case CustomerReviewFormat.Guided:
+				case ProvidedReviewFormat.Guided:
 					serializer.Serialize(writer, "Guided");
 					return;
 			}
-			throw new Exception("Cannot marshal type CustomerReviewFormat");
+			throw new Exception("Cannot marshal type ProvidedReviewFormat");
 		}
 
-		public static readonly CustomerReviewFormatConverter Singleton = new CustomerReviewFormatConverter();
+		public static readonly ProvidedReviewFormatConverter Singleton = new ProvidedReviewFormatConverter();
 	}
 
 	internal class QuestionTypeConverter : JsonConverter
@@ -1382,6 +1384,8 @@ namespace AudibleApiDTOs
 					return OriginType.AudibleComplimentaryOriginal;
 				case "Purchase":
 					return OriginType.Purchase;
+				case "Subscription":
+					return OriginType.Subscription;
 			}
 			throw new Exception("Cannot unmarshal type OriginType");
 		}
@@ -1404,6 +1408,9 @@ namespace AudibleApiDTOs
 					return;
 				case OriginType.Purchase:
 					serializer.Serialize(writer, "Purchase");
+					return;
+				case OriginType.Subscription:
+					serializer.Serialize(writer, "Subscription");
 					return;
 			}
 			throw new Exception("Cannot marshal type OriginType");
@@ -1686,7 +1693,7 @@ namespace AudibleApiDTOs
 
 	internal class StatusConverter : JsonConverter
 	{
-		public override bool CanConvert(Type t) => t == typeof(Status);
+		public override bool CanConvert(Type t) => t == typeof(Status) || t == typeof(Status?);
 
 		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
 		{
@@ -1756,6 +1763,8 @@ namespace AudibleApiDTOs
 					return ThesaurusSubjectKeyword.SwordSorcery;
 				case "workouts":
 					return ThesaurusSubjectKeyword.Workouts;
+				case "terrorism":
+					return ThesaurusSubjectKeyword.Terrorism;
 			}
 			throw new Exception("Cannot unmarshal type ThesaurusSubjectKeyword");
 		}
@@ -1811,6 +1820,9 @@ namespace AudibleApiDTOs
 					return;
 				case ThesaurusSubjectKeyword.Workouts:
 					serializer.Serialize(writer, "workouts");
+					return;
+				case ThesaurusSubjectKeyword.Terrorism:
+					serializer.Serialize(writer, "terrorism");
 					return;
 			}
 			throw new Exception("Cannot marshal type ThesaurusSubjectKeyword");
