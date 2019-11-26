@@ -215,8 +215,7 @@ namespace AudibleApi
 				.AvailableCodecs
 				.Select(ac => ac.EnhancedCodec);
 			// since Intersect() doesn't guarantee order, do not use it here
-			var codecEnum = codecPreferenceOrder.FirstOrDefault(p => codecs.Contains(p));
-			var codec = Serialize.ToJson(codecEnum).Trim('"');
+			var codec = codecPreferenceOrder.FirstOrDefault(p => codecs.Contains(p));
 			return codec;
 		}
 

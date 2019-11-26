@@ -52,7 +52,7 @@ namespace AudibleApiDTOs
 		public object ClaimCodeUrl { get; set; }
 
 		[JsonProperty("content_delivery_type")]
-		public ContentDeliveryType? ContentDeliveryType { get; set; }
+		public string ContentDeliveryType { get; set; }
 
 		[JsonProperty("content_level")]
 		public object ContentLevel { get; set; }
@@ -61,7 +61,7 @@ namespace AudibleApiDTOs
 		public ContentRating ContentRating { get; set; }
 
 		[JsonProperty("content_type")]
-		public ContentType? ContentType { get; set; }
+		public string ContentType { get; set; }
 
 		[JsonProperty("copyright")]
 		public object Copyright { get; set; }
@@ -85,7 +85,7 @@ namespace AudibleApiDTOs
 		public object ExtendedProductDescription { get; set; }
 
 		[JsonProperty("format_type")]
-		public FormatType? FormatType { get; set; }
+		public string FormatType { get; set; }
 
 		[JsonProperty("generic_keyword")]
 		public object GenericKeyword { get; set; }
@@ -139,7 +139,7 @@ namespace AudibleApiDTOs
 		public DateTimeOffset? IssueDate { get; set; }
 
 		[JsonProperty("language")]
-		public Language? Language { get; set; }
+		public string Language { get; set; }
 
 		[JsonProperty("member_giving_status")]
 		public object MemberGivingStatus { get; set; }
@@ -169,10 +169,10 @@ namespace AudibleApiDTOs
 		public string OriginId { get; set; }
 
 		[JsonProperty("origin_marketplace")]
-		public OriginMarketplace? OriginMarketplace { get; set; }
+		public string OriginMarketplace { get; set; }
 
 		[JsonProperty("origin_type")]
-		public OriginType? OriginType { get; set; }
+		public string OriginType { get; set; }
 
 		[JsonProperty("part_number")]
 		public object PartNumber { get; set; }
@@ -247,7 +247,7 @@ namespace AudibleApiDTOs
 		public string SkuLite { get; set; }
 
 		[JsonProperty("status")]
-		public Status Status { get; set; }
+		public string Status { get; set; }
 
 		[JsonProperty("subscription_asins")]
 		public object SubscriptionAsins { get; set; }
@@ -277,16 +277,16 @@ namespace AudibleApiDTOs
 	public partial class AvailableCodec
 	{
 		[JsonProperty("enhanced_codec")]
-		public EnhancedCodec? EnhancedCodec { get; set; }
+		public string EnhancedCodec { get; set; }
 
 		[JsonProperty("format")]
-		public AvailableCodecFormat? Format { get; set; }
+		public string Format { get; set; }
 
 		[JsonProperty("is_kindle_enhanced")]
 		public bool? IsKindleEnhanced { get; set; }
 
 		[JsonProperty("name")]
-		public Name? Name { get; set; }
+		public string Name { get; set; }
 	}
 
 	public partial class CategoryLadder
@@ -298,7 +298,7 @@ namespace AudibleApiDTOs
 		public Ladder[] Ladder { get; set; }
 
 		[JsonProperty("root")]
-		public Root? Root { get; set; }
+		public string Root { get; set; }
 	}
 
 	public partial class Ladder
@@ -380,7 +380,7 @@ namespace AudibleApiDTOs
 		public object CustomerVote { get; set; }
 
 		[JsonProperty("format")]
-		public ProvidedReviewFormat? Format { get; set; }
+		public string Format { get; set; }
 
 		[JsonProperty("guided_responses")]
 		public GuidedResponse[] GuidedResponses { get; set; }
@@ -417,7 +417,7 @@ namespace AudibleApiDTOs
 		public string Question { get; set; }
 
 		[JsonProperty("question_type")]
-		public QuestionType? QuestionType { get; set; }
+		public string QuestionType { get; set; }
 	}
 
 	public partial class Ratings
@@ -453,7 +453,7 @@ namespace AudibleApiDTOs
 		public DateTimeOffset? EndDate { get; set; }
 
 		[JsonProperty("plan_name")]
-		public PlanName? PlanName { get; set; }
+		public string PlanName { get; set; }
 
 		[JsonProperty("start_date")]
 		public DateTimeOffset? StartDate { get; set; }
@@ -492,13 +492,13 @@ namespace AudibleApiDTOs
 		public double? Base { get; set; }
 
 		[JsonProperty("currency_code")]
-		public CurrencyCode? CurrencyCode { get; set; }
+		public string CurrencyCode { get; set; }
 
 		[JsonProperty("merchant_id")]
-		public MerchantId? MerchantId { get; set; }
+		public string MerchantId { get; set; }
 
 		[JsonProperty("type")]
-		public TypeEnum? Type { get; set; }
+		public string Type { get; set; }
 	}
 
 	public partial class ProductImages
@@ -558,10 +558,10 @@ namespace AudibleApiDTOs
 		public string Asin { get; set; }
 
 		[JsonProperty("relationship_to_product")]
-		public RelationshipToProduct? RelationshipToProduct { get; set; }
+		public string RelationshipToProduct { get; set; }
 
 		[JsonProperty("relationship_type")]
-		public RelationshipType? RelationshipType { get; set; }
+		public string RelationshipType { get; set; }
 
 		[JsonProperty("sequence")]
 		public string Sequence { get; set; }
@@ -592,46 +592,6 @@ namespace AudibleApiDTOs
 		public string Url { get; set; }
 	}
 
-	public enum EnhancedCodec { Aax, Format4, Lc128_44100_Stereo, Lc32_22050_Stereo, Lc64_22050_Stereo, Lc64_44100_Stereo, Mp42232, Mp42264, Mp444128, Mp44464, Piff2232, Piff2264, Piff44128, Piff4464 };
-
-	public enum AvailableCodecFormat { Enhanced, Format4 };
-
-	public enum Name { Aax, Aax22_32, Aax22_64, Aax44_128, Aax44_64, Format4, Mp422_32, Mp422_64, Mp444_128, Mp444_64, Piff22_32, Piff22_64, Piff44_128, Piff44_64 };
-	
-	public enum Root { EditorsPicks, ExploreBy, Genres, InstitutionsHpMarketing, RodizioBuckets, RodizioGenres, ShortsPrime, ShortsCurated, ShortsSandbox };
-
-	public enum ContentDeliveryType { MultiPartBook, Periodical, SinglePartBook, SinglePartIssue };
-
-	public enum ContentType { Episode, Lecture, Meditation, Misc, NewspaperMagazine, Performance, Product, RadioTvProgram, Show, Speech };
-
-	public enum ProvidedReviewFormat { Freeform, Guided };
-
-	public enum QuestionType { Genre, Misc, Overall, Performance, Story };
-
-	public enum FormatType { Abridged, OriginalRecording, Unabridged };
-
-	public enum Language { English };
-
-	public enum OriginMarketplace { Af2M0Kc94Rcea };
-
-	public enum OriginType { AudibleChannels, AudibleComplimentaryOriginal, Purchase, Subscription };
-
-	public enum PlanName { AyceRomance, ComplimentaryOriginalMemberBenefit, Radio, Rodizio, SpecialBenefit };
-
-	public enum CurrencyCode { Usd };
-
-	public enum MerchantId { A2Zo8Jx97D5Mn9 };
-
-	public enum TypeEnum { List, Member, Sale, Ws4VUpsell };
-
-	public enum RelationshipToProduct { Child, Parent };
-
-	public enum RelationshipType { Component, Episode, MerchantTitleAuthority, Season, Series };
-
-	public enum Status { Active };
-
-	public enum ThesaurusSubjectKeyword { AdventurersExplorers, AlternateHistory, Comedians, Contemporary, Dramatizations, EasternReligions, LaConfidential, LiteratureAndFiction, Medicine, Spirituality, StandupComedy, Storytelling, SwordSorcery, Workouts, Terrorism };
-
 	public partial class LibraryDtoV10
 	{
 		public static LibraryDtoV10 FromJson(string json) => JsonConvert.DeserializeObject<LibraryDtoV10>(json, AudibleApiDTOs.Converter.Settings);
@@ -650,399 +610,9 @@ namespace AudibleApiDTOs
 			DateParseHandling = DateParseHandling.None,
 			Converters =
 			{
-				EnhancedCodecConverter.Singleton,
-				AvailableCodecFormatConverter.Singleton,
-				NameConverter.Singleton,
-				RootConverter.Singleton,
-				ContentDeliveryTypeConverter.Singleton,
-				ContentTypeConverter.Singleton,
-				ProvidedReviewFormatConverter.Singleton,
-				QuestionTypeConverter.Singleton,
-				FormatTypeConverter.Singleton,
-				LanguageConverter.Singleton,
-				OriginMarketplaceConverter.Singleton,
-				OriginTypeConverter.Singleton,
-				PlanNameConverter.Singleton,
-				CurrencyCodeConverter.Singleton,
-				MerchantIdConverter.Singleton,
-				TypeEnumConverter.Singleton,
-				RelationshipToProductConverter.Singleton,
-				RelationshipTypeConverter.Singleton,
-				StatusConverter.Singleton,
-				ThesaurusSubjectKeywordConverter.Singleton,
 				new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
 			},
 		};
-	}
-
-	internal class EnhancedCodecConverter : JsonConverter
-	{
-		public override bool CanConvert(Type t) => t == typeof(EnhancedCodec) || t == typeof(EnhancedCodec?);
-
-		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-		{
-			if (reader.TokenType == JsonToken.Null) return null;
-			var value = serializer.Deserialize<string>(reader);
-			switch (value)
-			{
-				case "LC_128_44100_stereo":
-					return EnhancedCodec.Lc128_44100_Stereo;
-				case "LC_32_22050_stereo":
-					return EnhancedCodec.Lc32_22050_Stereo;
-				case "LC_64_22050_stereo":
-					return EnhancedCodec.Lc64_22050_Stereo;
-				case "LC_64_44100_stereo":
-					return EnhancedCodec.Lc64_44100_Stereo;
-				case "aax":
-					return EnhancedCodec.Aax;
-				case "format4":
-					return EnhancedCodec.Format4;
-				case "mp42232":
-					return EnhancedCodec.Mp42232;
-				case "mp42264":
-					return EnhancedCodec.Mp42264;
-				case "mp444128":
-					return EnhancedCodec.Mp444128;
-				case "mp44464":
-					return EnhancedCodec.Mp44464;
-				case "piff2232":
-					return EnhancedCodec.Piff2232;
-				case "piff2264":
-					return EnhancedCodec.Piff2264;
-				case "piff44128":
-					return EnhancedCodec.Piff44128;
-				case "piff4464":
-					return EnhancedCodec.Piff4464;
-			}
-			throw new Exception("Cannot unmarshal type EnhancedCodec");
-		}
-
-		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-		{
-			if (untypedValue == null)
-			{
-				serializer.Serialize(writer, null);
-				return;
-			}
-			var value = (EnhancedCodec)untypedValue;
-			switch (value)
-			{
-				case EnhancedCodec.Lc128_44100_Stereo:
-					serializer.Serialize(writer, "LC_128_44100_stereo");
-					return;
-				case EnhancedCodec.Lc32_22050_Stereo:
-					serializer.Serialize(writer, "LC_32_22050_stereo");
-					return;
-				case EnhancedCodec.Lc64_22050_Stereo:
-					serializer.Serialize(writer, "LC_64_22050_stereo");
-					return;
-				case EnhancedCodec.Lc64_44100_Stereo:
-					serializer.Serialize(writer, "LC_64_44100_stereo");
-					return;
-				case EnhancedCodec.Aax:
-					serializer.Serialize(writer, "aax");
-					return;
-				case EnhancedCodec.Format4:
-					serializer.Serialize(writer, "format4");
-					return;
-				case EnhancedCodec.Mp42232:
-					serializer.Serialize(writer, "mp42232");
-					return;
-				case EnhancedCodec.Mp42264:
-					serializer.Serialize(writer, "mp42264");
-					return;
-				case EnhancedCodec.Mp444128:
-					serializer.Serialize(writer, "mp444128");
-					return;
-				case EnhancedCodec.Mp44464:
-					serializer.Serialize(writer, "mp44464");
-					return;
-				case EnhancedCodec.Piff2232:
-					serializer.Serialize(writer, "piff2232");
-					return;
-				case EnhancedCodec.Piff2264:
-					serializer.Serialize(writer, "piff2264");
-					return;
-				case EnhancedCodec.Piff44128:
-					serializer.Serialize(writer, "piff44128");
-					return;
-				case EnhancedCodec.Piff4464:
-					serializer.Serialize(writer, "piff4464");
-					return;
-			}
-			throw new Exception("Cannot marshal type EnhancedCodec");
-		}
-
-		public static readonly EnhancedCodecConverter Singleton = new EnhancedCodecConverter();
-	}
-
-	internal class AvailableCodecFormatConverter : JsonConverter
-	{
-		public override bool CanConvert(Type t) => t == typeof(AvailableCodecFormat) || t == typeof(AvailableCodecFormat?);
-
-		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-		{
-			if (reader.TokenType == JsonToken.Null) return null;
-			var value = serializer.Deserialize<string>(reader);
-			switch (value)
-			{
-				case "Enhanced":
-					return AvailableCodecFormat.Enhanced;
-				case "Format4":
-					return AvailableCodecFormat.Format4;
-			}
-			throw new Exception("Cannot unmarshal type AvailableCodecFormat");
-		}
-
-		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-		{
-			if (untypedValue == null)
-			{
-				serializer.Serialize(writer, null);
-				return;
-			}
-			var value = (AvailableCodecFormat)untypedValue;
-			switch (value)
-			{
-				case AvailableCodecFormat.Enhanced:
-					serializer.Serialize(writer, "Enhanced");
-					return;
-				case AvailableCodecFormat.Format4:
-					serializer.Serialize(writer, "Format4");
-					return;
-			}
-			throw new Exception("Cannot marshal type AvailableCodecFormat");
-		}
-
-		public static readonly AvailableCodecFormatConverter Singleton = new AvailableCodecFormatConverter();
-	}
-
-	internal class NameConverter : JsonConverter
-	{
-		public override bool CanConvert(Type t) => t == typeof(Name) || t == typeof(Name?);
-
-		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-		{
-			if (reader.TokenType == JsonToken.Null) return null;
-			var value = serializer.Deserialize<string>(reader);
-			switch (value)
-			{
-				case "aax":
-					return Name.Aax;
-				case "aax_22_32":
-					return Name.Aax22_32;
-				case "aax_22_64":
-					return Name.Aax22_64;
-				case "aax_44_128":
-					return Name.Aax44_128;
-				case "aax_44_64":
-					return Name.Aax44_64;
-				case "format4":
-					return Name.Format4;
-				case "mp4_22_32":
-					return Name.Mp422_32;
-				case "mp4_22_64":
-					return Name.Mp422_64;
-				case "mp4_44_128":
-					return Name.Mp444_128;
-				case "mp4_44_64":
-					return Name.Mp444_64;
-				case "piff_22_32":
-					return Name.Piff22_32;
-				case "piff_22_64":
-					return Name.Piff22_64;
-				case "piff_44_128":
-					return Name.Piff44_128;
-				case "piff_44_64":
-					return Name.Piff44_64;
-			}
-			throw new Exception("Cannot unmarshal type Name");
-		}
-
-		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-		{
-			if (untypedValue == null)
-			{
-				serializer.Serialize(writer, null);
-				return;
-			}
-			var value = (Name)untypedValue;
-			switch (value)
-			{
-				case Name.Aax:
-					serializer.Serialize(writer, "aax");
-					return;
-				case Name.Aax22_32:
-					serializer.Serialize(writer, "aax_22_32");
-					return;
-				case Name.Aax22_64:
-					serializer.Serialize(writer, "aax_22_64");
-					return;
-				case Name.Aax44_128:
-					serializer.Serialize(writer, "aax_44_128");
-					return;
-				case Name.Aax44_64:
-					serializer.Serialize(writer, "aax_44_64");
-					return;
-				case Name.Format4:
-					serializer.Serialize(writer, "format4");
-					return;
-				case Name.Mp422_32:
-					serializer.Serialize(writer, "mp4_22_32");
-					return;
-				case Name.Mp422_64:
-					serializer.Serialize(writer, "mp4_22_64");
-					return;
-				case Name.Mp444_128:
-					serializer.Serialize(writer, "mp4_44_128");
-					return;
-				case Name.Mp444_64:
-					serializer.Serialize(writer, "mp4_44_64");
-					return;
-				case Name.Piff22_32:
-					serializer.Serialize(writer, "piff_22_32");
-					return;
-				case Name.Piff22_64:
-					serializer.Serialize(writer, "piff_22_64");
-					return;
-				case Name.Piff44_128:
-					serializer.Serialize(writer, "piff_44_128");
-					return;
-				case Name.Piff44_64:
-					serializer.Serialize(writer, "piff_44_64");
-					return;
-			}
-			throw new Exception("Cannot marshal type Name");
-		}
-
-		public static readonly NameConverter Singleton = new NameConverter();
-	}
-
-	internal class RootConverter : JsonConverter
-	{
-		public override bool CanConvert(Type t) => t == typeof(Root) || t == typeof(Root?);
-
-		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-		{
-			if (reader.TokenType == JsonToken.Null) return null;
-			var value = serializer.Deserialize<string>(reader);
-			switch (value)
-			{
-				case "EditorsPicks":
-					return Root.EditorsPicks;
-				case "ExploreBy":
-					return Root.ExploreBy;
-				case "Genres":
-					return Root.Genres;
-				case "InstitutionsHpMarketing":
-					return Root.InstitutionsHpMarketing;
-				case "RodizioBuckets":
-					return Root.RodizioBuckets;
-				case "RodizioGenres":
-					return Root.RodizioGenres;
-				case "ShortsPrime":
-					return Root.ShortsPrime;
-				case "ShortsCurated":
-					return Root.ShortsCurated;
-				case "ShortsSandbox":
-					return Root.ShortsSandbox;
-			}
-			throw new Exception("Cannot unmarshal type Root");
-		}
-
-		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-		{
-			if (untypedValue == null)
-			{
-				serializer.Serialize(writer, null);
-				return;
-			}
-			var value = (Root)untypedValue;
-			switch (value)
-			{
-				case Root.EditorsPicks:
-					serializer.Serialize(writer, "EditorsPicks");
-					return;
-				case Root.ExploreBy:
-					serializer.Serialize(writer, "ExploreBy");
-					return;
-				case Root.Genres:
-					serializer.Serialize(writer, "Genres");
-					return;
-				case Root.InstitutionsHpMarketing:
-					serializer.Serialize(writer, "InstitutionsHpMarketing");
-					return;
-				case Root.RodizioBuckets:
-					serializer.Serialize(writer, "RodizioBuckets");
-					return;
-				case Root.RodizioGenres:
-					serializer.Serialize(writer, "RodizioGenres");
-					return;
-				case Root.ShortsPrime:
-					serializer.Serialize(writer, "ShortsPrime");
-					return;
-				case Root.ShortsCurated:
-					serializer.Serialize(writer, "ShortsCurated");
-					return;
-				case Root.ShortsSandbox:
-					serializer.Serialize(writer, "ShortsSandbox");
-					return;
-			}
-			throw new Exception("Cannot marshal type Root");
-		}
-
-		public static readonly RootConverter Singleton = new RootConverter();
-	}
-
-	internal class ContentDeliveryTypeConverter : JsonConverter
-	{
-		public override bool CanConvert(Type t) => t == typeof(ContentDeliveryType) || t == typeof(ContentDeliveryType?);
-
-		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-		{
-			if (reader.TokenType == JsonToken.Null) return null;
-			var value = serializer.Deserialize<string>(reader);
-			switch (value)
-			{
-				case "MultiPartBook":
-					return ContentDeliveryType.MultiPartBook;
-				case "Periodical":
-					return ContentDeliveryType.Periodical;
-				case "SinglePartBook":
-					return ContentDeliveryType.SinglePartBook;
-				case "SinglePartIssue":
-					return ContentDeliveryType.SinglePartIssue;
-			}
-			throw new Exception("Cannot unmarshal type ContentDeliveryType");
-		}
-
-		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-		{
-			if (untypedValue == null)
-			{
-				serializer.Serialize(writer, null);
-				return;
-			}
-			var value = (ContentDeliveryType)untypedValue;
-			switch (value)
-			{
-				case ContentDeliveryType.MultiPartBook:
-					serializer.Serialize(writer, "MultiPartBook");
-					return;
-				case ContentDeliveryType.Periodical:
-					serializer.Serialize(writer, "Periodical");
-					return;
-				case ContentDeliveryType.SinglePartBook:
-					serializer.Serialize(writer, "SinglePartBook");
-					return;
-				case ContentDeliveryType.SinglePartIssue:
-					serializer.Serialize(writer, "SinglePartIssue");
-					return;
-			}
-			throw new Exception("Cannot marshal type ContentDeliveryType");
-		}
-
-		public static readonly ContentDeliveryTypeConverter Singleton = new ContentDeliveryTypeConverter();
 	}
 
 	internal class ParseStringConverter : JsonConverter
@@ -1074,760 +644,5 @@ namespace AudibleApiDTOs
 		}
 
 		public static readonly ParseStringConverter Singleton = new ParseStringConverter();
-	}
-
-	internal class ContentTypeConverter : JsonConverter
-	{
-		public override bool CanConvert(Type t) => t == typeof(ContentType) || t == typeof(ContentType?);
-
-		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-		{
-			if (reader.TokenType == JsonToken.Null) return null;
-			var value = serializer.Deserialize<string>(reader);
-			switch (value)
-			{
-				case "Episode":
-					return ContentType.Episode;
-				case "Lecture":
-					return ContentType.Lecture;
-				case "Newspaper / Magazine":
-					return ContentType.NewspaperMagazine;
-				case "Meditation":
-					return ContentType.Meditation;
-				case "Misc":
-					return ContentType.Misc;
-				case "Performance":
-					return ContentType.Performance;
-				case "Product":
-					return ContentType.Product;
-				case "Radio/TV Program":
-					return ContentType.RadioTvProgram;
-				case "Show":
-					return ContentType.Show;
-				case "Speech":
-					return ContentType.Speech;
-			}
-			throw new Exception("Cannot unmarshal type ContentType");
-		}
-
-		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-		{
-			if (untypedValue == null)
-			{
-				serializer.Serialize(writer, null);
-				return;
-			}
-			var value = (ContentType)untypedValue;
-			switch (value)
-			{
-				case ContentType.Episode:
-					serializer.Serialize(writer, "Episode");
-					return;
-				case ContentType.Lecture:
-					serializer.Serialize(writer, "Lecture");
-					return;
-				case ContentType.NewspaperMagazine:
-					serializer.Serialize(writer, "Newspaper / Magazine");
-					return;
-				case ContentType.Meditation:
-					serializer.Serialize(writer, "Meditation");
-					return;
-				case ContentType.Misc:
-					serializer.Serialize(writer, "Misc");
-					return;
-				case ContentType.Performance:
-					serializer.Serialize(writer, "Performance");
-					return;
-				case ContentType.Product:
-					serializer.Serialize(writer, "Product");
-					return;
-				case ContentType.RadioTvProgram:
-					serializer.Serialize(writer, "Radio/TV Program");
-					return;
-				case ContentType.Show:
-					serializer.Serialize(writer, "Show");
-					return;
-				case ContentType.Speech:
-					serializer.Serialize(writer, "Speech");
-					return;
-			}
-			throw new Exception("Cannot marshal type ContentType");
-		}
-
-		public static readonly ContentTypeConverter Singleton = new ContentTypeConverter();
-	}
-
-	internal class ProvidedReviewFormatConverter : JsonConverter
-	{
-		public override bool CanConvert(Type t) => t == typeof(ProvidedReviewFormat) || t == typeof(ProvidedReviewFormat?);
-
-		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-		{
-			if (reader.TokenType == JsonToken.Null) return null;
-			var value = serializer.Deserialize<string>(reader);
-			switch (value)
-			{
-				case "Freeform":
-					return ProvidedReviewFormat.Freeform;
-				case "Guided":
-					return ProvidedReviewFormat.Guided;
-			}
-			throw new Exception("Cannot unmarshal type ProvidedReviewFormat");
-		}
-
-		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-		{
-			if (untypedValue == null)
-			{
-				serializer.Serialize(writer, null);
-				return;
-			}
-			var value = (ProvidedReviewFormat)untypedValue;
-			switch (value)
-			{
-				case ProvidedReviewFormat.Freeform:
-					serializer.Serialize(writer, "Freeform");
-					return;
-				case ProvidedReviewFormat.Guided:
-					serializer.Serialize(writer, "Guided");
-					return;
-			}
-			throw new Exception("Cannot marshal type ProvidedReviewFormat");
-		}
-
-		public static readonly ProvidedReviewFormatConverter Singleton = new ProvidedReviewFormatConverter();
-	}
-
-	internal class QuestionTypeConverter : JsonConverter
-	{
-		public override bool CanConvert(Type t) => t == typeof(QuestionType) || t == typeof(QuestionType?);
-
-		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-		{
-			if (reader.TokenType == JsonToken.Null) return null;
-			var value = serializer.Deserialize<string>(reader);
-			switch (value)
-			{
-				case "Genre":
-					return QuestionType.Genre;
-				case "Misc":
-					return QuestionType.Misc;
-				case "Overall":
-					return QuestionType.Overall;
-				case "Performance":
-					return QuestionType.Performance;
-				case "Story":
-					return QuestionType.Story;
-			}
-			throw new Exception("Cannot unmarshal type QuestionType");
-		}
-
-		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-		{
-			if (untypedValue == null)
-			{
-				serializer.Serialize(writer, null);
-				return;
-			}
-			var value = (QuestionType)untypedValue;
-			switch (value)
-			{
-				case QuestionType.Genre:
-					serializer.Serialize(writer, "Genre");
-					return;
-				case QuestionType.Misc:
-					serializer.Serialize(writer, "Misc");
-					return;
-				case QuestionType.Overall:
-					serializer.Serialize(writer, "Overall");
-					return;
-				case QuestionType.Performance:
-					serializer.Serialize(writer, "Performance");
-					return;
-				case QuestionType.Story:
-					serializer.Serialize(writer, "Story");
-					return;
-			}
-			throw new Exception("Cannot marshal type QuestionType");
-		}
-
-		public static readonly QuestionTypeConverter Singleton = new QuestionTypeConverter();
-	}
-
-	internal class FormatTypeConverter : JsonConverter
-	{
-		public override bool CanConvert(Type t) => t == typeof(FormatType) || t == typeof(FormatType?);
-
-		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-		{
-			if (reader.TokenType == JsonToken.Null) return null;
-			var value = serializer.Deserialize<string>(reader);
-			switch (value)
-			{
-				case "abridged":
-					return FormatType.Abridged;
-				case "original_recording":
-					return FormatType.OriginalRecording;
-				case "unabridged":
-					return FormatType.Unabridged;
-			}
-			throw new Exception("Cannot unmarshal type FormatType");
-		}
-
-		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-		{
-			if (untypedValue == null)
-			{
-				serializer.Serialize(writer, null);
-				return;
-			}
-			var value = (FormatType)untypedValue;
-			switch (value)
-			{
-				case FormatType.Abridged:
-					serializer.Serialize(writer, "abridged");
-					return;
-				case FormatType.OriginalRecording:
-					serializer.Serialize(writer, "original_recording");
-					return;
-				case FormatType.Unabridged:
-					serializer.Serialize(writer, "unabridged");
-					return;
-			}
-			throw new Exception("Cannot marshal type FormatType");
-		}
-
-		public static readonly FormatTypeConverter Singleton = new FormatTypeConverter();
-	}
-
-	internal class LanguageConverter : JsonConverter
-	{
-		public override bool CanConvert(Type t) => t == typeof(Language) || t == typeof(Language?);
-
-		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-		{
-			if (reader.TokenType == JsonToken.Null) return null;
-			var value = serializer.Deserialize<string>(reader);
-			if (value == "english")
-			{
-				return Language.English;
-			}
-			throw new Exception("Cannot unmarshal type Language");
-		}
-
-		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-		{
-			if (untypedValue == null)
-			{
-				serializer.Serialize(writer, null);
-				return;
-			}
-			var value = (Language)untypedValue;
-			if (value == Language.English)
-			{
-				serializer.Serialize(writer, "english");
-				return;
-			}
-			throw new Exception("Cannot marshal type Language");
-		}
-
-		public static readonly LanguageConverter Singleton = new LanguageConverter();
-	}
-
-	internal class OriginMarketplaceConverter : JsonConverter
-	{
-		public override bool CanConvert(Type t) => t == typeof(OriginMarketplace) || t == typeof(OriginMarketplace?);
-
-		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-		{
-			if (reader.TokenType == JsonToken.Null) return null;
-			var value = serializer.Deserialize<string>(reader);
-			if (value == "AF2M0KC94RCEA")
-			{
-				return OriginMarketplace.Af2M0Kc94Rcea;
-			}
-			throw new Exception("Cannot unmarshal type OriginMarketplace");
-		}
-
-		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-		{
-			if (untypedValue == null)
-			{
-				serializer.Serialize(writer, null);
-				return;
-			}
-			var value = (OriginMarketplace)untypedValue;
-			if (value == OriginMarketplace.Af2M0Kc94Rcea)
-			{
-				serializer.Serialize(writer, "AF2M0KC94RCEA");
-				return;
-			}
-			throw new Exception("Cannot marshal type OriginMarketplace");
-		}
-
-		public static readonly OriginMarketplaceConverter Singleton = new OriginMarketplaceConverter();
-	}
-
-	internal class OriginTypeConverter : JsonConverter
-	{
-		public override bool CanConvert(Type t) => t == typeof(OriginType) || t == typeof(OriginType?);
-
-		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-		{
-			if (reader.TokenType == JsonToken.Null) return null;
-			var value = serializer.Deserialize<string>(reader);
-			switch (value)
-			{
-				case "AudibleChannels":
-					return OriginType.AudibleChannels;
-				case "AudibleComplimentaryOriginal":
-					return OriginType.AudibleComplimentaryOriginal;
-				case "Purchase":
-					return OriginType.Purchase;
-				case "Subscription":
-					return OriginType.Subscription;
-			}
-			throw new Exception("Cannot unmarshal type OriginType");
-		}
-
-		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-		{
-			if (untypedValue == null)
-			{
-				serializer.Serialize(writer, null);
-				return;
-			}
-			var value = (OriginType)untypedValue;
-			switch (value)
-			{
-				case OriginType.AudibleChannels:
-					serializer.Serialize(writer, "AudibleChannels");
-					return;
-				case OriginType.AudibleComplimentaryOriginal:
-					serializer.Serialize(writer, "AudibleComplimentaryOriginal");
-					return;
-				case OriginType.Purchase:
-					serializer.Serialize(writer, "Purchase");
-					return;
-				case OriginType.Subscription:
-					serializer.Serialize(writer, "Subscription");
-					return;
-			}
-			throw new Exception("Cannot marshal type OriginType");
-		}
-
-		public static readonly OriginTypeConverter Singleton = new OriginTypeConverter();
-	}
-
-	internal class PlanNameConverter : JsonConverter
-	{
-		public override bool CanConvert(Type t) => t == typeof(PlanName) || t == typeof(PlanName?);
-
-		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-		{
-			if (reader.TokenType == JsonToken.Null) return null;
-			var value = serializer.Deserialize<string>(reader);
-			switch (value)
-			{
-				case "AyceRomance":
-					return PlanName.AyceRomance;
-				case "ComplimentaryOriginalMemberBenefit":
-					return PlanName.ComplimentaryOriginalMemberBenefit;
-				case "Radio":
-					return PlanName.Radio;
-				case "Rodizio":
-					return PlanName.Rodizio;
-				case "SpecialBenefit":
-					return PlanName.SpecialBenefit;
-			}
-			throw new Exception("Cannot unmarshal type PlanName");
-		}
-
-		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-		{
-			if (untypedValue == null)
-			{
-				serializer.Serialize(writer, null);
-				return;
-			}
-			var value = (PlanName)untypedValue;
-			switch (value)
-			{
-				case PlanName.AyceRomance:
-					serializer.Serialize(writer, "AyceRomance");
-					return;
-				case PlanName.ComplimentaryOriginalMemberBenefit:
-					serializer.Serialize(writer, "ComplimentaryOriginalMemberBenefit");
-					return;
-				case PlanName.Radio:
-					serializer.Serialize(writer, "Radio");
-					return;
-				case PlanName.Rodizio:
-					serializer.Serialize(writer, "Rodizio");
-					return;
-				case PlanName.SpecialBenefit:
-					serializer.Serialize(writer, "SpecialBenefit");
-					return;
-			}
-			throw new Exception("Cannot marshal type PlanName");
-		}
-
-		public static readonly PlanNameConverter Singleton = new PlanNameConverter();
-	}
-
-	internal class CurrencyCodeConverter : JsonConverter
-	{
-		public override bool CanConvert(Type t) => t == typeof(CurrencyCode) || t == typeof(CurrencyCode?);
-
-		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-		{
-			if (reader.TokenType == JsonToken.Null) return null;
-			var value = serializer.Deserialize<string>(reader);
-			if (value == "USD")
-			{
-				return CurrencyCode.Usd;
-			}
-			throw new Exception("Cannot unmarshal type CurrencyCode");
-		}
-
-		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-		{
-			if (untypedValue == null)
-			{
-				serializer.Serialize(writer, null);
-				return;
-			}
-			var value = (CurrencyCode)untypedValue;
-			if (value == CurrencyCode.Usd)
-			{
-				serializer.Serialize(writer, "USD");
-				return;
-			}
-			throw new Exception("Cannot marshal type CurrencyCode");
-		}
-
-		public static readonly CurrencyCodeConverter Singleton = new CurrencyCodeConverter();
-	}
-
-	internal class MerchantIdConverter : JsonConverter
-	{
-		public override bool CanConvert(Type t) => t == typeof(MerchantId) || t == typeof(MerchantId?);
-
-		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-		{
-			if (reader.TokenType == JsonToken.Null) return null;
-			var value = serializer.Deserialize<string>(reader);
-			if (value == "A2ZO8JX97D5MN9")
-			{
-				return MerchantId.A2Zo8Jx97D5Mn9;
-			}
-			throw new Exception("Cannot unmarshal type MerchantId");
-		}
-
-		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-		{
-			if (untypedValue == null)
-			{
-				serializer.Serialize(writer, null);
-				return;
-			}
-			var value = (MerchantId)untypedValue;
-			if (value == MerchantId.A2Zo8Jx97D5Mn9)
-			{
-				serializer.Serialize(writer, "A2ZO8JX97D5MN9");
-				return;
-			}
-			throw new Exception("Cannot marshal type MerchantId");
-		}
-
-		public static readonly MerchantIdConverter Singleton = new MerchantIdConverter();
-	}
-
-	internal class TypeEnumConverter : JsonConverter
-	{
-		public override bool CanConvert(Type t) => t == typeof(TypeEnum) || t == typeof(TypeEnum?);
-
-		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-		{
-			if (reader.TokenType == JsonToken.Null) return null;
-			var value = serializer.Deserialize<string>(reader);
-			switch (value)
-			{
-				case "list":
-					return TypeEnum.List;
-				case "member":
-					return TypeEnum.Member;
-				case "sale":
-					return TypeEnum.Sale;
-				case "ws4v_upsell":
-					return TypeEnum.Ws4VUpsell;
-			}
-			throw new Exception("Cannot unmarshal type TypeEnum");
-		}
-
-		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-		{
-			if (untypedValue == null)
-			{
-				serializer.Serialize(writer, null);
-				return;
-			}
-			var value = (TypeEnum)untypedValue;
-			switch (value)
-			{
-				case TypeEnum.List:
-					serializer.Serialize(writer, "list");
-					return;
-				case TypeEnum.Member:
-					serializer.Serialize(writer, "member");
-					return;
-				case TypeEnum.Sale:
-					serializer.Serialize(writer, "sale");
-					return;
-				case TypeEnum.Ws4VUpsell:
-					serializer.Serialize(writer, "ws4v_upsell");
-					return;
-			}
-			throw new Exception("Cannot marshal type TypeEnum");
-		}
-
-		public static readonly TypeEnumConverter Singleton = new TypeEnumConverter();
-	}
-
-	internal class RelationshipToProductConverter : JsonConverter
-	{
-		public override bool CanConvert(Type t) => t == typeof(RelationshipToProduct) || t == typeof(RelationshipToProduct?);
-
-		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-		{
-			if (reader.TokenType == JsonToken.Null) return null;
-			var value = serializer.Deserialize<string>(reader);
-			switch (value)
-			{
-				case "child":
-					return RelationshipToProduct.Child;
-				case "parent":
-					return RelationshipToProduct.Parent;
-			}
-			throw new Exception("Cannot unmarshal type RelationshipToProduct");
-		}
-
-		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-		{
-			if (untypedValue == null)
-			{
-				serializer.Serialize(writer, null);
-				return;
-			}
-			var value = (RelationshipToProduct)untypedValue;
-			switch (value)
-			{
-				case RelationshipToProduct.Child:
-					serializer.Serialize(writer, "child");
-					return;
-				case RelationshipToProduct.Parent:
-					serializer.Serialize(writer, "parent");
-					return;
-			}
-			throw new Exception("Cannot marshal type RelationshipToProduct");
-		}
-
-		public static readonly RelationshipToProductConverter Singleton = new RelationshipToProductConverter();
-	}
-
-	internal class RelationshipTypeConverter : JsonConverter
-	{
-		public override bool CanConvert(Type t) => t == typeof(RelationshipType) || t == typeof(RelationshipType?);
-
-		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-		{
-			if (reader.TokenType == JsonToken.Null) return null;
-			var value = serializer.Deserialize<string>(reader);
-			switch (value)
-			{
-				case "component":
-					return RelationshipType.Component;
-				case "episode":
-					return RelationshipType.Episode;
-				case "merchant_title_authority":
-					return RelationshipType.MerchantTitleAuthority;
-				case "season":
-					return RelationshipType.Season;
-				case "series":
-					return RelationshipType.Series;
-			}
-			throw new Exception("Cannot unmarshal type RelationshipType");
-		}
-
-		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-		{
-			if (untypedValue == null)
-			{
-				serializer.Serialize(writer, null);
-				return;
-			}
-			var value = (RelationshipType)untypedValue;
-			switch (value)
-			{
-				case RelationshipType.Component:
-					serializer.Serialize(writer, "component");
-					return;
-				case RelationshipType.Episode:
-					serializer.Serialize(writer, "episode");
-					return;
-				case RelationshipType.MerchantTitleAuthority:
-					serializer.Serialize(writer, "merchant_title_authority");
-					return;
-				case RelationshipType.Season:
-					serializer.Serialize(writer, "season");
-					return;
-				case RelationshipType.Series:
-					serializer.Serialize(writer, "series");
-					return;
-			}
-			throw new Exception("Cannot marshal type RelationshipType");
-		}
-
-		public static readonly RelationshipTypeConverter Singleton = new RelationshipTypeConverter();
-	}
-
-	internal class StatusConverter : JsonConverter
-	{
-		public override bool CanConvert(Type t) => t == typeof(Status) || t == typeof(Status?);
-
-		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-		{
-			if (reader.TokenType == JsonToken.Null) return null;
-			var value = serializer.Deserialize<string>(reader);
-			if (value == "Active")
-			{
-				return Status.Active;
-			}
-			throw new Exception("Cannot unmarshal type Status");
-		}
-
-		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-		{
-			if (untypedValue == null)
-			{
-				serializer.Serialize(writer, null);
-				return;
-			}
-			var value = (Status)untypedValue;
-			if (value == Status.Active)
-			{
-				serializer.Serialize(writer, "Active");
-				return;
-			}
-			throw new Exception("Cannot marshal type Status");
-		}
-
-		public static readonly StatusConverter Singleton = new StatusConverter();
-	}
-
-	internal class ThesaurusSubjectKeywordConverter : JsonConverter
-	{
-		public override bool CanConvert(Type t) => t == typeof(ThesaurusSubjectKeyword) || t == typeof(ThesaurusSubjectKeyword?);
-
-		public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-		{
-			if (reader.TokenType == JsonToken.Null) return null;
-			var value = serializer.Deserialize<string>(reader);
-			switch (value)
-			{
-				case "adventurers_&_explorers":
-					return ThesaurusSubjectKeyword.AdventurersExplorers;
-				case "alternate_history":
-					return ThesaurusSubjectKeyword.AlternateHistory;
-				case "comedians":
-					return ThesaurusSubjectKeyword.Comedians;
-				case "contemporary":
-					return ThesaurusSubjectKeyword.Contemporary;
-				case "dramatizations":
-					return ThesaurusSubjectKeyword.Dramatizations;
-				case "eastern_religions":
-					return ThesaurusSubjectKeyword.EasternReligions;
-				case "la_confidential":
-					return ThesaurusSubjectKeyword.LaConfidential;
-				case "literature-and-fiction":
-					return ThesaurusSubjectKeyword.LiteratureAndFiction;
-				case "medicine":
-					return ThesaurusSubjectKeyword.Medicine;
-				case "spirituality":
-					return ThesaurusSubjectKeyword.Spirituality;
-				case "standup_comedy":
-					return ThesaurusSubjectKeyword.StandupComedy;
-				case "storytelling":
-					return ThesaurusSubjectKeyword.Storytelling;
-				case "sword_&_sorcery":
-					return ThesaurusSubjectKeyword.SwordSorcery;
-				case "workouts":
-					return ThesaurusSubjectKeyword.Workouts;
-				case "terrorism":
-					return ThesaurusSubjectKeyword.Terrorism;
-			}
-			throw new Exception("Cannot unmarshal type ThesaurusSubjectKeyword");
-		}
-
-		public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-		{
-			if (untypedValue == null)
-			{
-				serializer.Serialize(writer, null);
-				return;
-			}
-			var value = (ThesaurusSubjectKeyword)untypedValue;
-			switch (value)
-			{
-				case ThesaurusSubjectKeyword.AdventurersExplorers:
-					serializer.Serialize(writer, "adventurers_&_explorers");
-					return;
-				case ThesaurusSubjectKeyword.AlternateHistory:
-					serializer.Serialize(writer, "alternate_history");
-					return;
-				case ThesaurusSubjectKeyword.Comedians:
-					serializer.Serialize(writer, "comedians");
-					return;
-				case ThesaurusSubjectKeyword.Contemporary:
-					serializer.Serialize(writer, "contemporary");
-					return;
-				case ThesaurusSubjectKeyword.Dramatizations:
-					serializer.Serialize(writer, "dramatizations");
-					return;
-				case ThesaurusSubjectKeyword.EasternReligions:
-					serializer.Serialize(writer, "eastern_religions");
-					return;
-				case ThesaurusSubjectKeyword.LaConfidential:
-					serializer.Serialize(writer, "la_confidential");
-					return;
-				case ThesaurusSubjectKeyword.LiteratureAndFiction:
-					serializer.Serialize(writer, "literature-and-fiction");
-					return;
-				case ThesaurusSubjectKeyword.Medicine:
-					serializer.Serialize(writer, "medicine");
-					return;
-				case ThesaurusSubjectKeyword.Spirituality:
-					serializer.Serialize(writer, "spirituality");
-					return;
-				case ThesaurusSubjectKeyword.StandupComedy:
-					serializer.Serialize(writer, "standup_comedy");
-					return;
-				case ThesaurusSubjectKeyword.Storytelling:
-					serializer.Serialize(writer, "storytelling");
-					return;
-				case ThesaurusSubjectKeyword.SwordSorcery:
-					serializer.Serialize(writer, "sword_&_sorcery");
-					return;
-				case ThesaurusSubjectKeyword.Workouts:
-					serializer.Serialize(writer, "workouts");
-					return;
-				case ThesaurusSubjectKeyword.Terrorism:
-					serializer.Serialize(writer, "terrorism");
-					return;
-			}
-			throw new Exception("Cannot marshal type ThesaurusSubjectKeyword");
-		}
-
-		public static readonly ThesaurusSubjectKeywordConverter Singleton = new ThesaurusSubjectKeywordConverter();
 	}
 }

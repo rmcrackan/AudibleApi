@@ -16,7 +16,7 @@
 // RuntimeLengthMin type: int?
 // rename Author class to Person
 // class Serialize: add partial
-// lots of manually edited enum stuff
+// manually edited lots of enum stuff
 
 using System;
 using System.Linq;
@@ -50,10 +50,7 @@ namespace AudibleApiDTOs
 		public int MyUserRating_Performance => Convert.ToInt32(ProvidedReview?.Ratings.PerformanceRating ?? 0L);
 		public int MyUserRating_Story => Convert.ToInt32(ProvidedReview?.Ratings.StoryRating ?? 0L);
 
-		public bool IsAbridged
-			=> FormatType.HasValue
-			? FormatType == AudibleApiDTOs.FormatType.Abridged
-			: false;
+		public bool IsAbridged => FormatType == AudibleApiDTOs.FormatType.Abridged;
 		public DateTime? DatePublished => IssueDate?.UtcDateTime; // item.IssueDate == item.ReleaseDate
 		public string Publisher => PublisherName;
 
