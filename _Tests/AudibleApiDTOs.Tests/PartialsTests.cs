@@ -279,13 +279,13 @@ namespace PartialsTests
 	public class AvailableCodec_ToString
 	{
 		[TestMethod]
-		public void Name_null() => new AvailableCodec { Name = null, Format = AvailableCodecFormat.Enhanced, EnhancedCodec = EnhancedCodec.Aax }.ToString().Should().Be(" Enhanced Aax");
+		public void Name_null() => new AvailableCodec { Name = null, Format = AvailableCodecFormat.Enhanced, EnhancedCodec = EnhancedCodec.Aax }.ToString().Should().Be(" Enhanced aax");
 		[TestMethod]
-		public void Format_null() => new AvailableCodec { Name = Name.Aax, Format = null, EnhancedCodec = EnhancedCodec.Aax }.ToString().Should().Be("Aax  Aax");
+		public void Format_null() => new AvailableCodec { Name = Name.Aax, Format = null, EnhancedCodec = EnhancedCodec.Aax }.ToString().Should().Be("aax  aax");
 		[TestMethod]
-		public void EnhancedCodec_null() => new AvailableCodec { Name = Name.Aax, Format = AvailableCodecFormat.Enhanced, EnhancedCodec = null }.ToString().Should().Be("Aax Enhanced ");
+		public void EnhancedCodec_null() => new AvailableCodec { Name = Name.Aax, Format = AvailableCodecFormat.Enhanced, EnhancedCodec = null }.ToString().Should().Be("aax Enhanced ");
 		[TestMethod]
-		public void populated() => new AvailableCodec { Name = Name.Aax, Format = AvailableCodecFormat.Enhanced, EnhancedCodec = EnhancedCodec.Aax }.ToString().Should().Be("Aax Enhanced Aax");
+		public void populated() => new AvailableCodec { Name = Name.Aax, Format = AvailableCodecFormat.Enhanced, EnhancedCodec = EnhancedCodec.Aax }.ToString().Should().Be("aax Enhanced aax");
 	}
 
 	[TestClass]
@@ -467,11 +467,11 @@ namespace PartialsTests
 	public class Relationship_ToString
 	{
 		[TestMethod]
-		public void RelationshipToProduct_null() => new Relationship { RelationshipToProduct = null, RelationshipType = RelationshipType.Season }.ToString().Should().Be(" Season");
+		public void RelationshipToProduct_null() => new Relationship { RelationshipToProduct = null, RelationshipType = RelationshipType.Season }.ToString().Should().Be(" season");
 		[TestMethod]
-		public void RelationshipType_null() => new Relationship { RelationshipToProduct = RelationshipToProduct.Child, RelationshipType = null }.ToString().Should().Be("Child ");
+		public void RelationshipType_null() => new Relationship { RelationshipToProduct = RelationshipToProduct.Child, RelationshipType = null }.ToString().Should().Be("child ");
 		[TestMethod]
-		public void populated() => new Relationship { RelationshipToProduct = RelationshipToProduct.Child, RelationshipType = RelationshipType.Season }.ToString().Should().Be("Child Season");
+		public void populated() => new Relationship { RelationshipToProduct = RelationshipToProduct.Child, RelationshipType = RelationshipType.Season }.ToString().Should().Be("child season");
 	}
 
 	[TestClass]
