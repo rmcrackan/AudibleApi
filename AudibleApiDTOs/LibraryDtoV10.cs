@@ -20,6 +20,7 @@
 
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace AudibleApiDTOs
 {
@@ -148,11 +149,20 @@ namespace AudibleApiDTOs
 	{
 		public string SeriesName => Title;
 		public string SeriesId => Asin;
+
+		// tested for
+		// 0.3,4.7,8.6 => 0.3f
+		// 0.6, 3.5 => 0.6f
+		// 5-8 => 5f
+		// 5. => 5f
+		// abc1.12.def3.4 => 1.12f
+		// X.5 => 5f // no leading 0
+		private static Regex regex { get; } = new Regex(@"^\D*(?<index>\d+\.?\d*)", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
 		public float Index
 			=> string.IsNullOrWhiteSpace(Sequence)
 			? 0
-			// eg: a book containing volumes 5,6,7,8 has sequence "5-8"
-			: float.Parse(Sequence.Split('-').First());
+			: float.Parse(regex.Match(Sequence).Groups["index"].ToString());
 
 		public override string ToString() => $"[{SeriesId}] {SeriesName}";
 	}
