@@ -28,5 +28,11 @@
     "domain": "ca",
     "marketPlaceId": "A2CQZ5RBY40XE",
     "language": "en-CA"
+  },
+  "australia": {
+    "countryCode": "au",
+    "domain": "com.au",
+    "marketPlaceId": "AN7EY7DTAW63G",
+    "language": "en-AU"
   }
 }
