@@ -43,13 +43,13 @@ namespace AudibleApiDTOs
 		public string SupplementUrl => PdfUrl?.AbsoluteUri;
 		public DateTime DateAdded => PurchaseDate.UtcDateTime;
 
-		public float Product_OverallStars => Convert.ToSingle(Rating?.OverallDistribution.DisplayStars ?? 0);
-		public float Product_PerformanceStars => Convert.ToSingle(Rating?.PerformanceDistribution.DisplayStars ?? 0);
-		public float Product_StoryStars => Convert.ToSingle(Rating?.StoryDistribution.DisplayStars ?? 0);
+		public float Product_OverallStars => Convert.ToSingle(Rating?.OverallDistribution?.DisplayStars ?? 0);
+		public float Product_PerformanceStars => Convert.ToSingle(Rating?.PerformanceDistribution?.DisplayStars ?? 0);
+		public float Product_StoryStars => Convert.ToSingle(Rating?.StoryDistribution?.DisplayStars ?? 0);
 
-		public int MyUserRating_Overall => Convert.ToInt32(ProvidedReview?.Ratings.OverallRating ?? 0L);
-		public int MyUserRating_Performance => Convert.ToInt32(ProvidedReview?.Ratings.PerformanceRating ?? 0L);
-		public int MyUserRating_Story => Convert.ToInt32(ProvidedReview?.Ratings.StoryRating ?? 0L);
+		public int MyUserRating_Overall => Convert.ToInt32(ProvidedReview?.Ratings?.OverallRating ?? 0L);
+		public int MyUserRating_Performance => Convert.ToInt32(ProvidedReview?.Ratings?.PerformanceRating ?? 0L);
+		public int MyUserRating_Story => Convert.ToInt32(ProvidedReview?.Ratings?.StoryRating ?? 0L);
 
 		public bool IsAbridged => FormatType == AudibleApiDTOs.FormatType.Abridged;
 		public DateTime? DatePublished => IssueDate?.UtcDateTime; // item.IssueDate == item.ReleaseDate
