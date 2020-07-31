@@ -18,7 +18,7 @@ namespace AudibleApiClientExample
 			// open appsettings.json in build dir
 			// find location of existing IdentityTokens.json
 			// put this location into appsettings.json in build dir. remember to escape back-slashes
-			// save file
+			// save appsettings.json
 
 			var settings = File.ReadAllText("appsettings.json");
 			var jObj = Newtonsoft.Json.Linq.JObject.Parse(settings);
