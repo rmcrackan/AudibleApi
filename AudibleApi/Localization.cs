@@ -22,25 +22,6 @@ namespace AudibleApi
 			CurrentLocale = _locales["us"];
 		}
 
-		public enum LocaleNames
-		{
-			[Description("us")]
-			US,
-			[Description("uk")]
-			UK,
-			[Description("germany")]
-			Germany,
-			[Description("france")]
-			France,
-			[Description("canada")]
-			Canada,
-			[Description("australia")]
-			Australia
-		}
-
-		public static void SetLocale(LocaleNames localeName)
-			=> SetLocale(localeName.GetDescription());
-
 		public static void SetLocale(string localeName)
 		{
 			localeName = localeName?.Trim().ToLower();

@@ -24,13 +24,13 @@ namespace ResourcesTests
 	{
 		[TestCleanup]
 		public void reset_to_default()
-			=> Localization.SetLocale(Localization.LocaleNames.US);
+			=> Localization.SetLocale(LocaleNames.US);
 
 		[TestMethod]
 		public void verify_all_uk()
 		{
 			Localization.CurrentLocale.CountryCode.Should().Be("us");
-			Localization.SetLocale(Localization.LocaleNames.UK);
+			Localization.SetLocale(LocaleNames.UK);
 			Localization.CurrentLocale.CountryCode.Should().Be("uk");
 
 			Resources.AudibleApiUri.ToString().Should().Be("https://api.audible.co.uk/");
@@ -50,7 +50,7 @@ https://www.amazon.co.uk/ap/signin?openid.identity=http%3a%2f%2fspecs.openid.net
 		{
 			verify_all_uk();
 			Localization.CurrentLocale.CountryCode.Should().Be("uk");
-			Localization.SetLocale(Localization.LocaleNames.US);
+			Localization.SetLocale(LocaleNames.US);
 			Localization.CurrentLocale.CountryCode.Should().Be("us");
 
 			Resources.AudibleApiUri.ToString().Should().Be("https://api.audible.com/");

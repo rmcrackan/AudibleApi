@@ -43,17 +43,13 @@ namespace LocalizationTests
 	{
 		[TestCleanup]
 		public void reset_to_default()
-			=> Localization.SetLocale(Localization.LocaleNames.US);
-
-		[TestMethod]
-		public void invalid_enum_throws()
-			=> Assert.ThrowsException<ArgumentNullException>(() => Localization.SetLocale((Localization.LocaleNames)99));
+			=> Localization.SetLocale(LocaleNames.US);
 
 		[TestMethod]
 		public void valid_enum_sets()
 		{
 			Assert.AreEqual(Localization.CurrentLocale.CountryCode, "us");
-			Localization.SetLocale(Localization.LocaleNames.Germany);
+			Localization.SetLocale(LocaleNames.Germany);
 			Assert.AreEqual(Localization.CurrentLocale.CountryCode, "de");
 		}
 	}
@@ -63,7 +59,7 @@ namespace LocalizationTests
 	{
 		[TestCleanup]
 		public void reset_to_default()
-			=> Localization.SetLocale(Localization.LocaleNames.US);
+			=> Localization.SetLocale(LocaleNames.US);
 
 		[TestMethod]
 		public void null_param_throws()
@@ -110,7 +106,7 @@ namespace LocalizationTests
 		public void verify_all_uk()
 		{
 			Localization.CurrentLocale.CountryCode.Should().Be("us");
-			Localization.SetLocale(Localization.LocaleNames.UK);
+			Localization.SetLocale(LocaleNames.UK);
 			Localization.CurrentLocale.CountryCode.Should().Be("uk");
 
 			var curr = Localization.CurrentLocale;
@@ -126,7 +122,7 @@ namespace LocalizationTests
 		{
 			verify_all_uk();
 			Localization.CurrentLocale.CountryCode.Should().Be("uk");
-			Localization.SetLocale(Localization.LocaleNames.US);
+			Localization.SetLocale(LocaleNames.US);
 			Localization.CurrentLocale.CountryCode.Should().Be("us");
 
 			var curr = Localization.CurrentLocale;
