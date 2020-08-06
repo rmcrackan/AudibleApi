@@ -31,7 +31,7 @@ namespace AudibleApi
 			{
 				identityPersistent = new IdentityPersistent(identityFilePath);
 			}
-			catch // TODO: exceptions should not be used for control flow. fix this
+			catch (Exception ex) // TODO: exceptions should not be used for control flow. fix this
 			{
 				var inMemoryIdentity = await loginAsync(loginCallback);
 				identityPersistent = new IdentityPersistent(identityFilePath, inMemoryIdentity);

@@ -64,6 +64,27 @@ namespace AudibleApiClientExample
 			Console.WriteLine(str);
 		}
 
+		public Task AccountInfoAsync() => wrapCallAsync(accountInfoAsync);
+		private async Task accountInfoAsync()
+		{
+			string groups = "";
+
+			var url = "/1.0/customer/information";
+			groups = "migration_details,subscription_details_rodizio,subscription_details_premium,customer_segment,subscription_details_channels";
+
+
+			if (!string.IsNullOrWhiteSpace(groups))
+				url += (url.Contains("?") ? "&" : "?") + "response_groups=" + groups.Replace(" ", "").Replace("[", "").Replace("]", "");
+			var responseMsg = await _api.AdHocAuthenticatedGetAsync(url);
+			var jObj = await responseMsg.Content.ReadAsJObjectAsync();
+			var str = jObj.ToString(Formatting.Indented);
+			Console.WriteLine(str);
+
+
+			var str2 = (await _api.UserProfileAsync()).ToString(Formatting.Indented);
+			Console.WriteLine(str2);
+		}
+
 		public Task DownloadBookAsync() => wrapCallAsync(downloadBookAsync);
 		private async Task downloadBookAsync()
 		{
@@ -199,6 +220,12 @@ namespace AudibleApiClientExample
 				Console.WriteLine(aex.Message);
 				Console.WriteLine(aex.JsonMessage.ToString());
 				Console.WriteLine(aex.RequestUri.ToString());
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("ERROR:");
+				Console.WriteLine(ex.Message);
+				Console.WriteLine(ex.StackTrace);
 			}
 		}
 		#endregion

@@ -33,7 +33,9 @@ namespace AudibleApi
 			[Description("france")]
 			France,
 			[Description("canada")]
-			Canada
+			Canada,
+			[Description("australia")]
+			Australia
 		}
 
 		public static void SetLocale(LocaleNames localeName)

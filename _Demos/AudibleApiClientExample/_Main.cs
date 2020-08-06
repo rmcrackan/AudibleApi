@@ -29,7 +29,8 @@ namespace AudibleApiClientExample
 			//await client.PrintLibraryAsync();
 			//await client.DownloadBookAsync();
 			//await client.DocumentLibraryResponseGroupOptionsAsync();
-			await client.DeserializeSingleBookAsync();
+			//await client.DeserializeSingleBookAsync();
+			await client.AccountInfoAsync();
 		}
 	}
 }
