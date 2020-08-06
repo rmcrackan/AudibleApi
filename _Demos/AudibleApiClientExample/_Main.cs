@@ -13,10 +13,10 @@ namespace AudibleApiClientExample
 
 		static async Task Main(string[] args)
 		{
-			// TO USE EXISTING IdentityTokens.json
+			// TO USE EXISTING AccountsSettings.json
 			// run this app once to copy appsettings.json to build dir
 			// open appsettings.json in build dir
-			// find location of existing IdentityTokens.json
+			// find location of existing AccountsSettings.json
 			// put this location into appsettings.json in build dir. remember to escape back-slashes
 			// save appsettings.json
 

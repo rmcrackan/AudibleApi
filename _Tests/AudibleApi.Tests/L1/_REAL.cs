@@ -31,7 +31,7 @@ namespace L1.Tests
 				{
 					var lines = new List<string>
 					{
-						$"Error! {nameof(APP_SETTINGS)} not found.\r\nTo fix this error, copy the client's appsettings IdentityFilePath entry into the L1's appsettings IdentityFilePath entry. If Libation is on this computer, the path is probably %LibationFiles%\\IdentityTokens.json"
+						$"Error! {nameof(APP_SETTINGS)} not found.\r\nTo fix this error, copy the client's appsettings IdentityFilePath entry into the L1's appsettings IdentityFilePath entry. If Libation is on this computer, the path is probably %LibationFiles%\\AccountsSettings.json"
 					};
 
 					throw new Exception(string.Join("\r\n", lines));
