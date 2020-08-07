@@ -5,12 +5,13 @@ using AudibleApi;
 using AudibleApi.Authorization;
 using TestCommon;
 using static AuthorizationShared.Shared;
+using static AuthorizationShared.Shared.AccessTokenTemporality;
 
 namespace TestAudibleApiCommon
 {
     public class MockIdMaintainer : IdentityMaintainer
 	{
-		public MockIdMaintainer() : this(GetIdentity_Future(), HttpMock.GetHandler()) { }
+		public MockIdMaintainer() : this(GetIdentity(Future), HttpMock.GetHandler()) { }
 		public MockIdMaintainer(IIdentity identity, HttpMessageHandler handler)
 			: base(
 			identity,

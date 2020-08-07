@@ -1,22 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Dinah.Core;
 using Newtonsoft.Json;
 
 namespace AudibleApi.Authorization
 {
+	/// <summary>Persist settings to json file. Optional JSONPath</summary>
     public class IdentityPersistent : IIdentity, IDisposable
     {
 		public string Path { get; }
+		public string JsonPath { get; }
 		private IIdentity _identity { get; }
 
 		/// <summary>uses path. create file if doesn't yet exist</summary>
-		public IdentityPersistent(string path, IIdentity identity)
+		public IdentityPersistent(IIdentity identity, string path, string jsonPath = null)
         {
 			validatePath(path);
 
 			Path = path;
+			if (!string.IsNullOrWhiteSpace(jsonPath))
+				JsonPath = jsonPath.Trim();
 
 			_identity = identity ?? throw new ArgumentNullException(nameof(identity));
             _identity.Updated += saveFile;
@@ -25,11 +28,13 @@ namespace AudibleApi.Authorization
 		}
 
 		/// <summary>load from existing file</summary>
-		public IdentityPersistent(string path)
+		public IdentityPersistent(string path, string jsonPath = null)
         {
 			validatePath(path);
 
 			Path = path;
+			if (!string.IsNullOrWhiteSpace(jsonPath))
+				JsonPath = jsonPath.Trim();
 
 			_identity = loadFromFile();
             _identity.Updated += saveFile;

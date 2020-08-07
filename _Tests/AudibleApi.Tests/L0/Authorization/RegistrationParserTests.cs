@@ -17,6 +17,7 @@ using Newtonsoft.Json.Linq;
 using TestAudibleApiCommon;
 using TestCommon;
 using static AuthorizationShared.Shared;
+using static AuthorizationShared.Shared.AccessTokenTemporality;
 using static TestAudibleApiCommon.ComputedTestValues;
 
 namespace Authoriz.RegistrationParserTests
@@ -52,7 +53,7 @@ namespace Authoriz.RegistrationParserTests
 		public void parse_real_string()
 		{
 			var authRegister = JObject.Parse(AuthenticateResponse);
-			var id = Identity.FromJson(IdentityJson_Future);
+			var id = GetIdentity(Future);
 			var sysDateTime = StaticSystemDateTime.Past;
 
 			RegistrationParser.ParseRegistrationIntoIdentity(authRegister, id, sysDateTime);

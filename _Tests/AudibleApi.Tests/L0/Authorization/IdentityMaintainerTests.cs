@@ -17,6 +17,7 @@ using Newtonsoft.Json.Linq;
 using TestAudibleApiCommon;
 using TestCommon;
 using static AuthorizationShared.Shared;
+using static AuthorizationShared.Shared.AccessTokenTemporality;
 using static TestAudibleApiCommon.ComputedTestValues;
 
 namespace Authoriz.IdentityMaintainerTests
@@ -167,7 +168,7 @@ namespace Authoriz.IdentityMaintainerTests
 
 		private async Task<AccessToken> _test_refresh(HttpMessageHandler handler, DateTime expires, int expectedSaveCount)
 		{
-			var json = IdentityJson_Future.Replace(AccessTokenExpires_Future, expires.ToString());
+			var json = GetIdentityJson(Future).Replace(GetAccessTokenExpires(Future), expires.ToString());
 
 			var log = new List<string>();
 			var identity = Identity.FromJson(json);
@@ -206,7 +207,7 @@ namespace Authoriz.IdentityMaintainerTests
 			var handler = HttpMock.GetHandler(AuthenticateResponse);
 			var log = new List<string>();
 
-			var idMgr = Identity.FromJson(IdentityJson_Future);
+			var idMgr = GetIdentity(Future);
 			var maintainer = new MockIdMaintainer(idMgr, handler);
 			idMgr.Updated += (_, __) => log.Add("updated");
 
@@ -223,7 +224,7 @@ namespace Authoriz.IdentityMaintainerTests
 		public async Task failure_throws()
 		{
 			var handler = HttpMock.GetHandler(AuthenticateResponse, HttpStatusCode.GatewayTimeout);
-			var idMgr = Identity.FromJson(IdentityJson_Future);
+			var idMgr = GetIdentity(Future);
 			var maintainer = new MockIdMaintainer(idMgr, handler);
 
 			await Assert.ThrowsExceptionAsync<RegistrationException>(() => maintainer.DeregisterAsync());
@@ -235,7 +236,7 @@ namespace Authoriz.IdentityMaintainerTests
 			var handler = HttpMock.GetHandler(AuthenticateResponse);
 			var log = new List<string>();
 
-			var idMgr = Identity.FromJson(IdentityJson_Future);
+			var idMgr = GetIdentity(Future);
 			var maintainer = new MockIdMaintainer(idMgr, handler);
 			idMgr.Updated += (_, __) => log.Add("updated");
 
@@ -243,7 +244,7 @@ namespace Authoriz.IdentityMaintainerTests
 			idMgr.PrivateKey.Value.Should().Be(PrivateKeyValueNewLines);
 			idMgr.AdpToken.Value.Should().Be(AdpTokenValue);
 			idMgr.ExistingAccessToken.TokenValue.Should().Be(AccessTokenValue);
-			idMgr.ExistingAccessToken.Expires.Should().Be(AccessTokenExpires_Future_Parsed);
+			idMgr.ExistingAccessToken.Expires.Should().Be(GetAccessTokenExpires_Parsed(Future));
 			idMgr.RefreshToken.Should().Be(RefreshTokenValue);
 
 			await maintainer.DeregisterAsync();
@@ -271,7 +272,7 @@ namespace Authoriz.IdentityMaintainerTests
 			var handler = HttpMock.GetHandler();
 			var log = new List<string>();
 
-			var idMgr = Identity.FromJson(IdentityJson_Future);
+			var idMgr = GetIdentity(Future);
 			var maintainer = new MockIdMaintainer(idMgr, handler);
 			idMgr.Updated += (_, __) => log.Add("updated");
 
@@ -292,13 +293,13 @@ namespace Authoriz.IdentityMaintainerTests
 
 			// init w/expired token
 			var log = new List<string>();
-			var idMgr = GetIdentity_Expired();
+			var idMgr = GetIdentity(Expired);
 			var maintainer = new MockIdMaintainer(idMgr, handler);
 
 			idMgr.Updated += (_, __) => log.Add("updated");
 
 			idMgr.ExistingAccessToken.TokenValue.Should().Be(AccessTokenValue);
-			idMgr.ExistingAccessToken.Expires.Should().Be(AccessTokenExpires_Expired_Parsed);
+			idMgr.ExistingAccessToken.Expires.Should().Be(GetAccessTokenExpires_Parsed(Expired));
 
 			await maintainer.RefreshAccessTokenAsync();
 
@@ -325,7 +326,7 @@ namespace Authoriz.IdentityMaintainerTests
 			var handler = HttpMock.GetHandler();
 			var log = new List<string>();
 
-			var idMgr = Identity.FromJson(IdentityJson_Future);
+			var idMgr = GetIdentity(Future);
 			var maintainer = new MockIdMaintainer(idMgr, handler);
 			idMgr.Updated += (_, __) => log.Add("updated");
 
@@ -350,13 +351,13 @@ namespace Authoriz.IdentityMaintainerTests
 
 			// init w/expired token
 			var log = new List<string>();
-			var idMgr = GetIdentity_Expired();
+			var idMgr = GetIdentity(Expired);
 			var maintainer = new MockIdMaintainer(idMgr, handler);
 
 			idMgr.Updated += (_, __) => log.Add("updated");
 
 			idMgr.ExistingAccessToken.TokenValue.Should().Be(AccessTokenValue);
-			idMgr.ExistingAccessToken.Expires.Should().Be(AccessTokenExpires_Expired_Parsed);
+			idMgr.ExistingAccessToken.Expires.Should().Be(GetAccessTokenExpires_Parsed(Expired));
 
 			await maintainer.EnsureStateAsync();
 
@@ -417,7 +418,7 @@ namespace Authoriz.IdentityMaintainerTests
 
 			var log = new List<string>();
 			// expired token
-			var idMgr = GetIdentity_Expired();
+			var idMgr = GetIdentity(Expired);
 			var maintainer = new MockIdMaintainer(idMgr, handler);
 			idMgr.Updated += (_, __) => log.Add("updated");
 
@@ -471,7 +472,7 @@ namespace Authoriz.IdentityMaintainerTests
 
 			var log = new List<string>();
 			// expired token
-			var idMgr = GetIdentity_Expired();
+			var idMgr = GetIdentity(Expired);
 			var maintainer = new MockIdMaintainer(idMgr, handler);
 			idMgr.Updated += (_, __) => log.Add("updated");
 
@@ -520,7 +521,7 @@ namespace Authoriz.IdentityMaintainerTests
 
 			var log = new List<string>();
 			// expired token
-			var idMgr = GetIdentity_Expired();
+			var idMgr = GetIdentity(Expired);
 			var maintainer = new MockIdMaintainer(idMgr, handler);
 
 			idMgr.Updated += (_, __) => log.Add("updated");

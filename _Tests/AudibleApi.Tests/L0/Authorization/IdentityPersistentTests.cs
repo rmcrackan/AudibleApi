@@ -15,57 +15,63 @@ using Moq;
 using Moq.Protected;
 using TestAudibleApiCommon;
 using TestCommon;
-using static Authoriz.IdentityPersistentTests.Shared;
 using static AuthorizationShared.Shared;
+using static AuthorizationShared.Shared.AccessTokenTemporality;
 using static TestAudibleApiCommon.ComputedTestValues;
 
 namespace Authoriz.IdentityPersistentTests
 {
-    public static class Shared
+    public class IdentityPersistentTestBase
     {
-        public static string getRandomFilePath()
-            => Guid.NewGuid().ToString() + ".txt";
+        protected string TestFile;
+
+        protected void WriteToTestFile(string contents)
+            => File.WriteAllText(TestFile, contents);
+
+        // create file with valid contents
+        protected void CreateValidIdentityFile()
+            => WriteToTestFile(GetIdentityJson(Future));
+
+        [TestInitialize]
+        public void TestInit()
+            => TestFile = Guid.NewGuid() + ".txt";
+
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            if (File.Exists(TestFile))
+                File.Delete(TestFile);
+        }
     }
 
     [TestClass]
-    public class ctor_path_Identity
-	{
-		string currfile;
-
-		[TestCleanup]
-		public void TestCleanup()
-		{
-			if (File.Exists(currfile))
-				File.Delete(currfile);
-		}
-
+    public class ctor_Identity_path : IdentityPersistentTestBase
+    {
 		[TestMethod]
         public void null_path_throws()
-            => Assert.ThrowsException<ArgumentNullException>(() => new IdentityPersistent(null, new Mock<IIdentity>().Object));
+            => Assert.ThrowsException<ArgumentNullException>(() => new IdentityPersistent(new Mock<IIdentity>().Object, null));
 
         [TestMethod]
         public void blank_path_throws()
         {
-            Assert.ThrowsException<ArgumentException>(() => new IdentityPersistent("", new Mock<IIdentity>().Object));
-            Assert.ThrowsException<ArgumentException>(() => new IdentityPersistent("   ", new Mock<IIdentity>().Object));
+            Assert.ThrowsException<ArgumentException>(() => new IdentityPersistent(new Mock<IIdentity>().Object, ""));
+            Assert.ThrowsException<ArgumentException>(() => new IdentityPersistent(new Mock<IIdentity>().Object, "   "));
         }
 
         [TestMethod]
         public void null_IIdentity_throws()
-            => Assert.ThrowsException<ArgumentNullException>(() => new IdentityPersistent("foo", null));
-
-		string at { get; } = AccessToken.REQUIRED_BEGINNING;
+            => Assert.ThrowsException<ArgumentNullException>(() => new IdentityPersistent(null, "foo"));
 
 		[TestMethod]
 		public void invalid_state_identity_saves()
 		{
-			var id = new Identity(new AccessToken(at, DateTime.MaxValue), new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("k", "val") });
+			var id = new Identity(
+                new AccessToken(AccessToken.REQUIRED_BEGINNING, DateTime.MaxValue),
+                new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("k", "val") });
 			id.IsValid.Should().BeFalse();
 
-			currfile = getRandomFilePath();
-
-			new IdentityPersistent(currfile, id);
-			var contents = File.ReadAllText(currfile);
+			new IdentityPersistent(id, TestFile);
+			var contents = File.ReadAllText(TestFile);
 
 			var idOut = Identity.FromJson(contents);
 			idOut.IsValid.Should().BeFalse();
@@ -77,87 +83,98 @@ namespace Authoriz.IdentityPersistentTests
 			cookie.Key.Should().Be("k");
 			cookie.Value.Should().Be("val");
 		}
+
+        [TestMethod]
+        [DataRow(null, null)]
+        [DataRow("", null)]
+        [DataRow("   ", null)]
+        [DataRow("Foo", "Foo")]
+        [DataRow("   Foo   Trim   ", "Foo   Trim")]
+        public void set_jsonpath(string jsonPath, string expected)
+        {
+            var idMgr = GetIdentity(Future);
+            new IdentityPersistent(idMgr, TestFile, jsonPath)
+                .JsonPath.Should().Be(expected);
+        }
     }
 
     [TestClass]
-    public class ctor_path_systemDateTime
-	{
+    public class ctor_path : IdentityPersistentTestBase
+    {
 		[TestMethod]
 		public void null_path_throws()
             => Assert.ThrowsException<ArgumentNullException>(() => new IdentityPersistent(null));
 
 		[TestMethod]
 		public void blank_path_throws()
-		{
-			Assert.ThrowsException<ArgumentException>(() => new IdentityPersistent(""));
-			Assert.ThrowsException<ArgumentException>(() => new IdentityPersistent("   "));
-		}
+        {
+            Assert.ThrowsException<ArgumentException>(() => new IdentityPersistent(""));
+            Assert.ThrowsException<ArgumentException>(() => new IdentityPersistent("   "));
+        }
 
         [TestMethod]
         public void file_does_not_exist()
-            => Assert.ThrowsException<FileNotFoundException>(() => new IdentityPersistent(getRandomFilePath()));
+            => Assert.ThrowsException<FileNotFoundException>(() => new IdentityPersistent(TestFile));
+
+        [TestMethod]
+        [DataRow(null, null)]
+        [DataRow("", null)]
+        [DataRow("   ", null)]
+        [DataRow("Foo", "Foo")]
+        [DataRow("   Foo   Trim   ", "Foo   Trim")]
+        public void set_jsonpath(string jsonPath, string expected)
+        {
+            CreateValidIdentityFile();
+            new IdentityPersistent(TestFile, jsonPath)
+                .JsonPath.Should().Be(expected);
+        }
     }
 
     [TestClass]
-    public class loadFromPath
+    public class ctor_jsonpath : IdentityPersistentTestBase
+    {
+
+        // load with invalid jsonpath
+        // load with valid non-matching jsonpath
+        // load with valid matching jsonpath
+
+
+        // save with invalid jsonpath
+        // save with valid non-matching jsonpath
+        // save with valid matching jsonpath
+
+    }
+
+    [TestClass]
+    public class loadFromPath : IdentityPersistentTestBase
     {
         [TestMethod]
         public void file_is_valid()
         {
-            var path = getRandomFilePath();
-            try
-            {
-                File.WriteAllText(path, IdentityJson_Future);
+            CreateValidIdentityFile();
 
-				var idMgrPersist = new IdentityPersistent(path);
+            var idMgrPersist = new IdentityPersistent(TestFile);
 
-                idMgrPersist.PrivateKey.Value.Should().Be(PrivateKeyValueNewLines);
-                idMgrPersist.ExistingAccessToken.TokenValue.Should().Be(AccessTokenValue);
-                idMgrPersist.ExistingAccessToken.Expires.Should().Be(AccessTokenExpires_Future_Parsed);
-                idMgrPersist.AdpToken.Value.Should().Be(AdpTokenValue);
-                idMgrPersist.RefreshToken.Value.Should().Be(RefreshTokenValue);
-            }
-            finally
-            {
-                File.Delete(path);
-            }
+            idMgrPersist.PrivateKey.Value.Should().Be(PrivateKeyValueNewLines);
+            idMgrPersist.ExistingAccessToken.TokenValue.Should().Be(AccessTokenValue);
+            idMgrPersist.ExistingAccessToken.Expires.Should().Be(GetAccessTokenExpires_Parsed(Future));
+            idMgrPersist.AdpToken.Value.Should().Be(AdpTokenValue);
+            idMgrPersist.RefreshToken.Value.Should().Be(RefreshTokenValue);
         }
 
         [TestMethod]
         public void file_is_blank()
         {
-            var path = getRandomFilePath();
-            try
-            {
-                File.WriteAllText(path, "");
-
-                Assert.ThrowsException<FormatException>(() => new IdentityPersistent(path));
-            }
-            finally
-            {
-                File.Delete(path);
-            }
+            WriteToTestFile("");
+            Assert.ThrowsException<FormatException>(() => new IdentityPersistent(TestFile));
         }
 
         [TestMethod]
         public void file_is_wrong_format()
         {
-            var path = getRandomFilePath();
-            try
-            {
-                File.WriteAllText(path, "foo");
-
-                Assert.ThrowsException<Newtonsoft.Json.JsonReaderException>(() => new IdentityPersistent(path));
-            }
-            finally
-            {
-                File.Delete(path);
-            }
+            WriteToTestFile("foo");
+            Assert.ThrowsException<Newtonsoft.Json.JsonReaderException>(() => new IdentityPersistent(TestFile));
         }
-
-		string pk { get; } = PrivateKey.REQUIRED_BEGINNING + PrivateKey.REQUIRED_ENDING;
-		string adp { get; } = AdpTokenValue;
-		string rt { get; } = RefreshToken.REQUIRED_BEGINNING;
 
 		[TestMethod]
         public void file_missing_accessToken()
@@ -165,29 +182,20 @@ namespace Authoriz.IdentityPersistentTests
 			var contents = $@"
 {{
   ""PrivateKey"": {{
-    ""Value"": ""{pk}""
+    ""Value"": ""{PrivateKey.REQUIRED_BEGINNING + PrivateKey.REQUIRED_ENDING}""
   }},
   ""AdpToken"": {{
-    ""Value"": ""{adp}""
+    ""Value"": ""{AdpTokenValue}""
   }},
   ""RefreshToken"": {{
-    ""Value"": ""{rt}""
+    ""Value"": ""{RefreshToken.REQUIRED_BEGINNING}""
   }},
   ""Cookies"": []
 }}
 ".Trim();
-
-			var path = getRandomFilePath();
-			try
-			{
-				File.WriteAllText(path, contents);
-				Assert.ThrowsException<ArgumentNullException>(() => new IdentityPersistent(path));
-			}
-			finally
-			{
-				File.Delete(path);
-			}
-		}
+            WriteToTestFile(contents);
+            Assert.ThrowsException<ArgumentNullException>(() => new IdentityPersistent(TestFile));
+        }
 
 		[TestMethod]
         [DataRow("pk", "at", "adp", "rt")]
@@ -212,88 +220,63 @@ namespace Authoriz.IdentityPersistentTests
   ""Cookies"": []
 }}
 ".Trim();
+            WriteToTestFile(contents);
+            Assert.ThrowsException<FormatException>(() => new IdentityPersistent(TestFile));
+        }
 
-            var path = getRandomFilePath();
-            try
-            {
-                File.WriteAllText(path, contents);
-                Assert.ThrowsException<FormatException>(() => new IdentityPersistent(path));
-            }
-            finally
-            {
-                File.Delete(path);
-            }
+        [TestMethod]
+        public void invalid_jsonPath()
+        {
+            CreateValidIdentityFile();
+
+            var idMgrPersist = new IdentityPersistent(TestFile, "$[");
         }
     }
 
     [TestClass]
-    public class save
+    public class save : IdentityPersistentTestBase
     {
-        string currfile;
-
-        [TestCleanup]
-        public void TestCleanup()
-        {
-            if (File.Exists(currfile))
-                File.Delete(currfile);
-        }
-
         [TestMethod]
         public void invalid_path()
         {
             var invalidPath = @"Q:\";
-            currfile = Path.Combine(invalidPath, getRandomFilePath());
+            var currfile = Path.Combine(invalidPath, TestFile);
 
             Assert.ThrowsException<DirectoryNotFoundException>(() => new IdentityPersistent(currfile));
         }
 
         [TestMethod]
         public void file_does_not_exist()
-        {
-            currfile = getRandomFilePath();
-
-            Assert.ThrowsException<FileNotFoundException>(() => new IdentityPersistent(currfile));
-        }
+            => Assert.ThrowsException<FileNotFoundException>(() => new IdentityPersistent(TestFile));
 
         [TestMethod]
         public void file_is_empty()
         {
-            currfile = getRandomFilePath();
-            var contents = "";
-            File.WriteAllText(currfile, contents);
-
-            Assert.ThrowsException<FormatException>(() => new IdentityPersistent(currfile));
+            WriteToTestFile("");
+            Assert.ThrowsException<FormatException>(() => new IdentityPersistent(TestFile));
         }
 
         [TestMethod]
         public void file_is_whitespace()
         {
-            currfile = getRandomFilePath();
-            var contents = "   ";
-            File.WriteAllText(currfile, contents);
-
-            Assert.ThrowsException<FormatException>(() => new IdentityPersistent(currfile));
+            WriteToTestFile("   ");
+            Assert.ThrowsException<FormatException>(() => new IdentityPersistent(TestFile));
         }
 
         [TestMethod]
         public void file_is_wrong_format()
         {
-            currfile = getRandomFilePath();
-            var contents = "foo";
-            File.WriteAllText(currfile, contents);
-
-            Assert.ThrowsException<Newtonsoft.Json.JsonReaderException>(() => new IdentityPersistent(currfile));
+            WriteToTestFile("foo");
+            Assert.ThrowsException<Newtonsoft.Json.JsonReaderException>(() => new IdentityPersistent(TestFile));
         }
 
         [TestMethod]
         public void file_has_valid_values()
         {
-            // create file with valid contents
-            currfile = getRandomFilePath();
-            File.WriteAllText(currfile, IdentityJson_Future);
+            CreateValidIdentityFile();
 
             // new object contains valid contents
-            var idMgrPersist = new IdentityPersistent(currfile);
+            var idMgrPersist = new IdentityPersistent(TestFile);
             idMgrPersist.PrivateKey.Value.Should().Be(PrivateKeyValueNewLines);
         }
 
@@ -304,7 +287,7 @@ namespace Authoriz.IdentityPersistentTests
 {{
   ""ExistingAccessToken"": {{
     ""TokenValue"": ""{AccessTokenValue}"",
-    ""Expires"": ""{AccessTokenExpires_Future}""
+    ""Expires"": ""{GetAccessTokenExpires(Future)}""
   }},
   ""EXTRAFIELD"": ""foo"",
   ""PrivateKey"": {{
@@ -319,13 +302,11 @@ namespace Authoriz.IdentityPersistentTests
   ""Cookies"": []
 }}
 ".Trim();
-
             // create file with valid contents
-            currfile = getRandomFilePath();
-            File.WriteAllText(currfile, contentsWithExtraField);
+            WriteToTestFile(contentsWithExtraField);
 
             // new object contains valid contents
-            var idMgrPersist = new IdentityPersistent(currfile);
+            var idMgrPersist = new IdentityPersistent(TestFile);
             idMgrPersist.PrivateKey.Value.Should().Be(PrivateKeyValueNewLines);
         }
 
@@ -336,7 +317,7 @@ namespace Authoriz.IdentityPersistentTests
 {{
   ""ExistingAccessToken"": {{
     ""TokenValue"": ""{AccessTokenValue}"",
-    ""Expires"": ""{AccessTokenExpires_Future}""
+    ""Expires"": ""{GetAccessTokenExpires(Future)}""
   }},
   ""PrivateKey"": {{
     ""Value"": ""{PrivateKeyValueNewLines}""
@@ -349,12 +330,12 @@ namespace Authoriz.IdentityPersistentTests
 ".Trim();
 
             // create file missing a field
-            currfile = getRandomFilePath();
-            File.WriteAllText(currfile, contentsNoRefreshToken);
-			var idPersist = new IdentityPersistent(currfile);
+            WriteToTestFile(contentsNoRefreshToken);
+
+            var idPersist = new IdentityPersistent(TestFile);
 			idPersist.IsValid.Should().BeFalse();
 			idPersist.ExistingAccessToken.TokenValue.Should().Be(AccessTokenValue);
-			idPersist.ExistingAccessToken.Expires.Should().Be(DateTime.Parse(AccessTokenExpires_Future));
+			idPersist.ExistingAccessToken.Expires.Should().Be(GetAccessTokenExpires_Parsed(Future));
 			idPersist.PrivateKey.Value.Should().Be(PrivateKeyValueNewLines);
 			idPersist.AdpToken.Value.Should().Be(AdpTokenValue);
 		}
@@ -373,10 +354,8 @@ namespace Authoriz.IdentityPersistentTests
   ""Cookies"": []
 }}
 ".Trim();
-			currfile = getRandomFilePath();
-			File.WriteAllText(currfile, json);
-
-			Assert.ThrowsException<ArgumentNullException>(() => new IdentityPersistent(currfile));
+            WriteToTestFile(json);
+            Assert.ThrowsException<ArgumentNullException>(() => new IdentityPersistent(TestFile));
 		}
 
 		[TestMethod]
@@ -400,21 +379,18 @@ namespace Authoriz.IdentityPersistentTests
   ""Cookies"": []
 }}
 ".Trim();
-            currfile = getRandomFilePath();
-            File.WriteAllText(currfile, json);
-
-            Assert.ThrowsException<ArgumentNullException>(() => new IdentityPersistent(currfile));
+            WriteToTestFile(json);
+            Assert.ThrowsException<ArgumentNullException>(() => new IdentityPersistent(TestFile));
         }
 
         [TestMethod]
         public void save_to_new_file()
         {
-            var idMgr = GetIdentity_Future();
-            currfile = getRandomFilePath();
+            var idMgr = GetIdentity(Future);
 
-            new IdentityPersistent(currfile, idMgr);
-            var contents = File.ReadAllText(currfile);
+            new IdentityPersistent(idMgr, TestFile);
 
+            var contents = File.ReadAllText(TestFile);
             var idMgrOut = Identity.FromJson(contents);
             idMgrOut.AdpToken.Value.Should().Be(idMgr.AdpToken.Value);
             idMgrOut.ExistingAccessToken.Expires.Should().Be(idMgr.ExistingAccessToken.Expires);
@@ -423,14 +399,15 @@ namespace Authoriz.IdentityPersistentTests
         [TestMethod]
         public void overwrite_existing_file()
         {
-            var idMgr = GetIdentity_Future();
-            currfile = getRandomFilePath();
+            var idMgr = GetIdentity(Future);
 
-            File.WriteAllText(currfile, "line 1\r\n2\r\n\r\n4");
+            // start with invalid file
+            WriteToTestFile("line 1\r\n2\r\n\r\n4");
 
-            new IdentityPersistent(currfile, idMgr);
-            var contents = File.ReadAllText(currfile);
+            // overwrites with valid identity
+            new IdentityPersistent(idMgr, TestFile);
 
+            var contents = File.ReadAllText(TestFile);
             var idMgrOut = Identity.FromJson(contents);
             idMgrOut.AdpToken.Value.Should().Be(idMgr.AdpToken.Value);
             idMgrOut.ExistingAccessToken.Expires.Should().Be(idMgr.ExistingAccessToken.Expires);

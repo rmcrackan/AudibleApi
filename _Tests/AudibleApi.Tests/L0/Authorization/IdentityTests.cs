@@ -17,6 +17,7 @@ using Newtonsoft.Json.Linq;
 using TestAudibleApiCommon;
 using TestCommon;
 using static AuthorizationShared.Shared;
+using static AuthorizationShared.Shared.AccessTokenTemporality;
 using static TestAudibleApiCommon.ComputedTestValues;
 
 namespace Authoriz.IdentityTests
@@ -107,7 +108,7 @@ namespace Authoriz.IdentityTests
 		[TestMethod]
 		public void from_json()
 		{
-			var id = Identity.FromJson(IdentityJson_Future);
+			var id = GetIdentity(Future);
 			id.IsValid.Should().BeTrue();
 		}
 	}
@@ -118,7 +119,7 @@ namespace Authoriz.IdentityTests
 		[TestMethod]
 		public void loads_all_values()
 		{
-			var idMgr = GetIdentity_Future();
+			var idMgr = GetIdentity(Future);
 			idMgr.AdpToken.Should().Be(AdpTokenValue);
 			idMgr.Cookies.Count().Should().Be(2);
 			var cookies = idMgr.Cookies.ToKeyValuePair();
@@ -127,7 +128,7 @@ namespace Authoriz.IdentityTests
 			cookies[0].Value.Should().Be("value 1");
 			cookies[1].Value.Should().Be("value 2");
 			idMgr.ExistingAccessToken.TokenValue.Should().Be(AccessTokenValue);
-			idMgr.ExistingAccessToken.Expires.Should().Be(AccessTokenExpires_Future_Parsed);
+			idMgr.ExistingAccessToken.Expires.Should().Be(GetAccessTokenExpires_Parsed(Future));
 			idMgr.PrivateKey.Should().Be(PrivateKeyValueNewLines);
 			idMgr.RefreshToken.Should().Be(RefreshTokenValue);
 		}
@@ -139,7 +140,7 @@ namespace Authoriz.IdentityTests
 		[TestMethod]
 		public void no_subscribers_does_not_throw()
 		{
-			var idMgr = Identity.FromJson(IdentityJson_Future);
+			var idMgr = GetIdentity(Future);
 			idMgr.Update(new AccessToken("Atna|", DateTime.MaxValue));
 		}
 
@@ -148,7 +149,7 @@ namespace Authoriz.IdentityTests
 		{
 			var log = new List<string>();
 
-			var idMgr = Identity.FromJson(IdentityJson_Future);
+			var idMgr = GetIdentity(Future);
 			idMgr.Updated += (_, __) => log.Add("updated");
 
 			idMgr.Update(new AccessToken("Atna|", DateTime.MaxValue));
@@ -163,7 +164,7 @@ namespace Authoriz.IdentityTests
 		[TestMethod]
 		public void null_param_throws()
 		{
-			var idMgr = Identity.FromJson(IdentityJson_Future);
+			var idMgr = GetIdentity(Future);
 			Assert.ThrowsException<ArgumentNullException>(() => idMgr.Update(null));
 		}
 
@@ -172,11 +173,11 @@ namespace Authoriz.IdentityTests
 		{
 			var log = new List<string>();
 
-			var idMgr = Identity.FromJson(IdentityJson_Future);
+			var idMgr = GetIdentity(Future);
 			idMgr.Updated += (_, __) => log.Add("updated");
 
 			idMgr.ExistingAccessToken.TokenValue.Should().Be(AccessTokenValue);
-			idMgr.ExistingAccessToken.Expires.Should().Be(AccessTokenExpires_Future_Parsed);
+			idMgr.ExistingAccessToken.Expires.Should().Be(GetAccessTokenExpires_Parsed(Future));
 
 			idMgr.Update(new AccessToken(AccessToken.REQUIRED_BEGINNING, DateTime.MaxValue));
 
@@ -198,7 +199,7 @@ namespace Authoriz.IdentityTests
 		[TestMethod]
 		public void null_param_throws()
 		{
-			var idMgr = Identity.FromJson(IdentityJson_Future);
+			var idMgr = GetIdentity(Future);
 			Assert.ThrowsException<ArgumentNullException>(() => idMgr.Update(
 				null,
 				new AdpToken(adp),
@@ -230,13 +231,13 @@ namespace Authoriz.IdentityTests
 		{
 			var log = new List<string>();
 
-			var idMgr = Identity.FromJson(IdentityJson_Future);
+			var idMgr = GetIdentity(Future);
 			idMgr.Updated += (_, __) => log.Add("updated");
 
 			idMgr.PrivateKey.Value.Should().Be(PrivateKeyValueNewLines);
 			idMgr.AdpToken.Value.Should().Be(AdpTokenValue);
 			idMgr.ExistingAccessToken.TokenValue.Should().Be(AccessTokenValue);
-			idMgr.ExistingAccessToken.Expires.Should().Be(AccessTokenExpires_Future_Parsed);
+			idMgr.ExistingAccessToken.Expires.Should().Be(GetAccessTokenExpires_Parsed(Future));
 			idMgr.RefreshToken.Value.Should().Be(RefreshTokenValue);
 
 			idMgr.Update(
@@ -264,13 +265,13 @@ namespace Authoriz.IdentityTests
 		{
 			var log = new List<string>();
 
-			var idMgr = Identity.FromJson(IdentityJson_Future);
+			var idMgr = GetIdentity(Future);
 			idMgr.Updated += (_, __) => log.Add("updated");
 
 			idMgr.PrivateKey.Value.Should().Be(PrivateKeyValueNewLines);
 			idMgr.AdpToken.Value.Should().Be(AdpTokenValue);
 			idMgr.ExistingAccessToken.TokenValue.Should().Be(AccessTokenValue);
-			idMgr.ExistingAccessToken.Expires.Should().Be(AccessTokenExpires_Future_Parsed);
+			idMgr.ExistingAccessToken.Expires.Should().Be(GetAccessTokenExpires_Parsed(Future));
 			idMgr.RefreshToken.Value.Should().Be(RefreshTokenValue);
 
 			idMgr.Invalidate();
