@@ -30,11 +30,10 @@ namespace AuthorizationShared
 			Expired => "1999-01-01T01:02:33.6204337-04:00",
 			Future => "2200-01-01T01:02:33.6204337-04:00"
 		};
-
 		public static DateTime GetAccessTokenExpires_Parsed(AccessTokenTemporality time)
 			=> DateTime.Parse(GetAccessTokenExpires(time));
 
-		public static string GetIdentityJson(AccessTokenTemporality time)
+		private static JObject getIdentityJObject(AccessTokenTemporality time)
 			=> new JObject {
 				{
 					"ExistingAccessToken", new JObject {
@@ -69,9 +68,47 @@ namespace AuthorizationShared
 						}
 					}
 				}
-			}.ToString().Replace("\\n", "\n");
+			};
+
+		public static string GetIdentityJson(AccessTokenTemporality time)
+			=> getIdentityJObject(time).ToString().Replace("\\n", "\n");
 
 		public static Identity GetIdentity(AccessTokenTemporality time)
 			=> Identity.FromJson(GetIdentityJson(time));
-    }
+
+		public static string GetNestedIdentityJson(AccessTokenTemporality time)
+			=> new JObject {
+				{
+					"ApiConnectionSettings", new JArray {
+						new JObject {
+							{ "Username", "Uno" },
+							{ "DecryptKey", "11111111" },
+							// TODO: give Locale: us
+							{ "IdentityTokens", getIdentityJObject(time) }
+						},
+						//// TODO: new object. duplicate username. unique username+locale
+						//new JObject {
+						//	{ "Username", "Uno" },
+						//	{ "DecryptKey", "11111111" },
+						//	// TODO: give Locale: uk
+						//	{ "IdentityTokens", GetIdentityJson(time) }
+						//},
+						new JObject {
+							{ "Username", "Dos" },
+							{ "DecryptKey", "22222222" },
+							// TODO: give Locale: us
+							{ "IdentityTokens", getIdentityJObject(time) }
+						}
+					}
+				}
+			}.ToString().Replace("\\n", "\n");
+		public static string JsonPathMatch =>
+			//TODO: WITH LOCALE// "$.ApiConnectionSettings[?(@.Username == 'Uno' && @.IdentityTokens.Locale == 'uk')].IdentityTokens"
+			"$.ApiConnectionSettings[?(@.Username == 'Uno')].IdentityTokens"
+			;
+		public static string JsonPathNonMatch =>
+			//TODO: WITH LOCALE// "$.ApiConnectionSettings[?(@.Username == 'Juan' && @.IdentityTokens.Locale == 'uk')].IdentityTokens"
+			"$.ApiConnectionSettings[?(@.Username == 'Juan')].IdentityTokens"
+			;
+	}
 }

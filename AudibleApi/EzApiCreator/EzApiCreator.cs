@@ -93,9 +93,9 @@ namespace AudibleApi
 			return localStream.ToArray();
 		}
 
-		private static async Task<Api> createApiAsync(this IdentityPersistent identityPersistent)
+		private static async Task<Api> createApiAsync(this IIdentity identity)
 		{
-			var identityMaintainer = await IdentityMaintainer.CreateAsync(identityPersistent);
+			var identityMaintainer = await IdentityMaintainer.CreateAsync(identity);
 			var api = new Api(identityMaintainer);
 			return api;
 		}

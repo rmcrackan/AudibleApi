@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AudibleApi.Authorization
 {
-	/// <summary>Persist settings to json file. Optional JSONPath</summary>
-    public class IdentityPersistent : IIdentity, IDisposable
+	/// <summary>Persist settings to json file.
+	/// If not using the optional JSONPath: Create file if it does not exist. Overwrite existing with identity tokens
+	/// If using the optional JSONPath: the object of the path must be valid and existing in the file</summary>
+	public class IdentityPersistent : IIdentity, IDisposable
     {
 		public string Path { get; }
 		public string JsonPath { get; }
@@ -14,15 +17,16 @@ namespace AudibleApi.Authorization
 
 		/// <summary>uses path. create file if doesn't yet exist</summary>
 		public IdentityPersistent(IIdentity identity, string path, string jsonPath = null)
-        {
+		{
+			_identity = identity ?? throw new ArgumentNullException(nameof(identity));
+			_identity.Updated += saveFile;
+
 			validatePath(path);
 
 			Path = path;
+
 			if (!string.IsNullOrWhiteSpace(jsonPath))
 				JsonPath = jsonPath.Trim();
-
-			_identity = identity ?? throw new ArgumentNullException(nameof(identity));
-            _identity.Updated += saveFile;
 
 			saveFile(this, null);
 		}
@@ -33,6 +37,7 @@ namespace AudibleApi.Authorization
 			validatePath(path);
 
 			Path = path;
+
 			if (!string.IsNullOrWhiteSpace(jsonPath))
 				JsonPath = jsonPath.Trim();
 
@@ -52,7 +57,17 @@ namespace AudibleApi.Authorization
         {
             var contents = File.ReadAllText(Path);
 
-            var identity = Identity.FromJson(contents);
+			if (JsonPath != null)
+			{
+				var jToken = JObject.Parse(contents).SelectToken(JsonPath);
+
+				if (jToken is null)
+					throw new JsonSerializationException($"No match found at JSONPath: {JsonPath}");
+
+				contents = jToken.ToString(Formatting.Indented);
+			}
+
+			var identity = Identity.FromJson(contents);
 
 			if (identity is null)
 				throw new FormatException("File was not in a format able to be imported");
@@ -65,10 +80,39 @@ namespace AudibleApi.Authorization
         }
 
         private object _locker { get; } = new object();
-        private void saveFile(object sender, EventArgs e)
+		private void saveFile(object sender, EventArgs e)
 		{
-            lock (_locker)
-                File.WriteAllText(Path, JsonConvert.SerializeObject(_identity, Formatting.Indented, new Identity.AccessTokenConverter()));
+			lock (_locker)
+			{
+				if (JsonPath is null)
+				{
+					File.WriteAllText(Path, JsonConvert.SerializeObject(_identity, Formatting.Indented, new Identity.AccessTokenConverter()));
+					return;
+				}
+
+				// path must
+				// - exist
+				// - have valid jsonPath match
+
+				var contents = File.ReadAllText(Path);
+				var allToken = JObject.Parse(contents);
+				var pathToken = allToken.SelectToken(JsonPath);
+
+				if (pathToken is null)
+					throw new JsonSerializationException($"No match found at JSONPath: {JsonPath}");
+
+				// load existing identity into JObject
+				var settings = new JsonSerializerSettings();
+				settings.Converters.Add(new Identity.AccessTokenConverter());
+				var serializer = JsonSerializer.Create(settings);
+				var idJObj = JObject.FromObject(_identity, serializer);
+
+				// replace. this propgates to 'allToken'
+				pathToken.Replace(idJObj);
+
+				var allSer = JsonConvert.SerializeObject(allToken, Formatting.Indented, new Identity.AccessTokenConverter());
+				File.WriteAllText(Path, allSer);
+			}
 		}
 
 		public void Dispose()

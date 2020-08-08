@@ -13,6 +13,8 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Moq.Protected;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using TestAudibleApiCommon;
 using TestCommon;
 using static AuthorizationShared.Shared;
@@ -31,6 +33,8 @@ namespace Authoriz.IdentityPersistentTests
         // create file with valid contents
         protected void CreateValidIdentityFile()
             => WriteToTestFile(GetIdentityJson(Future));
+        protected void CreateValidNestedIdentityFile()
+            => WriteToTestFile(GetNestedIdentityJson(Future));
 
         [TestInitialize]
         public void TestInit()
@@ -82,19 +86,56 @@ namespace Authoriz.IdentityPersistentTests
 			var cookie = cookies.ToList()[0];
 			cookie.Key.Should().Be("k");
 			cookie.Value.Should().Be("val");
-		}
+        }
 
         [TestMethod]
         [DataRow(null, null)]
         [DataRow("", null)]
         [DataRow("   ", null)]
-        [DataRow("Foo", "Foo")]
-        [DataRow("   Foo   Trim   ", "Foo   Trim")]
-        public void set_jsonpath(string jsonPath, string expected)
+        public void set_jsonpath_null(string jsonPath, string expected)
         {
             var idMgr = GetIdentity(Future);
             new IdentityPersistent(idMgr, TestFile, jsonPath)
                 .JsonPath.Should().Be(expected);
+        }
+
+        [TestMethod]
+        public void set_jsonpath_non_null_invalid_file()
+        {
+            var idMgr = GetIdentity(Future);
+            Assert.ThrowsException<FileNotFoundException>(() => new IdentityPersistent(idMgr, $@"C:\{Guid.NewGuid()}.txt", "foo"));
+        }
+
+        [TestMethod]
+        public void set_jsonpath_non_null_non_matching_file()
+        {
+            // create identity with no nesting. does not match JsonPathMatch
+            CreateValidIdentityFile();
+
+            var idMgr = GetIdentity(Future);
+            Assert.ThrowsException<JsonSerializationException>(() => new IdentityPersistent(idMgr, TestFile, JsonPathMatch));
+        }
+
+        [TestMethod]
+        public void set_jsonpath_non_null()
+        {
+            var jsonPath = JsonPathMatch;
+
+            CreateValidNestedIdentityFile();
+            var idMgr = GetIdentity(Future);
+            new IdentityPersistent(idMgr, TestFile, jsonPath)
+                .JsonPath.Should().Be(jsonPath);
+        }
+
+        [TestMethod]
+        public void set_jsonpath_non_null_trim()
+        {
+            var jsonPath = JsonPathMatch;
+
+            CreateValidNestedIdentityFile();
+            var idMgr = GetIdentity(Future);
+            new IdentityPersistent(idMgr, TestFile, $"   {jsonPath}   ")
+                .JsonPath.Should().Be(jsonPath);
         }
     }
 
@@ -117,32 +158,35 @@ namespace Authoriz.IdentityPersistentTests
             => Assert.ThrowsException<FileNotFoundException>(() => new IdentityPersistent(TestFile));
 
         [TestMethod]
-        [DataRow(null, null)]
-        [DataRow("", null)]
-        [DataRow("   ", null)]
-        [DataRow("Foo", "Foo")]
-        [DataRow("   Foo   Trim   ", "Foo   Trim")]
-        public void set_jsonpath(string jsonPath, string expected)
+        [DataRow(null)]
+        [DataRow("")]
+        [DataRow("   ")]
+        public void set_jsonpath_null(string jsonPath)
         {
             CreateValidIdentityFile();
             new IdentityPersistent(TestFile, jsonPath)
-                .JsonPath.Should().Be(expected);
+                .JsonPath.Should().BeNull();
         }
-    }
 
-    [TestClass]
-    public class ctor_jsonpath : IdentityPersistentTestBase
-    {
+        [TestMethod]
+        public void set_jsonpath_non_null()
+        {
+            var jsonPath = JsonPathMatch;
 
-        // load with invalid jsonpath
-        // load with valid non-matching jsonpath
-        // load with valid matching jsonpath
+            CreateValidNestedIdentityFile();
+            new IdentityPersistent(TestFile, jsonPath)
+                .JsonPath.Should().Be(jsonPath);
+        }
 
+        [TestMethod]
+        public void set_jsonpath_non_null_trim()
+        {
+            var jsonPath = JsonPathMatch;
 
-        // save with invalid jsonpath
-        // save with valid non-matching jsonpath
-        // save with valid matching jsonpath
-
+            CreateValidNestedIdentityFile();
+            new IdentityPersistent(TestFile, $"   {jsonPath}   ")
+                .JsonPath.Should().Be(jsonPath);
+        }
     }
 
     [TestClass]
@@ -150,19 +194,15 @@ namespace Authoriz.IdentityPersistentTests
     {
         [TestMethod]
         public void file_is_valid()
-        {
-            CreateValidIdentityFile();
+		{
+			CreateValidIdentityFile();
 
-            var idMgrPersist = new IdentityPersistent(TestFile);
+			var idMgrPersist = new IdentityPersistent(TestFile);
 
-            idMgrPersist.PrivateKey.Value.Should().Be(PrivateKeyValueNewLines);
-            idMgrPersist.ExistingAccessToken.TokenValue.Should().Be(AccessTokenValue);
-            idMgrPersist.ExistingAccessToken.Expires.Should().Be(GetAccessTokenExpires_Parsed(Future));
-            idMgrPersist.AdpToken.Value.Should().Be(AdpTokenValue);
-            idMgrPersist.RefreshToken.Value.Should().Be(RefreshTokenValue);
-        }
+			is_valid(idMgrPersist);
+		}
 
-        [TestMethod]
+		[TestMethod]
         public void file_is_blank()
         {
             WriteToTestFile("");
@@ -173,7 +213,7 @@ namespace Authoriz.IdentityPersistentTests
         public void file_is_wrong_format()
         {
             WriteToTestFile("foo");
-            Assert.ThrowsException<Newtonsoft.Json.JsonReaderException>(() => new IdentityPersistent(TestFile));
+            Assert.ThrowsException<JsonReaderException>(() => new IdentityPersistent(TestFile));
         }
 
 		[TestMethod]
@@ -225,12 +265,41 @@ namespace Authoriz.IdentityPersistentTests
         }
 
         [TestMethod]
-        public void invalid_jsonPath()
+        public void valid_matching_jsonPath()
         {
-            CreateValidIdentityFile();
+            CreateValidNestedIdentityFile();
 
-            var idMgrPersist = new IdentityPersistent(TestFile, "$[");
+            var idMgrPersist = new IdentityPersistent(TestFile, JsonPathMatch);
+
+            is_valid(idMgrPersist);
         }
+
+        private static void is_valid(IdentityPersistent idMgrPersist)
+        {
+            idMgrPersist.PrivateKey.Value.Should().Be(PrivateKeyValueNewLines);
+            idMgrPersist.ExistingAccessToken.TokenValue.Should().Be(AccessTokenValue);
+            idMgrPersist.ExistingAccessToken.Expires.Should().Be(GetAccessTokenExpires_Parsed(Future));
+            idMgrPersist.AdpToken.Value.Should().Be(AdpTokenValue);
+            idMgrPersist.RefreshToken.Value.Should().Be(RefreshTokenValue);
+        }
+
+        [TestMethod]
+        public void valid_nonmatching_jsonPath()
+        {
+            CreateValidNestedIdentityFile();
+
+            Assert.ThrowsException<JsonSerializationException>(() => new IdentityPersistent(TestFile, JsonPathNonMatch));
+        }
+
+        [TestMethod]
+        public void invalid_jsonPath()
+		{
+            var jsonPath = "$[";
+
+            CreateValidNestedIdentityFile();
+
+            Assert.ThrowsException<JsonException>(() => new IdentityPersistent(TestFile, jsonPath));
+		}
     }
 
     [TestClass]
@@ -267,7 +336,7 @@ namespace Authoriz.IdentityPersistentTests
         public void file_is_wrong_format()
         {
             WriteToTestFile("foo");
-            Assert.ThrowsException<Newtonsoft.Json.JsonReaderException>(() => new IdentityPersistent(TestFile));
+            Assert.ThrowsException<JsonReaderException>(() => new IdentityPersistent(TestFile));
         }
 
         [TestMethod]
@@ -411,6 +480,42 @@ namespace Authoriz.IdentityPersistentTests
             var idMgrOut = Identity.FromJson(contents);
             idMgrOut.AdpToken.Value.Should().Be(idMgr.AdpToken.Value);
             idMgrOut.ExistingAccessToken.Expires.Should().Be(idMgr.ExistingAccessToken.Expires);
+        }
+
+        [TestMethod]
+        public void jsonpath_ctor_identity_param_overwrites_file()
+        {
+            var jsonPath = JsonPathMatch;
+
+            CreateValidNestedIdentityFile();
+
+            // verify file contents
+            var contents = File.ReadAllText(TestFile);
+            JObject
+                .Parse(contents)
+                .SelectToken(jsonPath)["ExistingAccessToken"]
+                .Value<string>("TokenValue")
+                .Should().Be(AccessTokenValue);
+
+            // alter identity
+            var newAtValue = AccessTokenValue + "_NEW";
+            var newDt = DateTime.Now.AddDays(1);
+            var newAt = new AccessToken(newAtValue, newDt);
+
+            var idMgr = GetIdentity(Future);
+            idMgr.Update(newAt);
+
+            // this step writes altered identity to file
+            new IdentityPersistent(idMgr, TestFile, jsonPath)
+                .JsonPath.Should().Be(jsonPath);
+
+            // verify new file contents
+            var newContents = File.ReadAllText(TestFile);
+            JObject
+                .Parse(newContents)
+                .SelectToken(jsonPath)["ExistingAccessToken"]
+                .Value<string>("TokenValue")
+                .Should().Be(newAtValue);
         }
     }
 }
