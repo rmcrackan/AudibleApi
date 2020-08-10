@@ -17,24 +17,21 @@ namespace AudibleApi
 		/// </summary>
 		/// <param name="identityFilePath">Load from and save to the file at this path</param>
 		/// <param name="loginCallback">Object with callback methods allowing for initial login</param>
-		/// <param name="localeCountryCode">Country code for desired Audible site</param>
+		/// <param name="jsonPath">Optional JSONPath for location of identity tokens inside identity file</param>
 		/// <returns>Object which enables calls to the Audible API</returns>
-		public static async Task<Api> GetApiAsync(string identityFilePath, ILoginCallback loginCallback = null, string localeCountryCode = "us")
+		public static async Task<Api> GetApiAsync(string identityFilePath, ILoginCallback loginCallback = null, string jsonPath = null)
 		{
 			StackBlocker.ApiTestBlocker();
-
-			if (localeCountryCode != null)
-				Localization.SetLocale(localeCountryCode);
 
 			IdentityPersistent identityPersistent;
 			try
 			{
-				identityPersistent = new IdentityPersistent(identityFilePath);
+				identityPersistent = new IdentityPersistent(identityFilePath, jsonPath);
 			}
 			catch (Exception ex) // TODO: exceptions should not be used for control flow. fix this
 			{
 				var inMemoryIdentity = await loginAsync(loginCallback);
-				identityPersistent = new IdentityPersistent(inMemoryIdentity, identityFilePath);
+				identityPersistent = new IdentityPersistent(inMemoryIdentity, identityFilePath, jsonPath);
 			}
 
 			var api = await createApiAsync(identityPersistent);

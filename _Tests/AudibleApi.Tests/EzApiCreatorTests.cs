@@ -25,7 +25,7 @@ namespace EzApiCreatorTests_L0
 	{
 		[TestMethod]
 		public async Task access_from_L0_throws()
-			=> await Assert.ThrowsExceptionAsync<MethodAccessException>(() => EzApiCreator.GetApiAsync(null, null, null));
+			=> await Assert.ThrowsExceptionAsync<MethodAccessException>(() => EzApiCreator.GetApiAsync(null));
 	}
 }
 
