@@ -2,27 +2,31 @@
 using System.Collections.Generic;
 using System.IO;
 using AudibleApi.Authorization;
+using FileManager;
 
 namespace L1.Tests
 {
     public static class REAL
     {
-		public static string TokenFilePath
+		private static string _tokenFilePath
 		{
 			get
 			{
 				try
 				{
-					return FileManager.AudibleApiStorage.AccountsSettingsFile;
+					return AudibleApiStorage.AccountsSettingsFile;
 				}
 				catch (Exception ex)
 				{
-					throw new Exception($"Error! settings file not found.\r\nTo fix this error, copy the client's appsettings LibationFiles path into the L1's appsettings LibationFiles entry");
+					throw new Exception($"Error! settings file not found.\r\nTo fix this error, copy the client's appsettings LibationFiles path into the L1's appsettings.json LibationFiles entry");
 				}
 			}
 		}
 
 		public static Identity GetIdentity()
-			=> Identity.FromJson(File.ReadAllText(TokenFilePath));
+			=> Identity.FromJson(File.ReadAllText(_tokenFilePath), AudibleApiStorage.GetJsonPath());
+
+		public static IdentityPersistent GetIdentityPersistent()
+			=> new IdentityPersistent(_tokenFilePath, AudibleApiStorage.GetJsonPath());
 	}
 }

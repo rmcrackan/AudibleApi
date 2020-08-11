@@ -55,19 +55,8 @@ namespace AudibleApi.Authorization
 
         private IIdentity loadFromFile()
         {
-            var contents = File.ReadAllText(Path);
-
-			if (JsonPath != null)
-			{
-				var jToken = JObject.Parse(contents).SelectToken(JsonPath);
-
-				if (jToken is null)
-					throw new JsonSerializationException($"No match found at JSONPath: {JsonPath}");
-
-				contents = jToken.ToString(Formatting.Indented);
-			}
-
-			var identity = Identity.FromJson(contents);
+            var json = File.ReadAllText(Path);
+			var identity = Identity.FromJson(json, JsonPath);
 
 			if (identity is null)
 				throw new FormatException("File was not in a format able to be imported");

@@ -6,9 +6,7 @@ using Newtonsoft.Json.Linq;
 
 namespace AudibleApi.Authorization
 {
-    /// <summary>
-    /// This is the same as KeyValuePair<K, V> except that newtonsoft doesn't play nicely with that native struct
-    /// </summary>
+    /// <summary>This is the same as KeyValuePair<K, V> except that newtonsoft doesn't play nicely with that native struct</summary>
     public class KVP<K, V>
     {
         public K Key { get; set; }
@@ -59,14 +57,24 @@ namespace AudibleApi.Authorization
 			_cookies = cookies;
 		}
 
-        public static Identity FromJson(string json)
+        public static Identity FromJson(string json, string jsonPath = null)
         {
-            var settings = new JsonSerializerSettings();
+			if (jsonPath != null)
+			{
+				var jToken = JObject.Parse(json).SelectToken(jsonPath);
+
+				if (jToken is null)
+					throw new JsonSerializationException($"No match found at JSONPath: {jsonPath}");
+
+				json = jToken.ToString(Formatting.Indented);
+			}
+
+			var settings = new JsonSerializerSettings();
             settings.Converters.Add(new AccessTokenConverter());
             var idMgr = JsonConvert.DeserializeObject<Identity>(json, settings);
 
 			if (idMgr is null)
-				throw new FormatException("Could not deserialize json: "+ json);
+				throw new FormatException("Could not deserialize json: " + json);
 
 			return idMgr;
         }

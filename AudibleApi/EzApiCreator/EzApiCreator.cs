@@ -19,7 +19,7 @@ namespace AudibleApi
 		/// <param name="loginCallback">Object with callback methods allowing for initial login</param>
 		/// <param name="jsonPath">Optional JSONPath for location of identity tokens inside identity file</param>
 		/// <returns>Object which enables calls to the Audible API</returns>
-		public static async Task<Api> GetApiAsync(string identityFilePath, ILoginCallback loginCallback = null, string jsonPath = null)
+		public static async Task<Api> GetApiAsync(string identityFilePath, string jsonPath = null, ILoginCallback loginCallback = null)
 		{
 			StackBlocker.ApiTestBlocker();
 
