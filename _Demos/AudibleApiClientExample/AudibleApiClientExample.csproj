@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libation\FileManager\FileManager.csproj" />
     <ProjectReference Include="..\..\AudibleApi\AudibleApi.csproj" />
   </ItemGroup>
 

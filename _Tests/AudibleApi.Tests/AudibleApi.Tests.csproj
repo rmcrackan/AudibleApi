@@ -14,11 +14,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Dinah.Core\_Tests\TestCommon\TestCommon.csproj" />
+    <ProjectReference Include="..\..\..\..\Libation\FileManager\FileManager.csproj" />
     <ProjectReference Include="..\..\AudibleApi\AudibleApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="L1\appsettings.json">
+    <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

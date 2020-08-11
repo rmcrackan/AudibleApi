@@ -16,10 +16,10 @@ namespace AudibleApiClientExample
 		public Api _api;
 
 		private AudibleApiClient() { }
-		public async static Task<AudibleApiClient> CreateClientAsync(string identityFilePath)
+		public async static Task<AudibleApiClient> CreateClientAsync()
 		{
 			Localization.SetLocale("us");
-			var api = await EzApiCreator.GetApiAsync(identityFilePath, new LoginCallback());
+			var api = await EzApiCreator.GetApiAsync(FileManager.AudibleApiStorage.AccountsSettingsFile, new LoginCallback());
 			return new AudibleApiClient { _api = api };
 		}
 

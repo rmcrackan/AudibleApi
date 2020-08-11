@@ -16,14 +16,11 @@ namespace AudibleApiClientExample
 			// TO USE EXISTING AccountsSettings.json
 			// run this app once to copy appsettings.json to build dir
 			// open appsettings.json in build dir
-			// find location of existing AccountsSettings.json
+			// find location of existing AccountsSettings.json (prob in \LibationFiles)
 			// put this location into appsettings.json in build dir. remember to escape back-slashes
 			// save appsettings.json
 
-			var settings = File.ReadAllText("appsettings.json");
-			var jObj = Newtonsoft.Json.Linq.JObject.Parse(settings);
-			var IdentityFilePath = jObj.Value<string>("IdentityFilePath");
-			var client = await AudibleApiClient.CreateClientAsync(IdentityFilePath);
+			var client = await AudibleApiClient.CreateClientAsync();
 
 			//// use client
 			//await client.PrintLibraryAsync();

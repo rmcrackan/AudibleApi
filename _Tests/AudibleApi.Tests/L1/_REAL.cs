@@ -2,39 +2,22 @@
 using System.Collections.Generic;
 using System.IO;
 using AudibleApi.Authorization;
-using Newtonsoft.Json.Linq;
 
 namespace L1.Tests
 {
     public static class REAL
     {
-		const string APP_SETTINGS = @"L1\appsettings.json";
 		public static string TokenFilePath
 		{
 			get
 			{
 				try
 				{
-					var contents = File.ReadAllText(APP_SETTINGS);
-					var jObject = JObject.Parse(contents);
-					var identityFilePath = jObject["IdentityFilePath"];
-					var path = identityFilePath.Value<string>();
-					if (!File.Exists(path))
-					{
-						path = Path.Combine("L1", path);
-						if (!File.Exists(path))
-							throw new FileNotFoundException();
-					}
-					return path;
+					return FileManager.AudibleApiStorage.AccountsSettingsFile;
 				}
-				catch
+				catch (Exception ex)
 				{
-					var lines = new List<string>
-					{
-						$"Error! {nameof(APP_SETTINGS)} not found.\r\nTo fix this error, copy the client's appsettings IdentityFilePath entry into the L1's appsettings IdentityFilePath entry. If Libation is on this computer, the path is probably %LibationFiles%\\AccountsSettings.json"
-					};
-
-					throw new Exception(string.Join("\r\n", lines));
+					throw new Exception($"Error! settings file not found.\r\nTo fix this error, copy the client's appsettings LibationFiles path into the L1's appsettings LibationFiles entry");
 				}
 			}
 		}
