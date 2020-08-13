@@ -58,7 +58,11 @@ namespace Authoriz.AccessTokenTests
 		{
 			// most important part is to get past this line w/o exceptions
 			var e = AccessToken.Empty;
-			e.Expires.Should().Be(DateTime.MinValue);
+
+			e.TokenValue.Length.Should().BeGreaterThan(2);
+			e.TokenValue.Length.Should().BeLessThan(10);
+
+			e.Expires.Should().Be(DateTime.MaxValue);
 		}
 	}
 

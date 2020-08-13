@@ -6,6 +6,9 @@ namespace AudibleApi
 {
 	public class Locale : ValueObject
 	{
+		public static Locale Empty => new Locale();
+		private Locale() => Name = "[empty]";
+
 		public string Name { get; }
 
 		public string CountryCode { get; }

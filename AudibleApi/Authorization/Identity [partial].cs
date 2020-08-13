@@ -11,9 +11,14 @@ namespace AudibleApi.Authorization
     /// </summary>
     public partial class Identity : IIdentity
 	{
-		public static Identity Empty => new Identity(AccessToken.Empty, new Dictionary<string, string>());
+		public static Identity Empty => new Identity(Locale.Empty, AccessToken.Empty, new Dictionary<string, string>());
 
 		public event EventHandler Updated;
+
+		[JsonProperty]
+		private string LocaleName;
+		[JsonIgnore]
+		public Locale Locale => Localization.Locales.SingleOrDefault(l => l.Name == LocaleName);
 
 		[JsonIgnore]
 		public bool IsValid { get; private set; }
@@ -33,13 +38,16 @@ namespace AudibleApi.Authorization
 
 		protected Identity() { }
 
-		public Identity(AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies)
+		public Identity(Locale locale, AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies)
 		{
+			if (locale is null)
+				throw new ArgumentNullException(nameof(locale));
 			if (accessToken is null)
 				throw new ArgumentNullException(nameof(accessToken));
 			if (cookies is null)
 				throw new ArgumentNullException(nameof(cookies));
 
+			LocaleName = locale.Name;
 			ExistingAccessToken = accessToken;
 			_cookies = cookies.Select(kvp => new KVP<string, string> { Key = kvp.Key, Value = kvp.Value }).ToList();
 		}

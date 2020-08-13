@@ -70,7 +70,8 @@ namespace Authoriz.IdentityPersistentTests
 		public void invalid_state_identity_saves()
 		{
 			var id = new Identity(
-                new AccessToken(AccessToken.REQUIRED_BEGINNING, DateTime.MaxValue),
+                Locale.Empty,
+                AccessToken.Empty,
                 new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("k", "val") });
 			id.IsValid.Should().BeFalse();
 

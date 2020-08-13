@@ -40,16 +40,22 @@ namespace Authoriz.IdentityTests
 		{
 			Assert.ThrowsException<ArgumentNullException>(() => new Identity(
 				null,
+				AccessToken.Empty,
 				new List<KeyValuePair<string, string>>()));
 			Assert.ThrowsException<ArgumentNullException>(() => new Identity(
-				new AccessToken("Atna|", DateTime.MaxValue),
+				Locale.Empty,
+				null,
+				new List<KeyValuePair<string, string>>()));
+			Assert.ThrowsException<ArgumentNullException>(() => new Identity(
+				Locale.Empty,
+				AccessToken.Empty,
 				null));
 		}
 
 		[TestMethod]
 		public void loads_cookies()
 		{
-			var idMgr = new Identity(new AccessToken("Atna|", DateTime.MaxValue), new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("name1", "value1") });
+			var idMgr = new Identity(Locale.Empty, AccessToken.Empty, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("name1", "value1") });
 
 			idMgr.Cookies.Count().Should().Be(1);
 			idMgr.Cookies.Single().Key.Should().Be("name1");
@@ -74,26 +80,25 @@ namespace Authoriz.IdentityTests
 	{
 		string pk { get; } = PrivateKey.REQUIRED_BEGINNING + PrivateKey.REQUIRED_ENDING;
 		string adp { get; } = AdpTokenValue;
-		string at { get; } = AccessToken.REQUIRED_BEGINNING;
 		string rt { get; } = RefreshToken.REQUIRED_BEGINNING;
 
 		[TestMethod]
 		public void ctor_state()
 		{
-			var id = new Identity(new AccessToken(at, DateTime.MaxValue), new List<KeyValuePair<string, string>>());
+			var id = Identity.Empty;
 			id.IsValid.Should().BeFalse();
 		}
 
 		[TestMethod]
 		public void update_state()
 		{
-			var id = new Identity(new AccessToken(at, DateTime.MaxValue), new List<KeyValuePair<string, string>>());
+			var id = Identity.Empty;
 			id.IsValid.Should().BeFalse();
 
 			id.Update(
 				new PrivateKey(pk),
 				new AdpToken(adp),
-				new AccessToken(at, DateTime.MaxValue),
+				AccessToken.Empty,
 				new RefreshToken(rt)
 				);
 			id.IsValid.Should().BeTrue();
@@ -102,13 +107,13 @@ namespace Authoriz.IdentityTests
 		[TestMethod]
 		public void invalidate_state()
 		{
-			var id = new Identity(new AccessToken(at, DateTime.MaxValue), new List<KeyValuePair<string, string>>());
+			var id = Identity.Empty;
 			id.IsValid.Should().BeFalse();
 
 			id.Update(
 				new PrivateKey(pk),
 				new AdpToken(adp),
-				new AccessToken(at, DateTime.MaxValue),
+				AccessToken.Empty,
 				new RefreshToken(rt)
 				);
 			id.IsValid.Should().BeTrue();
@@ -122,6 +127,19 @@ namespace Authoriz.IdentityTests
 		{
 			var id = GetIdentity(Future);
 			id.IsValid.Should().BeTrue();
+		}
+
+		[TestMethod]
+		public void from_json_no_locale_not_valid()
+		{
+			var origJson = GetIdentityJson(Future);
+
+			var jObj = JObject.Parse(origJson);
+			jObj.Remove("LocaleName");
+			var json = jObj.ToString(Formatting.Indented);
+
+			var id = Identity.FromJson(json);
+			id.IsValid.Should().BeFalse();
 		}
 	}
 
@@ -191,10 +209,10 @@ namespace Authoriz.IdentityTests
 			idMgr.ExistingAccessToken.TokenValue.Should().Be(AccessTokenValue);
 			idMgr.ExistingAccessToken.Expires.Should().Be(GetAccessTokenExpires_Parsed(Future));
 
-			idMgr.Update(new AccessToken(AccessToken.REQUIRED_BEGINNING, DateTime.MaxValue));
+			idMgr.Update(AccessToken.Empty);
 
-			idMgr.ExistingAccessToken.TokenValue.Should().Be(AccessToken.REQUIRED_BEGINNING);
-			idMgr.ExistingAccessToken.Expires.Should().Be(DateTime.MaxValue);
+			idMgr.ExistingAccessToken.TokenValue.Should().Be(AccessToken.Empty.TokenValue);
+			idMgr.ExistingAccessToken.Expires.Should().Be(AccessToken.Empty.Expires);
 
 			log.Count.Should().Be(1);
 		}
@@ -205,7 +223,6 @@ namespace Authoriz.IdentityTests
 	{
 		string pk { get; } = PrivateKey.REQUIRED_BEGINNING + PrivateKey.REQUIRED_ENDING;
 		string adp { get; } = AdpTokenValue;
-		string at { get; } = AccessToken.REQUIRED_BEGINNING;
 		string rt { get; } = RefreshToken.REQUIRED_BEGINNING;
 
 		[TestMethod]
@@ -215,13 +232,13 @@ namespace Authoriz.IdentityTests
 			Assert.ThrowsException<ArgumentNullException>(() => idMgr.Update(
 				null,
 				new AdpToken(adp),
-				new AccessToken(at, DateTime.MaxValue),
+				AccessToken.Empty,
 				new RefreshToken(rt)
 				));
 			Assert.ThrowsException<ArgumentNullException>(() => idMgr.Update(
 				new PrivateKey(pk),
 				null,
-				new AccessToken(at, DateTime.MaxValue),
+				AccessToken.Empty,
 				new RefreshToken(rt)
 				));
 			Assert.ThrowsException<ArgumentNullException>(() => idMgr.Update(
@@ -233,7 +250,7 @@ namespace Authoriz.IdentityTests
 			Assert.ThrowsException<ArgumentNullException>(() => idMgr.Update(
 				new PrivateKey(pk),
 				new AdpToken(adp),
-				new AccessToken(at, DateTime.MaxValue),
+				AccessToken.Empty,
 				null
 				));
 		}
@@ -255,13 +272,13 @@ namespace Authoriz.IdentityTests
 			idMgr.Update(
 				new PrivateKey(pk),
 				new AdpToken(adp),
-				new AccessToken(at, DateTime.MaxValue),
+				AccessToken.Empty,
 				new RefreshToken(rt)
 				);
 
 			idMgr.PrivateKey.Value.Should().Be(pk);
 			idMgr.AdpToken.Value.Should().Be(adp);
-			idMgr.ExistingAccessToken.TokenValue.Should().Be(at);
+			idMgr.ExistingAccessToken.TokenValue.Should().Be(AccessToken.Empty.TokenValue);
 			idMgr.ExistingAccessToken.Expires.Should().Be(DateTime.MaxValue);
 			idMgr.RefreshToken.Value.Should().Be(rt);
 

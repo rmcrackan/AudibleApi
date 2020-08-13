@@ -11,8 +11,10 @@ namespace AudibleApi.Authorization
     {
         event EventHandler Updated;
 
-		/// <summary>has all authorization tokens/keys</summary>
-		bool IsValid { get; }
+        Locale Locale { get; }
+
+        /// <summary>has all authorization tokens/keys</summary>
+        bool IsValid { get; }
 
 		PrivateKey PrivateKey { get; }
 

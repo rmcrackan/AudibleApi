@@ -30,9 +30,14 @@ namespace AudibleApi.Authorization
     public partial class Identity
     {
         [JsonConstructor]
-        protected Identity(AccessToken existingAccessToken, PrivateKey privateKey, AdpToken adpToken, RefreshToken refreshToken, List<KVP<string, string>> cookies)
+        protected Identity(string localeName, AccessToken existingAccessToken, PrivateKey privateKey, AdpToken adpToken, RefreshToken refreshToken, List<KVP<string, string>> cookies)
 		{
 			IsValid = true;
+
+			if (string.IsNullOrWhiteSpace(localeName))
+				IsValid = false;
+			else
+				LocaleName = localeName.Trim();
 
 			if (existingAccessToken is null)
 				throw new ArgumentNullException(nameof(existingAccessToken));

@@ -61,7 +61,7 @@ namespace AudibleApi.Authentication
 				var accessToken = getAccessToken(response);
 
                 // authentication complete. begin authorization
-                var identity = new Identity(accessToken, cookies);
+                var identity = new Identity(Localization.CurrentLocale, accessToken, cookies);
 
                 return new LoginComplete(client, systemDateTime, body, identity);
             }

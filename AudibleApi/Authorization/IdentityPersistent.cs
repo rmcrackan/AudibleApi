@@ -114,6 +114,8 @@ namespace AudibleApi.Authorization
             remove => _identity.Updated -= value;
         }
 
+		public Locale Locale => _identity.Locale;
+
 		public bool IsValid => _identity.IsValid;
 
         public AccessToken ExistingAccessToken => _identity.ExistingAccessToken;

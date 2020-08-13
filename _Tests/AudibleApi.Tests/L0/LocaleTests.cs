@@ -55,4 +55,17 @@ namespace LocaleTests
 			Assert.IsTrue(locale1.Equals(locale2));
 		}
 	}
+
+	[TestClass]
+	public class Empty
+	{
+		[TestMethod]
+		public void ensure_valid()
+		{
+			// most important part is to get past this line w/o exceptions
+			var l = Locale.Empty;
+			l.Name.Should().Be("[empty]");
+			l.CountryCode.Should().BeNull();
+		}
+	}
 }

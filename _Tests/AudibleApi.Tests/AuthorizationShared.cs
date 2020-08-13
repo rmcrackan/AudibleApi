@@ -36,6 +36,9 @@ namespace AuthorizationShared
 		private static JObject getIdentityJObject(AccessTokenTemporality time)
 			=> new JObject {
 				{
+					"LocaleName", "us"
+				},
+				{
 					"ExistingAccessToken", new JObject {
 						{ "TokenValue", AccessTokenValue },
 						{ "Expires", GetAccessTokenExpires(time) }
