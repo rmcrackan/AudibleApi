@@ -14,8 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Dinah.Core\_Tests\TestCommon\TestCommon.csproj" />
-    <ProjectReference Include="..\..\..\..\Libation\FileManager\FileManager.csproj" />
-    <ProjectReference Include="..\..\AudibleApi\AudibleApi.csproj" />
+    <ProjectReference Include="..\..\..\..\Libation\InternalUtilities\InternalUtilities.csproj" />
   </ItemGroup>
 
   <ItemGroup>

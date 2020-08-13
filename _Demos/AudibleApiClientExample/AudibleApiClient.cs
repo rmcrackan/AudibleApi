@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AudibleApi;
 using Dinah.Core;
 using Dinah.Core.Net.Http;
-using FileManager;
+using InternalUtilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

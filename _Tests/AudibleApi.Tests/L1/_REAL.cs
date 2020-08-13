@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using AudibleApi.Authorization;
-using FileManager;
+using InternalUtilities;
 
 namespace L1.Tests
 {
