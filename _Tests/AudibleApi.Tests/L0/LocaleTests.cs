@@ -23,30 +23,33 @@ namespace LocaleTests
 	public class ctor
 	{
 		[TestMethod]
-		[DataRow(null, "dd", "mp", "ll")]
-		[DataRow("cc", null, "mp", "ll")]
-		[DataRow("cc", "dd", null, "ll")]
-		[DataRow("cc", "dd", "mp", null)]
-		public void null_param_throws(string countryCode, string domain, string marketPlaceId, string language)
-			=> Assert.ThrowsException<ArgumentNullException>(() => new Locale(countryCode, domain, marketPlaceId, language));
+		[DataRow(null, "cc", "dd", "mp", "ll")]
+		[DataRow("nn", null, "dd", "mp", "ll")]
+		[DataRow("nn", "cc", null, "mp", "ll")]
+		[DataRow("nn", "cc", "dd", null, "ll")]
+		[DataRow("nn", "cc", "dd", "mp", null)]
+		public void null_param_throws(string name, string countryCode, string domain, string marketPlaceId, string language)
+			=> Assert.ThrowsException<ArgumentNullException>(() => new Locale(name, countryCode, domain, marketPlaceId, language));
 
 		[TestMethod]
-		[DataRow("", "dd", "mp", "ll")]
-		[DataRow("   ", "dd", "mp", "ll")]
-		[DataRow("cc", "", "mp", "ll")]
-		[DataRow("cc", "   ", "mp", "ll")]
-		[DataRow("cc", "dd", "", "ll")]
-		[DataRow("cc", "dd", "   ", "ll")]
-		[DataRow("cc", "dd", "mp", "")]
-		[DataRow("cc", "dd", "mp", "   ")]
-		public void blank_param_throws(string countryCode, string domain, string marketPlaceId, string language)
-			=> Assert.ThrowsException<ArgumentException>(() => new Locale(countryCode, domain, marketPlaceId, language));
+		[DataRow("", "cc", "dd", "mp", "ll")]
+		[DataRow("   ", "cc", "dd", "mp", "ll")]
+		[DataRow("nn", "", "dd", "mp", "ll")]
+		[DataRow("nn", "   ", "dd", "mp", "ll")]
+		[DataRow("nn", "cc", "", "mp", "ll")]
+		[DataRow("nn", "cc", "   ", "mp", "ll")]
+		[DataRow("nn", "cc", "dd", "", "ll")]
+		[DataRow("nn", "cc", "dd", "   ", "ll")]
+		[DataRow("nn", "cc", "dd", "mp", "")]
+		[DataRow("nn", "cc", "dd", "mp", "   ")]
+		public void blank_param_throws(string name, string countryCode, string domain, string marketPlaceId, string language)
+			=> Assert.ThrowsException<ArgumentException>(() => new Locale(name, countryCode, domain, marketPlaceId, language));
 
 		[TestMethod]
 		public void instances_are_equal()
 		{
-			var locale1 = new Locale("cc", "dd", "mp", "ll");
-			var locale2 = new Locale("cc", "dd", "mp", "ll");
+			var locale1 = new Locale("nn", "cc", "dd", "mp", "ll");
+			var locale2 = new Locale("nn", "cc", "dd", "mp", "ll");
 
 			Assert.IsTrue(locale1 == locale2);
 			Assert.IsTrue(locale1.Equals(locale2));
