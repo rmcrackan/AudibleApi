@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 
 namespace AudibleApi
 {
-	public static class QueryStringBuilderExtensions
+	public static class LibraryQueryStringBuilderExtensions
 	{
 		public static string ToQueryString(this LibraryOptions.ResponseGroupOptions responseGroupOptions)
 		{
@@ -196,14 +196,14 @@ namespace AudibleApi
 
 		#region GetLibraryAsync
 		public Task<JObject> GetLibraryAsync()
-			=> getLibAsync("purchaseAfterDate=01/01/1970");
+			=> getLibraryAsync("purchaseAfterDate=01/01/1970");
 
 		public async Task<JObject> GetLibraryAsync(LibraryOptions libraryOptions)
 		{
 			if (libraryOptions is null)
 				return await GetLibraryAsync();
 
-			return await getLibAsync(libraryOptions.ToQueryString());
+			return await getLibraryAsync(libraryOptions.ToQueryString());
 		}
 
 		public async Task<JObject> GetLibraryAsync(string libraryOptions)
@@ -216,11 +216,11 @@ namespace AudibleApi
 			if (string.IsNullOrWhiteSpace(libraryOptions))
 				return await GetLibraryAsync();
 
-			return await getLibAsync(libraryOptions);
+			return await getLibraryAsync(libraryOptions);
 		}
 
 		// all strings passed here are assumed to be unconditionally valid
-		private async Task<JObject> getLibAsync(string parameters)
+		private async Task<JObject> getLibraryAsync(string parameters)
 		{
 			var url = $"{LIBRARY_PATH}?{parameters}";
 			var response = await AdHocAuthenticatedGetAsync(url);
