@@ -50,6 +50,18 @@ namespace Authoriz.AccessTokenTests
 		}
 	}
 
+	[TestClass]
+	public class Empty
+	{
+		[TestMethod]
+		public void ensure_valid()
+		{
+			// most important part is to get past this line w/o exceptions
+			var e = AccessToken.Empty;
+			e.Expires.Should().Be(DateTime.MinValue);
+		}
+	}
+
     [TestClass]
     public class Invalidate
     {

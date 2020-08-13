@@ -58,6 +58,18 @@ namespace Authoriz.IdentityTests
 	}
 
 	[TestClass]
+	public class Empty
+	{
+		[TestMethod]
+		public void ensure_valid()
+		{
+			// most important part is to get past this line w/o exceptions
+			var i = Identity.Empty;
+			i.IsValid.Should().BeFalse();
+		}
+	}
+
+	[TestClass]
 	public class IsValid
 	{
 		string pk { get; } = PrivateKey.REQUIRED_BEGINNING + PrivateKey.REQUIRED_ENDING;

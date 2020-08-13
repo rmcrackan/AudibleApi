@@ -10,8 +10,10 @@ namespace AudibleApi.Authorization
     /// In-memory handling of identity: Manages Audible API's state of authorization/authentication keys, tokens, and cookies. Maintains valid state
     /// </summary>
     public partial class Identity : IIdentity
-    {
-        public event EventHandler Updated;
+	{
+		public static Identity Empty => new Identity(AccessToken.Empty, new Dictionary<string, string>());
+
+		public event EventHandler Updated;
 
 		[JsonIgnore]
 		public bool IsValid { get; private set; }
