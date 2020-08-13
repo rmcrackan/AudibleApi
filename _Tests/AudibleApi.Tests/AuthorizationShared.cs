@@ -79,7 +79,7 @@ namespace AuthorizationShared
 		public static string GetNestedIdentityJson(AccessTokenTemporality time)
 			=> new JObject {
 				{
-					"ApiConnectionSettings", new JArray {
+					"AccountsSettings", new JArray {
 						new JObject {
 							{ "Username", "Uno" },
 							{ "DecryptKey", "11111111" },
@@ -103,12 +103,12 @@ namespace AuthorizationShared
 				}
 			}.ToString().Replace("\\n", "\n");
 		public static string JsonPathMatch =>
-			//TODO: WITH LOCALE// "$.ApiConnectionSettings[?(@.Username == 'Uno' && @.IdentityTokens.Locale == 'uk')].IdentityTokens"
-			"$.ApiConnectionSettings[?(@.Username == 'Uno')].IdentityTokens"
+			//TODO: WITH LOCALE// "$.AccountsSettings[?(@.Username == 'Uno' && @.IdentityTokens.Locale == 'uk')].IdentityTokens"
+			"$.AccountsSettings[?(@.Username == 'Uno')].IdentityTokens"
 			;
 		public static string JsonPathNonMatch =>
-			//TODO: WITH LOCALE// "$.ApiConnectionSettings[?(@.Username == 'Juan' && @.IdentityTokens.Locale == 'uk')].IdentityTokens"
-			"$.ApiConnectionSettings[?(@.Username == 'Juan')].IdentityTokens"
+			//TODO: WITH LOCALE// "$.AccountsSettings[?(@.Username == 'Juan' && @.IdentityTokens.Locale == 'uk')].IdentityTokens"
+			"$.AccountsSettings[?(@.Username == 'Juan')].IdentityTokens"
 			;
 	}
 }
