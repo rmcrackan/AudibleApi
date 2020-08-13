@@ -75,7 +75,7 @@ namespace LocalizationTests
 		[TestMethod]
 		public void invalid_string_throws()
 		{
-			Assert.ThrowsException<KeyNotFoundException>(() => Localization.SetLocale("foo"));
+			Assert.ThrowsException<InvalidOperationException>(() => Localization.SetLocale("foo"));
 		}
 
 		[TestMethod]
