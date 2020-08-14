@@ -75,7 +75,7 @@ namespace AudibleApi.Authorization
 			{
 				if (JsonPath is null)
 				{
-					File.WriteAllText(Path, JsonConvert.SerializeObject(_identity, Formatting.Indented, new Identity.AccessTokenConverter()));
+					File.WriteAllText(Path, JsonConvert.SerializeObject(_identity, Formatting.Indented, Identity.GetJsonSerializerSettings()));
 					return;
 				}
 
@@ -91,15 +91,13 @@ namespace AudibleApi.Authorization
 					throw new JsonSerializationException($"No match found at JSONPath: {JsonPath}");
 
 				// load existing identity into JObject
-				var settings = new JsonSerializerSettings();
-				settings.Converters.Add(new Identity.AccessTokenConverter());
-				var serializer = JsonSerializer.Create(settings);
+				var serializer = JsonSerializer.Create(Identity.GetJsonSerializerSettings());
 				var idJObj = JObject.FromObject(_identity, serializer);
 
 				// replace. this propgates to 'allToken'
 				pathToken.Replace(idJObj);
 
-				var allSer = JsonConvert.SerializeObject(allToken, Formatting.Indented, new Identity.AccessTokenConverter());
+				var allSer = JsonConvert.SerializeObject(allToken, Formatting.Indented, Identity.GetJsonSerializerSettings());
 				File.WriteAllText(Path, allSer);
 			}
 		}

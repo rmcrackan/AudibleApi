@@ -74,9 +74,7 @@ namespace AudibleApi.Authorization
 				json = jToken.ToString(Formatting.Indented);
 			}
 
-			var settings = new JsonSerializerSettings();
-            settings.Converters.Add(new AccessTokenConverter());
-            var idMgr = JsonConvert.DeserializeObject<Identity>(json, settings);
+            var idMgr = JsonConvert.DeserializeObject<Identity>(json, GetJsonSerializerSettings());
 
 			if (idMgr is null)
 				throw new FormatException("Could not deserialize json: " + json);
@@ -84,8 +82,15 @@ namespace AudibleApi.Authorization
 			return idMgr;
         }
 
-        // https://stackoverflow.com/a/23017892
-        internal class AccessTokenConverter : JsonConverter
+		public static JsonSerializerSettings GetJsonSerializerSettings()
+		{
+			var settings = new JsonSerializerSettings();
+			settings.Converters.Add(new AccessTokenConverter());
+			return settings;
+		}
+
+		// https://stackoverflow.com/a/23017892
+		internal class AccessTokenConverter : JsonConverter
         {
             public override bool CanConvert(Type objectType)
                 => objectType == typeof(AccessToken);
