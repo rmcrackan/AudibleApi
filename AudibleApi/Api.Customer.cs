@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Dinah.Core;
 using Dinah.Core.Net;
 using Dinah.Core.Net.Http;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AudibleApi
@@ -68,6 +69,16 @@ namespace AudibleApi
 
 		#region GetInformationAsync
 		const string INFORMATION_PATH = CUSTOMER_PATH + "/information";
+
+		/// <summary>Get locale from: /1.0/customer/information</summary>
+		public async Task<Locale> GetLocaleAsync(CustomerOptions customerOptions)
+		{
+			var customer = await GetCustomerInformationAsync(customerOptions);
+			var debugStr = customer.ToString(Formatting.Indented);
+			var marketPlace = customer["customer_details"]["migration_details"][0]["to_marketplaceId"].Value<string>();
+			var locale = Localization.Locales.SingleOrDefault(l => l.MarketPlaceId == marketPlace);
+			return locale;
+		}
 
 		public Task<JObject> GetCustomerInformationAsync(CustomerOptions customerOptions)
 			=> GetCustomerInformationAsync(customerOptions.ToQueryString());

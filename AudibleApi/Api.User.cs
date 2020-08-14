@@ -13,6 +13,14 @@ namespace AudibleApi
 {
     public partial class Api
     {
+        /// <summary>Get email from: /user/profile</summary>
+        public async Task<string> GetEmailAsync()
+        {
+            var u = await UserProfileAsync();
+            var email = u["email"].Value<string>();
+            return email;
+        }
+
         public async Task<JObject> UserProfileAsync()
         {
 			// note: this call uses the amazon api uri, NOT audible
