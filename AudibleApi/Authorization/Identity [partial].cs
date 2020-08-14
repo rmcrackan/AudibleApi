@@ -11,7 +11,7 @@ namespace AudibleApi.Authorization
     /// </summary>
     public partial class Identity : IIdentity
 	{
-		public static Identity Empty => new Identity(Locale.Empty, AccessToken.Empty, new Dictionary<string, string>());
+		public static Identity Empty => new Identity(Locale.Empty);
 
 		public event EventHandler Updated;
 
@@ -38,6 +38,10 @@ namespace AudibleApi.Authorization
 
 		protected Identity() { }
 
+		public Identity(Locale locale)
+			: this(locale, AccessToken.Empty, new Dictionary<string, string>())
+		{
+		}
 		public Identity(Locale locale, AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies)
 		{
 			if (locale is null)

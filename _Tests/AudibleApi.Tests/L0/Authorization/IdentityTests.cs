@@ -33,7 +33,23 @@ namespace Authoriz.IdentityTests
 	}
 
 	[TestClass]
-	public class ctor
+	public class ctor_locale
+	{
+		[TestMethod]
+		public void null_params_throw()
+			=> Assert.ThrowsException<ArgumentNullException>(() => new Identity(null));
+
+		[TestMethod]
+		public void invalid()
+		{
+			var us = new Identity(Localization.Locales.Single(l => l.Name == "us"));
+			us.IsValid.Should().BeFalse();
+			us.Locale.Name.Should().Be("us");
+		}
+	}
+
+	[TestClass]
+	public class ctor_locale_accessToken_cookies
 	{
 		[TestMethod]
 		public void null_params_throw()
