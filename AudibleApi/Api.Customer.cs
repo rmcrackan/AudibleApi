@@ -43,6 +43,8 @@ namespace AudibleApi
 	}
 	public class CustomerOptions
 	{
+		public static CustomerOptions All => new CustomerOptions { ResponseGroups = ResponseGroupOptions.ALL_OPTIONS };
+
 		[Flags]
 		public enum ResponseGroupOptions
 		{
