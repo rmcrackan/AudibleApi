@@ -28,7 +28,7 @@ namespace AudibleApi.Authorization
 	}
 
     public partial class Identity
-    {
+	{
         [JsonConstructor]
         protected Identity(string localeName, AccessToken existingAccessToken, PrivateKey privateKey, AdpToken adpToken, RefreshToken refreshToken, List<KVP<string, string>> cookies)
 		{
@@ -62,7 +62,7 @@ namespace AudibleApi.Authorization
 			_cookies = cookies;
 		}
 
-        public static Identity FromJson(string json, string jsonPath = null)
+		public static Identity FromJson(string json, string jsonPath = null)
         {
 			if (jsonPath != null)
 			{

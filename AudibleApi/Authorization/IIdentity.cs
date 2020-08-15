@@ -7,14 +7,14 @@ namespace AudibleApi.Authorization
     /// <summary>
     /// Manages Audible API's state of authorization/authentication keys, tokens, and cookies
     /// </summary>
-    public interface IIdentity
+    public interface IIdentity : Updatable
     {
-        event EventHandler Updated;
-
         Locale Locale { get; }
 
         /// <summary>has all authorization tokens/keys</summary>
         bool IsValid { get; }
+
+        AccessToken ExistingAccessToken { get; }
 
 		PrivateKey PrivateKey { get; }
 
@@ -23,8 +23,6 @@ namespace AudibleApi.Authorization
         RefreshToken RefreshToken { get; }
 
         IEnumerable<KVP<string, string>> Cookies { get; }
-
-        AccessToken ExistingAccessToken { get; }
 
 		void Update(AccessToken accessToken);
 

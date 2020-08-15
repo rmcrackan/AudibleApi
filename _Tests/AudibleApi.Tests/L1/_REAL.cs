@@ -26,7 +26,7 @@ namespace L1.Tests
 		public static Identity GetIdentity()
 			=> Identity.FromJson(File.ReadAllText(_tokenFilePath), AudibleApiStorage.GetJsonPath());
 
-		public static IdentityPersistent GetIdentityPersistent()
-			=> new IdentityPersistent(_tokenFilePath, AudibleApiStorage.GetJsonPath());
+		public static IdentityPersister GetIdentityPersister()
+			=> new IdentityPersister(_tokenFilePath, AudibleApiStorage.GetJsonPath());
 	}
 }

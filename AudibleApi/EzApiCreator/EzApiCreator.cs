@@ -23,18 +23,18 @@ namespace AudibleApi
 		{
 			StackBlocker.ApiTestBlocker();
 
-			IdentityPersistent identityPersistent;
+			IdentityPersister identityPersister;
 			try
 			{
-				identityPersistent = new IdentityPersistent(identityFilePath, jsonPath);
+				identityPersister = new IdentityPersister(identityFilePath, jsonPath);
 			}
 			catch (Exception ex) // TODO: exceptions should not be used for control flow. fix this
 			{
 				var inMemoryIdentity = await loginAsync(loginCallback);
-				identityPersistent = new IdentityPersistent(inMemoryIdentity, identityFilePath, jsonPath);
+				identityPersister = new IdentityPersister(inMemoryIdentity, identityFilePath, jsonPath);
 			}
 
-			var api = await createApiAsync(identityPersistent);
+			var api = await createApiAsync(identityPersister.Identity);
 			return api;
 		}
 
