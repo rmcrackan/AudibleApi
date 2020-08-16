@@ -59,5 +59,7 @@ namespace AudibleApi
 			yield return MarketPlaceId;
 			yield return Language;
 		}
+
+		public override string ToString() => $"{{{Name}}}";
 	}
 }
