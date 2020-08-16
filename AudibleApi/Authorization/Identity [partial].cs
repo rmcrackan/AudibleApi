@@ -16,7 +16,7 @@ namespace AudibleApi.Authorization
 		public event EventHandler Updated;
 
 		[JsonProperty]
-		private string LocaleName;
+		private string LocaleName { get; }
 		[JsonIgnore]
 		public Locale Locale => Localization.Locales.SingleOrDefault(l => l.Name == LocaleName);
 
@@ -39,9 +39,7 @@ namespace AudibleApi.Authorization
 		protected Identity() { }
 
 		public Identity(Locale locale)
-			: this(locale, AccessToken.Empty, new Dictionary<string, string>())
-		{
-		}
+			: this(locale, AccessToken.Empty, new Dictionary<string, string>()) { }
 		public Identity(Locale locale, AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies)
 		{
 			if (locale is null)

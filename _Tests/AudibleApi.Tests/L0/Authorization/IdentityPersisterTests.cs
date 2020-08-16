@@ -289,7 +289,7 @@ namespace Authoriz.IdentityPersisterTests
         {
             CreateValidNestedIdentityFile();
 
-            Assert.ThrowsException<JsonSerializationException>(() => new IdentityPersister(TestFile, JsonPathNonMatch));
+            Assert.ThrowsException<NullReferenceException>(() => new IdentityPersister(TestFile, JsonPathNonMatch));
         }
 
         [TestMethod]

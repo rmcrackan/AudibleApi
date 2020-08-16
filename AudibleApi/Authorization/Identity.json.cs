@@ -63,23 +63,23 @@ namespace AudibleApi.Authorization
 		}
 
 		public static Identity FromJson(string json, string jsonPath = null)
-        {
-			if (jsonPath != null)
+		{
+			Identity id;
+
+			if (jsonPath is null)
+				id = JsonConvert.DeserializeObject<Identity>(json, GetJsonSerializerSettings());
+			else
 			{
-				var jToken = JObject.Parse(json).SelectToken(jsonPath);
-
-				if (jToken is null)
-					throw new JsonSerializationException($"No match found at JSONPath: {jsonPath}");
-
-				json = jToken.ToString(Formatting.Indented);
+				var serializer = JsonSerializer.Create(GetJsonSerializerSettings());
+				id = JObject.Parse(json)
+					.SelectToken(jsonPath)
+					.ToObject<Identity>(serializer);
 			}
 
-            var idMgr = JsonConvert.DeserializeObject<Identity>(json, GetJsonSerializerSettings());
-
-			if (idMgr is null)
+			if (id is null)
 				throw new FormatException("Could not deserialize json: " + json);
 
-			return idMgr;
+			return id;
         }
 
 		public static JsonSerializerSettings GetJsonSerializerSettings()
