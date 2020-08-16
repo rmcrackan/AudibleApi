@@ -43,7 +43,7 @@ namespace AudibleApi
 		// - Each step in the login process will return a LoginResult
 		// - Each result which has required user input has a SubmitAsync method
 		// - The final LoginComplete result returns "Identity" -- in-memory authorization items
-		private static async Task<IIdentity> loginAsync(ILoginCallback responder)
+		private static async Task<Identity> loginAsync(ILoginCallback responder)
 		{
 			Dinah.Core.ArgumentValidator.EnsureNotNull(responder, nameof(responder));
 

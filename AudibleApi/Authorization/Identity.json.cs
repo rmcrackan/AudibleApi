@@ -63,24 +63,7 @@ namespace AudibleApi.Authorization
 		}
 
 		public static Identity FromJson(string json, string jsonPath = null)
-		{
-			Identity id;
-
-			if (jsonPath is null)
-				id = JsonConvert.DeserializeObject<Identity>(json, GetJsonSerializerSettings());
-			else
-			{
-				var serializer = JsonSerializer.Create(GetJsonSerializerSettings());
-				id = JObject.Parse(json)
-					.SelectToken(jsonPath)
-					.ToObject<Identity>(serializer);
-			}
-
-			if (id is null)
-				throw new FormatException("Could not deserialize json: " + json);
-
-			return id;
-        }
+			=> Dinah.Core.JsonHelper.FromJson<Identity>(json, jsonPath, GetJsonSerializerSettings());
 
 		public static JsonSerializerSettings GetJsonSerializerSettings()
 		{

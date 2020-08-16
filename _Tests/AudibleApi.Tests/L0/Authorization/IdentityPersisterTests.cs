@@ -53,13 +53,13 @@ namespace Authoriz.IdentityPersisterTests
     {
 		[TestMethod]
         public void null_path_throws()
-            => Assert.ThrowsException<ArgumentNullException>(() => new IdentityPersister(new Mock<IIdentity>().Object, null));
+            => Assert.ThrowsException<ArgumentNullException>(() => new IdentityPersister(GetIdentity(Future), null));
 
         [TestMethod]
         public void blank_path_throws()
         {
-            Assert.ThrowsException<ArgumentException>(() => new IdentityPersister(new Mock<IIdentity>().Object, ""));
-            Assert.ThrowsException<ArgumentException>(() => new IdentityPersister(new Mock<IIdentity>().Object, "   "));
+            Assert.ThrowsException<ArgumentException>(() => new IdentityPersister(GetIdentity(Future), ""));
+            Assert.ThrowsException<ArgumentException>(() => new IdentityPersister(GetIdentity(Future), "   "));
         }
 
         [TestMethod]
