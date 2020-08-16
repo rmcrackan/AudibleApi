@@ -60,6 +60,6 @@ namespace AudibleApi
 			yield return Language;
 		}
 
-		public override string ToString() => $"{{{Name}}}";
+		public override string ToString() => Name;
 	}
 }
