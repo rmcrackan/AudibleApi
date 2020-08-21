@@ -928,7 +928,7 @@ namespace ApiTests_L0.Sealed
 		{
 			try
 			{
-				Localization.SetLocale(LocaleNames.UK);
+				Localization.SetLocale(Locales.UkName);
 
 				var response = new HttpResponseMessage { StatusCode = HttpStatusCode.Found };
 				response.Headers.Location = new Uri("https://cds.audible.com/downloadme?a=1");
@@ -944,7 +944,7 @@ namespace ApiTests_L0.Sealed
 			}
 			finally
 			{
-				Localization.SetLocale(LocaleNames.US);
+				Localization.SetLocale(Locales.UsName);
 			}
 		}
 	}

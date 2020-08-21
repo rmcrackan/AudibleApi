@@ -15,21 +15,23 @@ namespace AudibleApi.Authentication
     {
         private IHttpClient _client { get; }
 		protected ISystemDateTime SystemDateTime { get; }
+        protected Locale Locale { get; }
 		protected Dictionary<string, string> Inputs { get; }
 
 		public IDictionary<string, string> GetInputsReadOnly()
             => new Dictionary<string, string>(Inputs);
 
-        protected LoginResult(IHttpClient client, ISystemDateTime systemDateTime, string responseBody)
+        protected LoginResult(IHttpClient client, ISystemDateTime systemDateTime, Locale locale, string responseBody)
         {
             _client = client ?? throw new ArgumentNullException(nameof(client));
-			SystemDateTime = systemDateTime ?? throw new ArgumentNullException(nameof(systemDateTime));
-			if (responseBody is null)
+            SystemDateTime = systemDateTime ?? throw new ArgumentNullException(nameof(systemDateTime));
+            Locale = locale ?? throw new ArgumentNullException(nameof(locale));
+            if (responseBody is null)
 				throw new ArgumentNullException(nameof(responseBody));
 			Inputs = HtmlHelper.GetInputs(responseBody);
 		}
 
         protected Task<LoginResult> GetResultsPageAsync(Dictionary<string, string> inputs)
-            => LoginResultRunner.GetResultsPageAsync(_client, SystemDateTime, inputs);
+            => LoginResultRunner.GetResultsPageAsync(_client, SystemDateTime, Locale, inputs);
     }
 }

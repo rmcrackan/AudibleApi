@@ -52,10 +52,12 @@ namespace LoginTests_L0
     [TestClass]
     public class LoadSessionCookiesAsync
     {
+        private Locale locale => Localization.Get("us");
+
         private Authenticate GetLogin(HttpClientHandler handler)
         {
 			var client = ApiHttpClient.Create(handler);
-			var login = new Authenticate(Locale.Empty, client, new Mock<ISystemDateTime>().Object)
+			var login = new Authenticate(locale, client, new Mock<ISystemDateTime>().Object)
 			{
 				MaxLoadSessionCookiesTrips = 3
 			};
@@ -85,7 +87,7 @@ namespace LoginTests_L0
                 });
 
             var login = GetLogin(handlerMock.Object);
-            await has_session_token(login);
+            await has_session_token(login, locale);
         }
 
         [TestMethod]
@@ -113,7 +115,7 @@ namespace LoginTests_L0
                 });
 
             var login = GetLogin(handlerMock.Object);
-            await has_session_token(login);
+            await has_session_token(login, locale);
         }
 
         [TestMethod]
@@ -143,14 +145,14 @@ namespace LoginTests_L0
                 });
 
             var login = GetLogin(handlerMock.Object);
-            await Assert.ThrowsExceptionAsync<TimeoutException>(() => has_session_token(login));
+            await Assert.ThrowsExceptionAsync<TimeoutException>(() => has_session_token(login, locale));
         }
 
-        public static async Task has_session_token(Authenticate login)
+        public static async Task has_session_token(Authenticate login, Locale locale)
         {
             await login.LoadSessionCookiesAsync();
 
-            var amazonCookies = login.GetCookies(Resources.STATIC_AmazonLoginUri).Cast<Cookie>().ToList();
+            var amazonCookies = login.GetCookies(locale.AmazonLoginUri()).Cast<Cookie>().ToList();
             var cookieNames = amazonCookies.Select(c => c.Name);
             cookieNames.Should().Contain("session-token");
         }

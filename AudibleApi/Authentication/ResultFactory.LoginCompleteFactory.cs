@@ -25,15 +25,15 @@ namespace AudibleApi.Authentication
                 return getAccessToken(response) != null;
             }
 
-            public override async Task<LoginResult> CreateResultAsync(IHttpClient client, ISystemDateTime systemDateTime, HttpResponseMessage response, Dictionary<string, string> oldInputs)
+            public override async Task<LoginResult> CreateResultAsync(IHttpClient client, ISystemDateTime systemDateTime, Locale locale, HttpResponseMessage response, Dictionary<string, string> oldInputs)
             {
                 // shared validation
-                await base.CreateResultAsync(client, systemDateTime, response, oldInputs);
+                await base.CreateResultAsync(client, systemDateTime, locale, response, oldInputs);
 
 				var body = await response.Content.ReadAsStringAsync();
 
 				var cookies = client.CookieJar
-					.EnumerateCookies(Resources.STATIC_AmazonLoginUri)
+					.EnumerateCookies(locale.AmazonLoginUri())
 					?.Select(c => new KeyValuePair<string, string>(c.Name, c.Value))
 					.ToList();
 
@@ -63,7 +63,7 @@ namespace AudibleApi.Authentication
                 // authentication complete. begin authorization
                 var identity = new Identity(Localization.CurrentLocale, accessToken, cookies);
 
-                return new LoginComplete(client, systemDateTime, body, identity);
+                return new LoginComplete(client, systemDateTime, locale, body, identity);
             }
 
             private static AccessToken getAccessToken(HttpResponseMessage response)

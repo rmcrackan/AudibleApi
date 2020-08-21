@@ -95,7 +95,8 @@ namespace Authentic.ResultFactoryTests.LoginCompleteFactoryTests
 
 			var apiHttpClient = ApiHttpClientMock.GetClient(response);
 			var sysDateTime = StaticSystemDateTime.Past;
-			var inputs = new Dictionary<string, string>();
+            var locale = Locales.Us;
+            var inputs = new Dictionary<string, string>();
 
 			apiHttpClient.CookieJar.Add(new Cookie { Name = "session-id", Value = "139-1488065-0277455", Domain = ".amazon.com", Expires = DateTime.Parse("Thu, 30-Jun-2039 19:07:14 GMT"), Path = "/" });
 			apiHttpClient.CookieJar.Add(new Cookie { Name = "session-id-time", Value = "2193073634l", Domain = ".amazon.com", Expires = DateTime.Parse("Thu, 30-Jun-2039 19:07:14 GMT"), Path = "/" });
@@ -103,6 +104,7 @@ namespace Authentic.ResultFactoryTests.LoginCompleteFactoryTests
 			var loginComplete = await ResultFactory.LoginComplete.CreateResultAsync(
 				apiHttpClient,
 				sysDateTime,
+                locale,
 				response,
 				inputs
 				) as LoginComplete;

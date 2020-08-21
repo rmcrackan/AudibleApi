@@ -10,7 +10,7 @@ namespace AudibleApi.Authentication
 {
 	public class CredentialsPage : LoginResult
 	{
-		public CredentialsPage(IHttpClient client, ISystemDateTime systemDateTime, string responseBody) : base(client, systemDateTime, responseBody) { }
+		public CredentialsPage(IHttpClient client, ISystemDateTime systemDateTime, Locale locale, string responseBody) : base(client, systemDateTime, locale, responseBody) { }
 
 		public async Task<LoginResult> SubmitAsync(string email, string password)
 		{
@@ -31,14 +31,14 @@ namespace AudibleApi.Authentication
 			return await GetResultsPageAsync(Inputs);
 		}
 
-		private static string getEncryptedMetadata(long nowUnixTimeStamp)
+		private string getEncryptedMetadata(long nowUnixTimeStamp)
 		{
-			var raw_metadata = GenerateMetadata(nowUnixTimeStamp);
+			var raw_metadata = GenerateMetadata(Locale, nowUnixTimeStamp);
 			var metadata = Cryptography.EncryptMetadata(raw_metadata);
 			return metadata;
 		}
 
-		public static string GenerateMetadata(long nowUnixTimeStamp)
+		public static string GenerateMetadata(Locale locale, long nowUnixTimeStamp)
 		{
 			var raw = new JObject {
 				{ "start", nowUnixTimeStamp },
@@ -125,7 +125,7 @@ namespace AudibleApi.Authentication
 				},
 				{ "referrer", "" },
 				{ "userAgent", Resources.UserAgent },
-				{ "location", Resources.STATIC_OAuthUrl },
+				{ "location", locale.OAuthUrl() },
 				{ "webDriver", null },
 				{  "history",
 					new JObject {

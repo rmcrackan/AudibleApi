@@ -11,7 +11,7 @@ namespace AudibleApi.Authentication
     {
         public Uri CaptchaImage { get; }
 
-        public CaptchaPage(IHttpClient client, ISystemDateTime systemDateTime, string responseBody, Uri img, string password) : base(client, systemDateTime, responseBody)
+        public CaptchaPage(IHttpClient client, ISystemDateTime systemDateTime, Locale locale, string responseBody, Uri img, string password) : base(client, systemDateTime, locale, responseBody)
         {
             if (img is null)
                 throw new ArgumentNullException(nameof(img));

@@ -9,7 +9,7 @@ namespace AudibleApi.Authentication
 {
     public class TwoFactorAuthenticationPage : LoginResult
     {
-        public TwoFactorAuthenticationPage(IHttpClient client, ISystemDateTime systemDateTime, string responseBody) : base(client, systemDateTime, responseBody) { }
+        public TwoFactorAuthenticationPage(IHttpClient client, ISystemDateTime systemDateTime, Locale locale, string responseBody) : base(client, systemDateTime, locale, responseBody) { }
 
         public async Task<LoginResult> SubmitAsync(string _2faCode)
         {

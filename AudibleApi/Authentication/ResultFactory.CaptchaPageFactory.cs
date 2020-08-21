@@ -29,10 +29,10 @@ namespace AudibleApi.Authentication
                     newInputs.ContainsKey("use_image_captcha");
             }
 
-			public override async Task<LoginResult> CreateResultAsync(IHttpClient client, ISystemDateTime systemDateTime, HttpResponseMessage response, Dictionary<string, string> oldInputs)
+			public override async Task<LoginResult> CreateResultAsync(IHttpClient client, ISystemDateTime systemDateTime, Locale locale, HttpResponseMessage response, Dictionary<string, string> oldInputs)
 			{
                 // shared validation
-                await base.CreateResultAsync(client, systemDateTime, response, oldInputs);
+                await base.CreateResultAsync(client, systemDateTime, locale, response, oldInputs);
 
                 if (!oldInputs.ContainsKey("password"))
                     throw new ArgumentException("Provided inputs do not contain a password", nameof(oldInputs));
@@ -41,7 +41,7 @@ namespace AudibleApi.Authentication
                 var body = await response.Content.ReadAsStringAsync();
                 var captchaUri = getCaptchaUri(body);
 
-                return new CaptchaPage(client, systemDateTime, body, captchaUri, password);
+                return new CaptchaPage(client, systemDateTime, locale, body, captchaUri, password);
             }
 
             private static Uri getCaptchaUri(string body)

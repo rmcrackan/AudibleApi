@@ -28,14 +28,14 @@ namespace AudibleApi.Authentication
                     !newInputs.ContainsKey("use_image_captcha");
             }
 
-			public override async Task<LoginResult> CreateResultAsync(IHttpClient client, ISystemDateTime systemDateTime, HttpResponseMessage response, Dictionary<string, string> oldInputs)
+			public override async Task<LoginResult> CreateResultAsync(IHttpClient client, ISystemDateTime systemDateTime, Locale locale, HttpResponseMessage response, Dictionary<string, string> oldInputs)
 			{
                 // shared validation
-                await base.CreateResultAsync(client, systemDateTime, response, oldInputs);
+                await base.CreateResultAsync(client, systemDateTime, locale, response, oldInputs);
 
                 // do not extract email or pw from inputs. if we're here then a previous login failed
                 var body = await response.Content.ReadAsStringAsync();
-                return new CredentialsPage(client, systemDateTime, body);
+                return new CredentialsPage(client, systemDateTime, locale, body);
             }
         }
     }

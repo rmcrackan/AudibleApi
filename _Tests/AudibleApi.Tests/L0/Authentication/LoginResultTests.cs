@@ -21,7 +21,7 @@ namespace Authentic.LoginResultTests
 {
     internal class ValidateLoginResult : LoginResult
     {
-        public ValidateLoginResult(ApiHttpClient client, ISystemDateTime systemDateTime, string responseBody) : base(client, systemDateTime, responseBody) { }
+        public ValidateLoginResult(ApiHttpClient client, ISystemDateTime systemDateTime, Locale locale, string responseBody) : base(client, systemDateTime, locale, responseBody) { }
     }
 
     [TestClass]
@@ -29,15 +29,19 @@ namespace Authentic.LoginResultTests
     {
         [TestMethod]
         public void null_client_throws()
-            => Assert.ThrowsException<ArgumentNullException>(() => new ValidateLoginResult(null, StaticSystemDateTime.Past, "foo"));
+            => Assert.ThrowsException<ArgumentNullException>(() => new ValidateLoginResult(null, StaticSystemDateTime.Past, Locales.Us, "foo"));
 
 		[TestMethod]
 		public void null_systemDateTime_throws()
-			=> Assert.ThrowsException<ArgumentNullException>(() => new ValidateLoginResult(ApiHttpClientMock.GetClient(), null, "foo"));
+			=> Assert.ThrowsException<ArgumentNullException>(() => new ValidateLoginResult(ApiHttpClientMock.GetClient(), null, Locales.Us, "foo"));
 
-		[TestMethod]
+        [TestMethod]
+        public void null_locale_throws()
+            => Assert.ThrowsException<ArgumentNullException>(() => new ValidateLoginResult(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, null, "foo"));
+
+        [TestMethod]
         public void null_responseBody_throws()
-            => Assert.ThrowsException<ArgumentNullException>(() => new ValidateLoginResult(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, null));
+            => Assert.ThrowsException<ArgumentNullException>(() => new ValidateLoginResult(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, Locales.Us, null));
 
         [TestMethod]
         public void inputs_are_saved()
@@ -45,7 +49,7 @@ namespace Authentic.LoginResultTests
             var body
                 = "<input name='a' value='b' />"
                 + "<input name='y' value='z' />";
-            var result = new ValidateLoginResult(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, body);
+            var result = new ValidateLoginResult(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, Locales.Us, body);
             var inputs = result.GetInputsReadOnly();
             inputs.Count.Should().Be(2);
             inputs["a"].Should().Be("b");

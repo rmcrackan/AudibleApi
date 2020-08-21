@@ -26,7 +26,8 @@ namespace Authentic.CredentialsPageTests
 			=> new CredentialsPage(
 				ApiHttpClientMock.GetClient(),
 				StaticSystemDateTime.Past,
-				"body");
+                Locales.Us,
+                "body");
 
 		[TestMethod]
         public async Task null_email_throws()
@@ -58,7 +59,8 @@ namespace Authentic.CredentialsPageTests
 			var page = new CredentialsPage(
 				ApiHttpClientMock.GetClient(responseToCaptureRequest),
 				StaticSystemDateTime.Past,
-				"body");
+                Locales.Us,
+                "body");
 			await Assert.ThrowsExceptionAsync<LoginFailedException>(() => page.SubmitAsync("e", "pw"));
 
             var content = await responseToCaptureRequest.RequestMessage.Content.ReadAsStringAsync();
@@ -77,7 +79,7 @@ namespace Authentic.CredentialsPageTests
 		[TestMethod]
 		public void validate_output()
 		{
-			var metadata = CredentialsPage.GenerateMetadata(123456789L);
+			var metadata = CredentialsPage.GenerateMetadata(Locales.Us, 123456789L);
 			metadata.Should().Be(CredentialsPageMetadataPlaintext);
 		}
 	}

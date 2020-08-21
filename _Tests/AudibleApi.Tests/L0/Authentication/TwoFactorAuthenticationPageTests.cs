@@ -26,13 +26,13 @@ namespace Authentic.TwoFactorAuthenticationPageTests
     {
 		[TestMethod]
         public async Task null_param_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new TwoFactorAuthenticationPage(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, "x").SubmitAsync(null));
+            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new TwoFactorAuthenticationPage(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, Locales.Us, "x").SubmitAsync(null));
 
         [TestMethod]
         public async Task blank_param_throws()
         {
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => new TwoFactorAuthenticationPage(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, "body").SubmitAsync(""));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => new TwoFactorAuthenticationPage(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, "body").SubmitAsync("   "));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => new TwoFactorAuthenticationPage(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, Locales.Us, "body").SubmitAsync(""));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => new TwoFactorAuthenticationPage(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, Locales.Us, "body").SubmitAsync("   "));
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@ namespace Authentic.TwoFactorAuthenticationPageTests
         {
             var responseToCaptureRequest = new HttpResponseMessage();
 
-			var page = new TwoFactorAuthenticationPage(ApiHttpClientMock.GetClient(responseToCaptureRequest), StaticSystemDateTime.Past, "body");
+			var page = new TwoFactorAuthenticationPage(ApiHttpClientMock.GetClient(responseToCaptureRequest), StaticSystemDateTime.Past, Locales.Us, "body");
 
 			await Assert.ThrowsExceptionAsync<LoginFailedException>(() => page.SubmitAsync("2fa"));
 

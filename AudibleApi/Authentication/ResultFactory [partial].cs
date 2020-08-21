@@ -28,22 +28,16 @@ namespace AudibleApi.Authentication
         public virtual Task<bool> IsMatchAsync(HttpResponseMessage response)
             => Task.FromResult(response?.Content != null);
 
-        public virtual async Task<LoginResult> CreateResultAsync(IHttpClient client, ISystemDateTime systemDateTime, HttpResponseMessage response, Dictionary<string, string> oldInputs)
+        public virtual async Task<LoginResult> CreateResultAsync(IHttpClient client, ISystemDateTime systemDateTime,Locale locale,  HttpResponseMessage response, Dictionary<string, string> oldInputs)
         {
-			if (client is null)
-				throw new ArgumentNullException(nameof(client));
-
-			if (systemDateTime is null)
-				throw new ArgumentNullException(nameof(systemDateTime));
-
-			if (response is null)
-                throw new ArgumentNullException(nameof(response));
+            ArgumentValidator.EnsureNotNull(client, nameof(client));
+            ArgumentValidator.EnsureNotNull(systemDateTime, nameof(systemDateTime));
+            ArgumentValidator.EnsureNotNull(locale, nameof(locale));
+            ArgumentValidator.EnsureNotNull(response, nameof(response));
+            ArgumentValidator.EnsureNotNull(oldInputs, nameof(oldInputs));
 
             if (response.Content is null)
                 throw new ArgumentException();
-
-            if (oldInputs is null)
-                throw new ArgumentNullException(nameof(oldInputs));
 
             if (!await IsMatchAsync(response))
                 throw new LoginFailedException("IsMatch validation failed");

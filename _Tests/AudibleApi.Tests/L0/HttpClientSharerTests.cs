@@ -51,7 +51,8 @@ namespace HttpClientSharerTests
 		{
 			var log = new List<string>();
 			var settings = new HttpClientSharer(newHandler(() => log.Add("send")));
-			var client = settings.GetSharedHttpClient(Resources.STATIC_AmazonApiUri);
+			var locale = Localization.Get("us");
+			var client = settings.GetSharedHttpClient(locale.AmazonApiUri());
 
 			var httpClient = client as HttpClient;
 			httpClient.BaseAddress.AbsoluteUri.Should().Be("https://api.amazon.com/");
@@ -65,9 +66,10 @@ namespace HttpClientSharerTests
 		public void returned_instances_are_equal()
 		{
 			var settings = new HttpClientSharer(newHandler(() => { }));
+			var locale = Localization.Get("us");
 
-			var client1 = settings.GetSharedHttpClient(Resources.STATIC_AmazonApiUri);
-			var client2 = settings.GetSharedHttpClient(Resources.STATIC_AmazonApiUri);
+			var client1 = settings.GetSharedHttpClient(locale.AmazonApiUri());
+			var client2 = settings.GetSharedHttpClient(locale.AmazonApiUri());
 
 			client1.Should().Be(client2);
 		}

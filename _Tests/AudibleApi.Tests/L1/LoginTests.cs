@@ -19,13 +19,15 @@ namespace LoginTests_L1
         [TestMethod]
         public async Task has_session_token()
         {
+            var locale = InternalUtilities.AudibleApiStorage.TEST_GetFirstAccount().Locale;
+
             // live HttpClientHandler
             var login = new Authenticate(
-				InternalUtilities.AudibleApiStorage.TEST_GetFirstAccount().Locale,
+                locale,
                 ApiHttpClient.Create(),
                 new SystemDateTime());
 
-            await LoginTests_L0.LoadSessionCookiesAsync.has_session_token(login);
+            await LoginTests_L0.LoadSessionCookiesAsync.has_session_token(login, locale);
         }
     }
 }

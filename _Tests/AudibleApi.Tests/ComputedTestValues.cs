@@ -145,7 +145,7 @@ namespace TestAudibleApiCommon
 
 		public static string CredentialsPageMetadataPlaintext => getValue(nameof(CredentialsPageMetadataPlaintext));
 		private static string getNewCredentialsPageMetadataPlaintext()
-			=> CredentialsPage.GenerateMetadata(123456789L);
+			=> CredentialsPage.GenerateMetadata(Locales.Us, 123456789L);
 
 		public static string CredentialsPageMetadataEncrypted => getValue(nameof(CredentialsPageMetadataEncrypted));
 		private static string getNewCredentialsPageMetadataEncrypted()

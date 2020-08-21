@@ -32,13 +32,13 @@ namespace AudibleApi.Authentication
                 return otpCodeNodes != null && otpCodeNodes.Any();
             }
 
-            public override async Task<LoginResult> CreateResultAsync(IHttpClient client, ISystemDateTime systemDateTime, HttpResponseMessage response, Dictionary<string, string> oldInputs)
+            public override async Task<LoginResult> CreateResultAsync(IHttpClient client, ISystemDateTime systemDateTime, Locale locale, HttpResponseMessage response, Dictionary<string, string> oldInputs)
             {
                 // shared validation
-                await base.CreateResultAsync(client, systemDateTime, response, oldInputs);
+                await base.CreateResultAsync(client, systemDateTime, locale, response, oldInputs);
 
                 var body = await response.Content.ReadAsStringAsync();
-                return new TwoFactorAuthenticationPage(client, systemDateTime, body);
+                return new TwoFactorAuthenticationPage(client, systemDateTime, locale, body);
             }
         }
     }
