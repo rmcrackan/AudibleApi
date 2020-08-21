@@ -24,7 +24,7 @@ namespace AudibleApi.Authentication
 			var response = await makeRequestAsync(
 				client,
 				HttpMethod.Post,
-				new Uri(Resources.AmazonLoginUri, "/ap/signin"),
+				new Uri(Resources.STATIC_AmazonLoginUri, "/ap/signin"),
 				new FormUrlEncodedContent(inputs));
 
             // passes client for later use. ie: client is not used in this call
@@ -39,7 +39,7 @@ namespace AudibleApi.Authentication
         {
 			#region debug
 			var preCallCookies = client.CookieJar
-				.EnumerateCookies(Resources.AmazonLoginUri)
+				.EnumerateCookies(Resources.STATIC_AmazonLoginUri)
 				?.ToList()
 				.Select(c => $"{c.Name}={c.Value}")
 				.Aggregate("", (a, b) => $"{a};{b}")
@@ -56,7 +56,7 @@ namespace AudibleApi.Authentication
 
 			#region debug
 			var postCallCookies = client.CookieJar
-				.EnumerateCookies(Resources.AmazonLoginUri)
+				.EnumerateCookies(Resources.STATIC_AmazonLoginUri)
 				?.ToList()
 				.Select(c => $"{c.Name}={c.Value}")
 				.Aggregate("", (a, b) => $"{a};{b}")

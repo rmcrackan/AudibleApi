@@ -7,24 +7,26 @@ namespace AudibleApi
 	{
 		public const string UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 12_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148";
 
-		private static string _audibleApiUrl
-			=> $"https://api.audible.{Localization.CurrentLocale.Domain}";
-		public static Uri AudibleApiUri => new Uri(_audibleApiUrl);
+		public static Uri STATIC_AudibleApiUri => Localization.CurrentLocale.AudibleApiUri();
+		private static string _audibleApiUrl(this Locale locale) => $"https://api.audible.{locale.Domain}";
+		public static Uri AudibleApiUri(this Locale locale) => new Uri(locale._audibleApiUrl());
 
-		private static string _amazonApiUrl
-			=> $"https://api.amazon.{Localization.CurrentLocale.Domain}";
-		public static Uri AmazonApiUri => new Uri(_amazonApiUrl);
+		public static Uri STATIC_AmazonApiUri => Localization.CurrentLocale.AmazonApiUri();
+		private static string _amazonApiUrl(this Locale locale) => $"https://api.amazon.{locale.Domain}";
+		public static Uri AmazonApiUri(this Locale locale) => new Uri(locale._amazonApiUrl());
 
-		private static string _amazonLoginUrl
-			=> $"https://www.amazon.{Localization.CurrentLocale.Domain}";
-		public static Uri AmazonLoginUri => new Uri(_amazonLoginUrl);
+		public static Uri STATIC_AmazonLoginUri => Localization.CurrentLocale.AmazonLoginUri();
+		private static string _amazonLoginUrl(this Locale locale) => $"https://www.amazon.{locale.Domain}";
+		public static Uri AmazonLoginUri(this Locale locale) => new Uri(locale._amazonLoginUrl());
 
-		private static string buildOauth()
+		public static string STATIC_OAuthUrl => Localization.CurrentLocale.OAuthUrl();
+		public static string OAuthUrl(this Locale locale) => locale._amazonLoginUrl() + "/ap/signin?" + locale.buildOauth();
+		private static string buildOauth(this Locale locale)
 		{
 			// this helps dramatically with debugging
-			var return_to = $"{AmazonLoginUri.GetOrigin()}/ap/maplanding";
-			var assoc_handle = $"amzn_audible_ios_{Localization.CurrentLocale.CountryCode}";
-			var marketPlaceId = Localization.CurrentLocale.MarketPlaceId;
+			var return_to = $"{STATIC_AmazonLoginUri.GetOrigin()}/ap/maplanding";
+			var assoc_handle = $"amzn_audible_ios_{locale.CountryCode}";
+			var marketPlaceId = locale.MarketPlaceId;
 
 			var q = System.Web.HttpUtility.ParseQueryString("");
 
@@ -42,7 +44,7 @@ namespace AudibleApi
 			q["accountStatusPolicy"] = "P1";
 			q["openid.mode"] = "checkid_setup";
 			q["openid.oa2.client_id"] = "device:6a52316c62706d53427a5735505a76477a45375959566674327959465a6374424a53497069546d45234132435a4a5a474c4b324a4a564d";
-			q["language"] = LanguageTag;
+			q["language"] = STATIC_LanguageTag;
 			q["marketPlaceId"] = marketPlaceId;
 			q["openid.oa2.scope"] = "device_auth_access";
 			q["forceMobileLayout"] = "true";
@@ -54,13 +56,11 @@ namespace AudibleApi
 
 			return str;
 		}
-		public static string OAuthUrl
-			=> _amazonLoginUrl + "/ap/signin?" + buildOauth();
 
-		public static string RegisterDomain
-			=> $".amazon.{Localization.CurrentLocale.Domain}";
+		public static string STATIC_RegisterDomain => Localization.CurrentLocale.RegisterDomain();
+		public static string RegisterDomain(this Locale locale) => $".amazon.{locale.Domain}";
 
-		public static string LanguageTag
-			=> Localization.CurrentLocale.Language;
+		public static string STATIC_LanguageTag => Localization.CurrentLocale.LanguageTag();
+		public static string LanguageTag(this Locale locale) => locale.Language;
 	}
 }

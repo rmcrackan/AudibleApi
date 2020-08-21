@@ -16,7 +16,7 @@ namespace AudibleApi
         private IIdentityMaintainer _identityMaintainer { get; }
 
         private ISealedHttpClient _client
-            => Sharer.GetSharedHttpClient(Resources.AudibleApiUri);
+            => Sharer.GetSharedHttpClient(_identityMaintainer.Locale.AudibleApiUri());
 
 		public Api(IIdentityMaintainer identityMaintainer)
 		{

@@ -33,13 +33,13 @@ namespace AudibleApi.Authentication
 		private void initClientState()
 		{
 			loginClient.Timeout = new TimeSpan(0, 0, 30);
-			loginClient.BaseAddress = Resources.AmazonLoginUri;
+			loginClient.BaseAddress = Resources.STATIC_AmazonLoginUri;
 
             loginClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
             loginClient.DefaultRequestHeaders.Add("Accept-Charset", "utf-8");
-            loginClient.DefaultRequestHeaders.Add("Accept-Language", Resources.LanguageTag);
-            loginClient.DefaultRequestHeaders.Add("Host", Resources.AmazonLoginUri.Host);
-            loginClient.DefaultRequestHeaders.Add("Origin", Resources.AmazonLoginUri.GetOrigin());
+            loginClient.DefaultRequestHeaders.Add("Accept-Language", Resources.STATIC_LanguageTag);
+            loginClient.DefaultRequestHeaders.Add("Host", Resources.STATIC_AmazonLoginUri.Host);
+            loginClient.DefaultRequestHeaders.Add("Origin", Resources.STATIC_AmazonLoginUri.GetOrigin());
             loginClient.DefaultRequestHeaders.Add("User-Agent", Resources.UserAgent);
         }
 
@@ -51,9 +51,9 @@ namespace AudibleApi.Authentication
             var iterations = 0;
 
             // reload 'get' until session token is in cookies
-            while (!loginClient.CookieJar.EnumerateCookies(Resources.AmazonLoginUri).Any(c => c.Name.ToLower() == "session-token"))
+            while (!loginClient.CookieJar.EnumerateCookies(Resources.STATIC_AmazonLoginUri).Any(c => c.Name.ToLower() == "session-token"))
             {
-                await loginClient.GetAsync(Resources.AmazonLoginUri);
+                await loginClient.GetAsync(Resources.STATIC_AmazonLoginUri);
 
                 iterations++;
 
@@ -72,7 +72,7 @@ namespace AudibleApi.Authentication
 
             // post 1st visit: set OAUTH_URL header
             // this will be our referer for all login calls AFTER initial oauth get
-            loginClient.DefaultRequestHeaders.Add("Referer", Resources.OAuthUrl);
+            loginClient.DefaultRequestHeaders.Add("Referer", Resources.STATIC_OAuthUrl);
 
             var page = new CredentialsPage(loginClient, _systemDateTime, login1_body);
             return await page.SubmitAsync(email, password);
@@ -80,7 +80,7 @@ namespace AudibleApi.Authentication
 
         private async Task<string> getInitialLoginPage()
         {
-            var response = await loginClient.GetAsync(Resources.OAuthUrl);
+            var response = await loginClient.GetAsync(Resources.STATIC_OAuthUrl);
             response.EnsureSuccessStatusCode();
 
             var login1_body = await response.Content.ReadAsStringAsync();

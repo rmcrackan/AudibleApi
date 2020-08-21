@@ -10,6 +10,7 @@ namespace AudibleApi.Authorization
 	public interface IIdentityMaintainer
 	{
 		ISystemDateTime SystemDateTime { get; }
+		Locale Locale { get; }
 
 		Task<AccessToken> GetAccessTokenAsync();
 		Task<AdpToken> GetAdpTokenAsync();

@@ -18,7 +18,7 @@ namespace AudibleApi.Authorization
 		[JsonProperty]
 		private string LocaleName { get; }
 		[JsonIgnore]
-		public Locale Locale => Localization.Locales.SingleOrDefault(l => l.Name == LocaleName);
+		public Locale Locale => Localization.Get(LocaleName);
 
 		[JsonIgnore]
 		public bool IsValid { get; private set; }

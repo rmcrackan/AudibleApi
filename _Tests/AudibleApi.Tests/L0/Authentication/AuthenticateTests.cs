@@ -146,7 +146,7 @@ namespace LoginTests_L0
         {
             await login.LoadSessionCookiesAsync();
 
-            var amazonCookies = login.GetCookies(Resources.AmazonLoginUri).Cast<Cookie>().ToList();
+            var amazonCookies = login.GetCookies(Resources.STATIC_AmazonLoginUri).Cast<Cookie>().ToList();
             var cookieNames = amazonCookies.Select(c => c.Name);
             cookieNames.Should().Contain("session-token");
         }

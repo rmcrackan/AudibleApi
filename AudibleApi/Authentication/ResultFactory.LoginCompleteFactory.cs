@@ -33,7 +33,7 @@ namespace AudibleApi.Authentication
 				var body = await response.Content.ReadAsStringAsync();
 
 				var cookies = client.CookieJar
-					.EnumerateCookies(Resources.AmazonLoginUri)
+					.EnumerateCookies(Resources.STATIC_AmazonLoginUri)
 					?.Select(c => new KeyValuePair<string, string>(c.Name, c.Value))
 					.ToList();
 

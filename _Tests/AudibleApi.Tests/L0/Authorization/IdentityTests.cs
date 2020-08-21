@@ -42,7 +42,7 @@ namespace Authoriz.IdentityTests
 		[TestMethod]
 		public void invalid()
 		{
-			var us = new Identity(Localization.Locales.Single(l => l.Name == "us"));
+			var us = new Identity(Localization.Get("us"));
 			us.IsValid.Should().BeFalse();
 			us.Locale.Name.Should().Be("us");
 		}

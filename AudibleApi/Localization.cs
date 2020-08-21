@@ -8,7 +8,10 @@ namespace AudibleApi
 {
 	public static class Localization
 	{
-		public static ReadOnlyCollection<Locale> Locales => _locales.AsReadOnly();
+		//// doesn't seem to be needed. if I'm wrong: uncomment
+		//public static ReadOnlyCollection<Locale> Locales => _locales.AsReadOnly();
+
+		public static Locale Get(string localeName) => _locales.SingleOrDefault(l => l.Name == localeName) ?? Locale.Empty;
 
 		public static Locale CurrentLocale { get; private set; }
 

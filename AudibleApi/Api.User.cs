@@ -24,7 +24,7 @@ namespace AudibleApi
         public async Task<JObject> UserProfileAsync()
         {
 			// note: this call uses the amazon api uri, NOT audible
-			var client = Sharer.GetSharedHttpClient(Resources.AmazonApiUri);
+			var client = Sharer.GetSharedHttpClient(Resources.STATIC_AmazonApiUri);
 
             var accessToken = await _identityMaintainer.GetAccessTokenAsync();
             var request = new HttpRequestMessage(HttpMethod.Get, $"/user/profile?access_token={accessToken.TokenValue}");

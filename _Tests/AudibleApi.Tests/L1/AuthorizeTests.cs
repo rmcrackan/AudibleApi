@@ -32,7 +32,7 @@ namespace Authorize_L1
 		[TestMethod]
 		public async Task<string> GetRegisterStringAsync()
 		{
-			var locale = Localization.Locales.Single(l => l.Name == "us");
+			var locale = Localization.Get("us");
 			var auth = new Authorize(locale);
 			var identity = REAL.GetIdentity();
 			var regStr = await auth.RegisterAsync(identity.ExistingAccessToken, identity.Cookies.ToKeyValuePair());

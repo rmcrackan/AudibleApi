@@ -10,6 +10,8 @@ namespace AudibleApi.Authorization
 	public class IdentityMaintainer : IIdentityMaintainer
 	{
 		public ISystemDateTime SystemDateTime { get; }
+		public Locale Locale => _identity.Locale;
+
 		private IIdentity _identity { get; }
 		private IAuthorize _authorize { get; }
 
