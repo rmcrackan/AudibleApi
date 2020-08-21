@@ -926,26 +926,17 @@ namespace ApiTests_L0.Sealed
 		[TestMethod]
 		public async Task valid()
 		{
-			try
-			{
-				Localization.SetLocale(Locales.UkName);
+			var response = new HttpResponseMessage { StatusCode = HttpStatusCode.Found };
+			response.Headers.Location = new Uri("https://cds.audible.com/downloadme?a=1");
 
-				var response = new HttpResponseMessage { StatusCode = HttpStatusCode.Found };
-				response.Headers.Location = new Uri("https://cds.audible.com/downloadme?a=1");
+			var handler = HttpMock.GetHandler(response);
+			var api = await ApiHttpClientMock.GetApiAsync(handler, Locales.Uk);
 
-				var handler = HttpMock.GetHandler(response);
-				var api = await ApiHttpClientMock.GetApiAsync(handler);
+			var client = api.Sharer.GetSharedHttpClient(new Uri("http://t.co"));
 
-				var client = api.Sharer.GetSharedHttpClient(new Uri("http://t.co"));
+			var downloadLink = await api.GetDownloadLinkAsync(client, "asin", "file.xyz");
 
-				var downloadLink = await api.GetDownloadLinkAsync(client, "asin", "file.xyz");
-
-				downloadLink.Should().Be("https://cds.audible.co.uk/downloadme?a=1");
-			}
-			finally
-			{
-				Localization.SetLocale(Locales.UsName);
-			}
+			downloadLink.Should().Be("https://cds.audible.co.uk/downloadme?a=1");
 		}
 	}
 }

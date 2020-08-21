@@ -1,4 +1,5 @@
 ﻿using System;
+using AudibleApi;
 using AudibleApi.Authorization;
 using Newtonsoft.Json.Linq;
 using static AuthorizationShared.Shared.AccessTokenTemporality;
@@ -33,10 +34,10 @@ namespace AuthorizationShared
 		public static DateTime GetAccessTokenExpires_Parsed(AccessTokenTemporality time)
 			=> DateTime.Parse(GetAccessTokenExpires(time));
 
-		private static JObject getIdentityJObject(AccessTokenTemporality time)
+		private static JObject getIdentityJObject(AccessTokenTemporality time, Locale locale = null)
 			=> new JObject {
 				{
-					"LocaleName", "us"
+					"LocaleName", locale?.Name ?? "us"
 				},
 				{
 					"ExistingAccessToken", new JObject {
@@ -73,11 +74,11 @@ namespace AuthorizationShared
 				}
 			};
 
-		public static string GetIdentityJson(AccessTokenTemporality time)
-			=> getIdentityJObject(time).ToString().Replace("\\n", "\n");
+		public static Identity GetIdentity(AccessTokenTemporality time, Locale locale = null)
+			=> Identity.FromJson(GetIdentityJson(time, locale));
 
-		public static Identity GetIdentity(AccessTokenTemporality time)
-			=> Identity.FromJson(GetIdentityJson(time));
+		public static string GetIdentityJson(AccessTokenTemporality time, Locale locale = null)
+			=> getIdentityJObject(time, locale).ToString().Replace("\\n", "\n");
 
 		public static string GetNestedIdentityJson(AccessTokenTemporality time)
 			=> new JObject {

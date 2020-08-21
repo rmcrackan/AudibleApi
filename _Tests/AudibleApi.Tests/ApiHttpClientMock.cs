@@ -32,12 +32,12 @@ namespace TestAudibleApiCommon
 			return await GetApiAsync(handler);
 		}
 
-		public static async Task<Api> GetApiAsync(HttpClientHandler handler)
+		public static async Task<Api> GetApiAsync(HttpClientHandler handler, Locale locale = null)
 		{
-			var idMgr = GetIdentity(Future);
+			var idMgr = GetIdentity(Future, locale);
 			var sharer = new HttpClientSharer(handler);
 			var systemDateTime = StaticSystemDateTime.Past;
-			var authorize = new Authorize(Locale.Empty, sharer, systemDateTime);
+			var authorize = new Authorize(idMgr.Locale, sharer, systemDateTime);
 			var maintainer = await IdentityMaintainer.CreateAsync(idMgr, authorize, systemDateTime);
 			return new Api(maintainer, sharer);
 		}

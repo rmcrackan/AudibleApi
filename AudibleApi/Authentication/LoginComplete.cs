@@ -11,7 +11,7 @@ namespace AudibleApi.Authentication
     {
         public Identity Identity { get; }
 
-        public LoginComplete(IHttpClient client, ISystemDateTime systemDateTime, Locale locale, string responseBody, Identity identity) : base(client, systemDateTime, locale, responseBody)
+        public LoginComplete(IHttpClient client, ISystemDateTime systemDateTime, string responseBody, Identity identity) : base(client, systemDateTime, identity?.Locale, responseBody)
             => Identity = identity ?? throw new ArgumentNullException(nameof(identity));
     }
 }
