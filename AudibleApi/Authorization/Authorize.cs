@@ -39,18 +39,20 @@ namespace AudibleApi.Authorization
 		private const string appName = "Audible";
 
 		private ISystemDateTime _systemDateTime { get; }
+		private Locale _locale { get; }
 
 		private IHttpClientSharer _sharer { get; }
 		private ISealedHttpClient _client
 			=> _sharer.GetSharedHttpClient(Resources.AmazonApiUri);
 
-		public Authorize() : this(new HttpClientSharer(), new SystemDateTime())
+		public Authorize(Locale locale) : this(locale, new HttpClientSharer(), new SystemDateTime())
 			=> StackBlocker.ApiTestBlocker();
 
-		public Authorize(IHttpClientSharer sharer, ISystemDateTime systemDateTime)
+		public Authorize(Locale locale, IHttpClientSharer sharer, ISystemDateTime systemDateTime)
 		{
 			_sharer = sharer ?? throw new ArgumentNullException(nameof(sharer));
 			_systemDateTime = systemDateTime ?? throw new ArgumentNullException(nameof(systemDateTime));
+			_locale = locale ?? throw new ArgumentNullException(nameof(locale));
 		}
 
 		public async Task<JObject> RegisterAsync(AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies)

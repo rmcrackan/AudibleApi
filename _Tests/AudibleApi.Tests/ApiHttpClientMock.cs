@@ -37,7 +37,7 @@ namespace TestAudibleApiCommon
 			var idMgr = GetIdentity(Future);
 			var sharer = new HttpClientSharer(handler);
 			var systemDateTime = StaticSystemDateTime.Past;
-			var authorize = new Authorize(sharer, systemDateTime);
+			var authorize = new Authorize(Locale.Empty, sharer, systemDateTime);
 			var maintainer = await IdentityMaintainer.CreateAsync(idMgr, authorize, systemDateTime);
 			return new Api(maintainer, sharer);
 		}

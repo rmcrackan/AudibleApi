@@ -177,7 +177,7 @@ namespace Authoriz.IdentityMaintainerTests
 			var systemDateTime = StaticSystemDateTime.Past;
 			var maintainer = await IdentityMaintainer.CreateAsync(
 				identity,
-				new Authorize(sharer, systemDateTime),
+				new Authorize(Locale.Empty, sharer, systemDateTime),
 				systemDateTime);
 
 			var returnToken = await maintainer.GetAccessTokenAsync();

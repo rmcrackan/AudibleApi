@@ -17,7 +17,7 @@ namespace AudibleApi.Authorization
 		{
 			StackBlocker.ApiTestBlocker();
 
-			var authorize = new Authorize();
+			var authorize = new Authorize(identity?.Locale);
 			var systemDateTime = new SystemDateTime();
 
 			return await CreateAsync(identity, authorize, systemDateTime);

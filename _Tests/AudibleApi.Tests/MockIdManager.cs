@@ -16,6 +16,7 @@ namespace TestAudibleApiCommon
 			: base(
 			identity,
 			new Authorize(
+				Locale.Empty,
 				new HttpClientSharer(handler),
 				StaticSystemDateTime.Past),
 			StaticSystemDateTime.Past)

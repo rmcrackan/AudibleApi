@@ -121,6 +121,9 @@ namespace StackBlockerTests_L1_Pass
 			identity
 				.Setup(a => a.IsValid)
 				.Returns(true);
+			identity
+				.Setup(a => a.Locale)
+				.Returns(Locale.Empty);
 			await IdentityMaintainer.CreateAsync(identity.Object);
 		}
 
@@ -142,7 +145,7 @@ namespace StackBlockerTests_L1_Pass
 	{
 		[TestMethod]
 		public void access_from_L1_passes()
-			=> new Authorize();
+			=> new Authorize(Locale.Empty);
 	}
 
 	[TestClass]
