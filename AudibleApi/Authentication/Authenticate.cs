@@ -16,17 +16,19 @@ namespace AudibleApi.Authentication
 		private IHttpClient loginClient { get; }
 
 		private ISystemDateTime _systemDateTime { get; }
+        private Locale _locale { get; }
 
-		public Authenticate() : this(ApiHttpClient.Create(), new SystemDateTime())
+        public Authenticate(Locale locale) : this(locale, ApiHttpClient.Create(), new SystemDateTime())
 			=> StackBlocker.ApiTestBlocker();
 
-		public Authenticate(IHttpClient client, ISystemDateTime systemDateTime)
+		public Authenticate(Locale locale, IHttpClient client, ISystemDateTime systemDateTime)
 		{
 			loginClient = client ?? throw new ArgumentNullException(nameof(client));
 			if (loginClient.CookieJar.ReflectOverAllCookies().Count > 0)
 				throw new ArgumentException("Cannot use a client which already has cookies");
 
-			_systemDateTime = systemDateTime ?? throw new ArgumentNullException(nameof(systemDateTime));
+            _systemDateTime = systemDateTime ?? throw new ArgumentNullException(nameof(systemDateTime));
+            _locale = locale ?? throw new ArgumentNullException(nameof(locale));
 
             initClientState();
         }

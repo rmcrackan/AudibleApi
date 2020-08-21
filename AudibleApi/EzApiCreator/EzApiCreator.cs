@@ -15,11 +15,12 @@ namespace AudibleApi
 		/// <summary>
 		/// Create a new Audible Api object
 		/// </summary>
+		/// <param name="locale">Audible region/locale to connect to</param>
 		/// <param name="identityFilePath">Load from and save to the file at this path</param>
 		/// <param name="loginCallback">Object with callback methods allowing for initial login</param>
 		/// <param name="jsonPath">Optional JSONPath for location of identity tokens inside identity file</param>
 		/// <returns>Object which enables calls to the Audible API</returns>
-		public static async Task<Api> GetApiAsync(string identityFilePath, string jsonPath = null, ILoginCallback loginCallback = null)
+		public static async Task<Api> GetApiAsync(Locale locale, string identityFilePath, string jsonPath = null, ILoginCallback loginCallback = null)
 		{
 			StackBlocker.ApiTestBlocker();
 
@@ -30,7 +31,7 @@ namespace AudibleApi
 			}
 			catch (Exception ex) // TODO: exceptions should not be used for control flow. fix this
 			{
-				var inMemoryIdentity = await loginAsync(loginCallback);
+				var inMemoryIdentity = await loginAsync(locale, loginCallback);
 				identityPersister = new IdentityPersister(inMemoryIdentity, identityFilePath, jsonPath);
 			}
 
@@ -43,13 +44,13 @@ namespace AudibleApi
 		// - Each step in the login process will return a LoginResult
 		// - Each result which has required user input has a SubmitAsync method
 		// - The final LoginComplete result returns "Identity" -- in-memory authorization items
-		private static async Task<Identity> loginAsync(ILoginCallback responder)
+		private static async Task<Identity> loginAsync(Locale locale, ILoginCallback responder)
 		{
 			Dinah.Core.ArgumentValidator.EnsureNotNull(responder, nameof(responder));
 
 			var (email, password) = responder.GetLogin();
 
-			var login = new Authenticate();
+			var login = new Authenticate(locale);
 			var loginResult = await login.SubmitCredentialsAsync(email, password);
 
 			while (true)

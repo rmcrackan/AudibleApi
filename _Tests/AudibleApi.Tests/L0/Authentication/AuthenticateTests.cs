@@ -22,27 +22,31 @@ namespace LoginTests_L0
 	{
 		[TestMethod]
 		public void access_from_L0_throws()
-			=> Assert.ThrowsException<MethodAccessException>(() => new Authenticate());
+			=> Assert.ThrowsException<MethodAccessException>(() => new Authenticate(Locale.Empty));
 	}
 
     [TestClass]
     public class ctor_client_systemDateTime
     {
         [TestMethod]
+        public void null_locale_throws()
+            => Assert.ThrowsException<ArgumentNullException>(() => new Authenticate(null, ApiHttpClient.Create(HttpMock.GetHandler()), new Mock<ISystemDateTime>().Object));
+
+        [TestMethod]
         public void null_httpClientHandler_throws()
-            => Assert.ThrowsException<ArgumentNullException>(() => new Authenticate(null, new Mock<ISystemDateTime>().Object));
+            => Assert.ThrowsException<ArgumentNullException>(() => new Authenticate(Locale.Empty, null, new Mock<ISystemDateTime>().Object));
 
 		[TestMethod]
 		public void has_cookies_throws()
 		{
 			var client = ApiHttpClient.Create(HttpMock.GetHandler());
 			client.CookieJar.Add(new Cookie("foo", "bar", "/", "a.com"));
-			Assert.ThrowsException<ArgumentException>(() => new Authenticate(client, new Mock<ISystemDateTime>().Object));
+			Assert.ThrowsException<ArgumentException>(() => new Authenticate(Locale.Empty, client, new Mock<ISystemDateTime>().Object));
 		}
 
 		[TestMethod]
 		public void null_systemDateTime_throws()
-			=> Assert.ThrowsException<ArgumentNullException>(() => new Authenticate(ApiHttpClient.Create(HttpMock.GetHandler()), null));
+			=> Assert.ThrowsException<ArgumentNullException>(() => new Authenticate(Locale.Empty, ApiHttpClient.Create(HttpMock.GetHandler()), null));
     }
 
     [TestClass]
@@ -51,7 +55,7 @@ namespace LoginTests_L0
         private Authenticate GetLogin(HttpClientHandler handler)
         {
 			var client = ApiHttpClient.Create(handler);
-			var login = new Authenticate(client, new Mock<ISystemDateTime>().Object)
+			var login = new Authenticate(Locale.Empty, client, new Mock<ISystemDateTime>().Object)
 			{
 				MaxLoadSessionCookiesTrips = 3
 			};

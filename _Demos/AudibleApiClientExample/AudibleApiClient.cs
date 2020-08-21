@@ -20,7 +20,11 @@ namespace AudibleApiClientExample
 		public async static Task<AudibleApiClient> CreateClientAsync()
 		{
 			Localization.SetLocale("us");
-			var api = await EzApiCreator.GetApiAsync(AudibleApiStorage.AccountsSettingsFile, AudibleApiStorage.TEST_GetFirstIdentityTokensJsonPath(), new LoginCallback());
+			var api = await EzApiCreator.GetApiAsync(
+				AudibleApiStorage.TEST_GetFirstAccount().Locale,
+				AudibleApiStorage.AccountsSettingsFile,
+				AudibleApiStorage.TEST_GetFirstIdentityTokensJsonPath(),
+				new LoginCallback());
 			return new AudibleApiClient { _api = api };
 		}
 

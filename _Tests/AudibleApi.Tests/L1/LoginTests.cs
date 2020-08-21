@@ -20,7 +20,10 @@ namespace LoginTests_L1
         public async Task has_session_token()
         {
             // live HttpClientHandler
-            var login = new Authenticate(ApiHttpClient.Create(), new SystemDateTime());
+            var login = new Authenticate(
+				InternalUtilities.AudibleApiStorage.TEST_GetFirstAccount().Locale,
+                ApiHttpClient.Create(),
+                new SystemDateTime());
 
             await LoginTests_L0.LoadSessionCookiesAsync.has_session_token(login);
         }
