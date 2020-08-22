@@ -40,7 +40,7 @@ namespace AudibleApi
 			q["accountStatusPolicy"] = "P1";
 			q["openid.mode"] = "checkid_setup";
 			q["openid.oa2.client_id"] = "device:6a52316c62706d53427a5735505a76477a45375959566674327959465a6374424a53497069546d45234132435a4a5a474c4b324a4a564d";
-			q["language"] = locale.LanguageTag();
+			q["language"] = locale.Language;
 			q["marketPlaceId"] = marketPlaceId;
 			q["openid.oa2.scope"] = "device_auth_access";
 			q["forceMobileLayout"] = "true";
@@ -54,7 +54,5 @@ namespace AudibleApi
 		}
 
 		public static string RegisterDomain(this Locale locale) => $".amazon.{locale.Domain}";
-
-		public static string LanguageTag(this Locale locale) => locale.Language;
 	}
 }

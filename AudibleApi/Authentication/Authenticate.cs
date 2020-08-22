@@ -41,7 +41,7 @@ namespace AudibleApi.Authentication
 
             loginClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
             loginClient.DefaultRequestHeaders.Add("Accept-Charset", "utf-8");
-            loginClient.DefaultRequestHeaders.Add("Accept-Language", _locale.LanguageTag());
+            loginClient.DefaultRequestHeaders.Add("Accept-Language", _locale.Language);
             loginClient.DefaultRequestHeaders.Add("Host", baseUri.Host);
             loginClient.DefaultRequestHeaders.Add("Origin", baseUri.GetOrigin());
             loginClient.DefaultRequestHeaders.Add("User-Agent", Resources.UserAgent);

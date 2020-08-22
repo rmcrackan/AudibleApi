@@ -37,7 +37,7 @@ https://www.amazon.co.uk/ap/signin?openid.identity=http%3a%2f%2fspecs.openid.net
 ".Trim();
 			uk.OAuthUrl().Should().Be(oauthExpected);
 			uk.RegisterDomain().Should().Be(".amazon.co.uk");
-			uk.LanguageTag().Should().Be("en-GB");
+			uk.Language.Should().Be("en-GB");
 		}
 	}
 }

@@ -14,18 +14,11 @@
     "language": "en-GB"
   },
   {
-    "name": "germany",
-    "countryCode": "de",
-    "domain": "de",
-    "marketPlaceId": "AN7V1F1VY261K",
-    "language": "de-DE"
-  },
-  {
-    "name": "france",
-    "countryCode": "fr",
-    "domain": "fr",
-    "marketPlaceId": "A2728XDNODOQ8T",
-    "language": "fr-FR"
+    "name": "australia",
+    "countryCode": "au",
+    "domain": "com.au",
+    "marketPlaceId": "AN7EY7DTAW63G",
+    "language": "en-AU"
   },
   {
     "name": "canada",
@@ -35,10 +28,38 @@
     "language": "en-CA"
   },
   {
-    "name": "australia",
-    "countryCode": "au",
-    "domain": "com.au",
-    "marketPlaceId": "AN7EY7DTAW63G",
-    "language": "en-AU"
+    "name": "france",
+    "countryCode": "fr",
+    "domain": "fr",
+    "marketPlaceId": "A2728XDNODOQ8T",
+    "language": "fr-FR"
+  },
+  {
+    "name": "germany",
+    "countryCode": "de",
+    "domain": "de",
+    "marketPlaceId": "AN7V1F1VY261K",
+    "language": "de-DE"
+  },
+  {
+    "name": "india",
+    "countryCode": "in",
+    "domain": "in",
+    "marketPlaceId": "AJO3FBRUE6J4S",
+    "language": "en-IN"
+  },
+  {
+    "name": "italy",
+    "countryCode": "it",
+    "domain": "it",
+    "marketPlaceId": "A2N7FU2W2BU2ZC",
+    "language": "it"
+  },
+  {
+    "name": "japan",
+    "countryCode": "jp",
+    "domain": "co.jp",
+    "marketPlaceId": "A1QAP3MOU4173J",
+    "language": "ja"
   }
 ]
