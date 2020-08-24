@@ -7,7 +7,7 @@ namespace AudibleApi.Authorization
     /// <summary>
     /// Manages Audible API's state of authorization/authentication keys, tokens, and cookies
     /// </summary>
-    public interface IIdentity : Updatable
+    public interface IIdentity : IUpdatable
     {
         Locale Locale { get; }
 
