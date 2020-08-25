@@ -23,33 +23,36 @@ namespace LocaleTests
 	public class ctor
 	{
 		[TestMethod]
-		[DataRow(null, "cc", "dd", "mp", "ll")]
-		[DataRow("nn", null, "dd", "mp", "ll")]
-		[DataRow("nn", "cc", null, "mp", "ll")]
-		[DataRow("nn", "cc", "dd", null, "ll")]
-		[DataRow("nn", "cc", "dd", "mp", null)]
-		public void null_param_throws(string name, string countryCode, string domain, string marketPlaceId, string language)
-			=> Assert.ThrowsException<ArgumentNullException>(() => new Locale(name, countryCode, domain, marketPlaceId, language));
+		[DataRow(null, "ld", "cc", "td", "mp", "ll")]
+		[DataRow("nn", null, "cc", "td", "mp", "ll")]
+		[DataRow("nn", "ld", null, "td", "mp", "ll")]
+		[DataRow("nn", "ld", "cc", null, "mp", "ll")]
+		[DataRow("nn", "ld", "cc", "td", null, "ll")]
+		[DataRow("nn", "ld", "cc", "td", "mp", null)]
+		public void null_param_throws(string name, string loginDomain, string countryCode, string topDomain, string marketPlaceId, string language)
+			=> Assert.ThrowsException<ArgumentNullException>(() => new Locale(name, loginDomain, countryCode, topDomain, marketPlaceId, language));
 
 		[TestMethod]
-		[DataRow("", "cc", "dd", "mp", "ll")]
-		[DataRow("   ", "cc", "dd", "mp", "ll")]
-		[DataRow("nn", "", "dd", "mp", "ll")]
-		[DataRow("nn", "   ", "dd", "mp", "ll")]
-		[DataRow("nn", "cc", "", "mp", "ll")]
-		[DataRow("nn", "cc", "   ", "mp", "ll")]
-		[DataRow("nn", "cc", "dd", "", "ll")]
-		[DataRow("nn", "cc", "dd", "   ", "ll")]
-		[DataRow("nn", "cc", "dd", "mp", "")]
-		[DataRow("nn", "cc", "dd", "mp", "   ")]
-		public void blank_param_throws(string name, string countryCode, string domain, string marketPlaceId, string language)
-			=> Assert.ThrowsException<ArgumentException>(() => new Locale(name, countryCode, domain, marketPlaceId, language));
+		[DataRow("", "ld", "cc", "td", "mp", "ll")]
+		[DataRow("   ", "ld", "cc", "td", "mp", "ll")]
+		[DataRow("nn", "", "cc", "td", "mp", "ll")]
+		[DataRow("nn", "   ", "cc", "td", "mp", "ll")]
+		[DataRow("nn", "ld", "", "td", "mp", "ll")]
+		[DataRow("nn", "ld", "   ", "td", "mp", "ll")]
+		[DataRow("nn", "ld", "cc", "", "mp", "ll")]
+		[DataRow("nn", "ld", "cc", "   ", "mp", "ll")]
+		[DataRow("nn", "ld", "cc", "td", "", "ll")]
+		[DataRow("nn", "ld", "cc", "td", "   ", "ll")]
+		[DataRow("nn", "ld", "cc", "td", "mp", "")]
+		[DataRow("nn", "ld", "cc", "td", "mp", "   ")]
+		public void blank_param_throws(string name, string loginDomain, string countryCode, string topDomain, string marketPlaceId, string language)
+			=> Assert.ThrowsException<ArgumentException>(() => new Locale(name, loginDomain, countryCode, topDomain, marketPlaceId, language));
 
 		[TestMethod]
 		public void instances_are_equal()
 		{
-			var locale1 = new Locale("nn", "cc", "dd", "mp", "ll");
-			var locale2 = new Locale("nn", "cc", "dd", "mp", "ll");
+			var locale1 = new Locale("nn", "ld", "cc", "td", "mp", "ll");
+			var locale2 = new Locale("nn", "ld", "cc", "td", "mp", "ll");
 
 			Assert.IsTrue(locale1 == locale2);
 			Assert.IsTrue(locale1.Equals(locale2));
