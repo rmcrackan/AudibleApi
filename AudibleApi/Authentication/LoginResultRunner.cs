@@ -110,7 +110,11 @@ namespace AudibleApi.Authentication
             var redirectUri = response.Headers.Location;
             if (!redirectUri.IsAbsoluteUri)
                 redirectUri = new Uri(uri.GetOrigin() + redirectUri);
-            Console.WriteLine($"Redirecting to {redirectUri}");
+			
+			var debugMsg = $"Redirecting to {redirectUri}";
+			Serilog.Log.Information(debugMsg);
+            Console.WriteLine(debugMsg);
+
 			// re-directs should always be GET
             return await makeRequestAsync(client, locale, HttpMethod.Get, redirectUri);
         }

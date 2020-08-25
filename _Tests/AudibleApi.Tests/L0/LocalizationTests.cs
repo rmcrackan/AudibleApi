@@ -28,7 +28,7 @@ namespace LocalizationTests
 			var us = Localization.Get("us");
 
 			us.CountryCode.Should().Be("us");
-			us.Domain.Should().Be("com");
+			us.TopDomain.Should().Be("com");
 			us.MarketPlaceId.Should().Be("AF2M0KC94RCEA");
 			us.Language.Should().Be("en-US");
 		}

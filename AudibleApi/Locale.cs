@@ -11,8 +11,9 @@ namespace AudibleApi
 
 		public string Name { get; }
 
+		public string LoginDomain { get; }
 		public string CountryCode { get; }
-		public string Domain { get; }
+		public string TopDomain { get; }
 		public string MarketPlaceId { get; }
 		public string Language { get; }
 
@@ -45,7 +46,7 @@ namespace AudibleApi
 			Name = name.Trim();
 
 			CountryCode = countryCode.Trim();
-			Domain = domain.Trim();
+			TopDomain = domain.Trim();
 			MarketPlaceId = marketPlaceId.Trim();
 			Language = language.Trim();
 		}
@@ -55,7 +56,7 @@ namespace AudibleApi
 			yield return Name;
 
 			yield return CountryCode;
-			yield return Domain;
+			yield return TopDomain;
 			yield return MarketPlaceId;
 			yield return Language;
 		}

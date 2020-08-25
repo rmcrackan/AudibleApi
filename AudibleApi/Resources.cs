@@ -7,13 +7,13 @@ namespace AudibleApi
 	{
 		public const string UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 12_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148";
 
-		private static string _audibleApiUrl(this Locale locale) => $"https://api.audible.{locale.Domain}";
+		private static string _audibleApiUrl(this Locale locale) => $"https://api.audible.{locale.TopDomain}";
 		public static Uri AudibleApiUri(this Locale locale) => new Uri(locale._audibleApiUrl());
 
-		private static string _amazonApiUrl(this Locale locale) => $"https://api.amazon.{locale.Domain}";
+		private static string _amazonApiUrl(this Locale locale) => $"https://api.amazon.{locale.TopDomain}";
 		public static Uri AmazonApiUri(this Locale locale) => new Uri(locale._amazonApiUrl());
 
-		private static string _amazonLoginUrl(this Locale locale) => $"https://www.amazon.{locale.Domain}";
+		private static string _amazonLoginUrl(this Locale locale) => $"https://www.{locale.LoginDomain}.{locale.TopDomain}";
 		public static Uri AmazonLoginUri(this Locale locale) => new Uri(locale._amazonLoginUrl());
 
 		public static string OAuthUrl(this Locale locale) => locale._amazonLoginUrl() + "/ap/signin?" + locale.buildOauth();
@@ -53,6 +53,6 @@ namespace AudibleApi
 			return str;
 		}
 
-		public static string RegisterDomain(this Locale locale) => $".amazon.{locale.Domain}";
+		public static string RegisterDomain(this Locale locale) => $".amazon.{locale.TopDomain}";
 	}
 }

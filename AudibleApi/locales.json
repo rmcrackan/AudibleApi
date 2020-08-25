@@ -1,65 +1,82 @@
 [
   {
     "name": "us",
+    "loginDomain": "amazon",
     "countryCode": "us",
-    "domain": "com",
+    "topDomain": "com",
     "marketPlaceId": "AF2M0KC94RCEA",
     "language": "en-US"
   },
   {
     "name": "uk",
+    "loginDomain": "amazon",
     "countryCode": "uk",
-    "domain": "co.uk",
+    "topDomain": "co.uk",
     "marketPlaceId": "A2I9A3Q2GNFNGQ",
     "language": "en-GB"
   },
   {
     "name": "australia",
+    "loginDomain": "amazon",
     "countryCode": "au",
-    "domain": "com.au",
+    "topDomain": "com.au",
     "marketPlaceId": "AN7EY7DTAW63G",
     "language": "en-AU"
   },
   {
     "name": "canada",
+    "loginDomain": "amazon",
     "countryCode": "ca",
-    "domain": "ca",
+    "topDomain": "ca",
     "marketPlaceId": "A2CQZ5RBY40XE",
     "language": "en-CA"
   },
   {
     "name": "france",
+    "loginDomain": "amazon",
     "countryCode": "fr",
-    "domain": "fr",
+    "topDomain": "fr",
     "marketPlaceId": "A2728XDNODOQ8T",
     "language": "fr-FR"
   },
   {
     "name": "germany",
+    "loginDomain": "amazon",
     "countryCode": "de",
-    "domain": "de",
+    "topDomain": "de",
     "marketPlaceId": "AN7V1F1VY261K",
     "language": "de-DE"
   },
   {
     "name": "india",
+    "loginDomain": "amazon",
     "countryCode": "in",
-    "domain": "in",
+    "topDomain": "in",
     "marketPlaceId": "AJO3FBRUE6J4S",
     "language": "en-IN"
   },
   {
     "name": "italy",
+    "loginDomain": "amazon",
     "countryCode": "it",
-    "domain": "it",
+    "topDomain": "it",
     "marketPlaceId": "A2N7FU2W2BU2ZC",
     "language": "it"
   },
   {
     "name": "japan",
+    "loginDomain": "amazon",
     "countryCode": "jp",
-    "domain": "co.jp",
+    "topDomain": "co.jp",
     "marketPlaceId": "A1QAP3MOU4173J",
     "language": "ja"
+  },
+  {
+    "name": "pre-amazon",
+    "loginDomain": "audible",
+    "countryCode": "us",
+    "topDomain": "com",
+    "marketPlaceId": "AF2M0KC94RCEA",
+    "language": "en-US"
   }
 ]

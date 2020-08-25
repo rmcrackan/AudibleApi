@@ -235,7 +235,7 @@ namespace AudibleApi
 			var cdsRoot = "https://cds.audible.";
 			downloadUrl = downloadUrl.Replace(
 				$"{cdsRoot}com",
-				$"{cdsRoot}{_locale.Domain}");
+				$"{cdsRoot}{_locale.TopDomain}");
 
 			return downloadUrl;
 		}
