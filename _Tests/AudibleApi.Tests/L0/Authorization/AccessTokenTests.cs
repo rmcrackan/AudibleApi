@@ -62,7 +62,7 @@ namespace Authoriz.AccessTokenTests
 			e.TokenValue.Length.Should().BeGreaterThan(2);
 			e.TokenValue.Length.Should().BeLessThan(10);
 
-			e.Expires.Should().Be(DateTime.MaxValue);
+			e.Expires.Should().Be(DateTime.MinValue);
 		}
 	}
 

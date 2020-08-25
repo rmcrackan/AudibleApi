@@ -295,7 +295,7 @@ namespace Authoriz.IdentityTests
 			idMgr.PrivateKey.Value.Should().Be(pk);
 			idMgr.AdpToken.Value.Should().Be(adp);
 			idMgr.ExistingAccessToken.TokenValue.Should().Be(AccessToken.Empty.TokenValue);
-			idMgr.ExistingAccessToken.Expires.Should().Be(DateTime.MaxValue);
+			idMgr.ExistingAccessToken.Expires.Should().Be(DateTime.MinValue);
 			idMgr.RefreshToken.Value.Should().Be(rt);
 
 			log.Count.Should().Be(1);

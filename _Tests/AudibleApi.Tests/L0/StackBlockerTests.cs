@@ -117,7 +117,7 @@ namespace StackBlockerTests_L1_Pass
 			var identity = new Mock<IIdentity>();
 			identity
 				.Setup(a => a.ExistingAccessToken)
-				.Returns(AccessToken.Empty);
+				.Returns(AccessToken.EmptyFuture);
 			identity
 				.Setup(a => a.IsValid)
 				.Returns(true);
