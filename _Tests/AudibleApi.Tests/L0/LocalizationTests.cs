@@ -27,6 +27,7 @@ namespace LocalizationTests
 		{
 			var us = Localization.Get("us");
 
+			us.LoginDomain.Should().Be("amazon");
 			us.CountryCode.Should().Be("us");
 			us.TopDomain.Should().Be("com");
 			us.MarketPlaceId.Should().Be("AF2M0KC94RCEA");

@@ -17,15 +17,17 @@ namespace AudibleApi
 		public string MarketPlaceId { get; }
 		public string Language { get; }
 
-		public Locale(string name, string countryCode, string domain, string marketPlaceId, string language)
+		public Locale(string name, string loginDomain, string countryCode, string topDomain, string marketPlaceId, string language)
 		{
 			if (name is null)
 				throw new ArgumentNullException(nameof(name));
 
+			if (loginDomain is null)
+				throw new ArgumentNullException(nameof(loginDomain));
 			if (countryCode is null)
 				throw new ArgumentNullException(nameof(countryCode));
-			if (domain is null)
-				throw new ArgumentNullException(nameof(domain));
+			if (topDomain is null)
+				throw new ArgumentNullException(nameof(topDomain));
 			if (marketPlaceId is null)
 				throw new ArgumentNullException(nameof(marketPlaceId));
 			if (language is null)
@@ -34,10 +36,12 @@ namespace AudibleApi
 			if (string.IsNullOrWhiteSpace(name))
 				throw new ArgumentException($"{name} may not be blank", nameof(name));
 
+			if (string.IsNullOrWhiteSpace(loginDomain))
+				throw new ArgumentException($"{loginDomain} may not be blank", nameof(loginDomain));
 			if (string.IsNullOrWhiteSpace(countryCode))
 				throw new ArgumentException($"{countryCode} may not be blank", nameof(countryCode));
-			if (string.IsNullOrWhiteSpace(domain))
-				throw new ArgumentException($"{domain} may not be blank", nameof(domain));
+			if (string.IsNullOrWhiteSpace(topDomain))
+				throw new ArgumentException($"{topDomain} may not be blank", nameof(topDomain));
 			if (string.IsNullOrWhiteSpace(marketPlaceId))
 				throw new ArgumentException($"{marketPlaceId} may not be blank", nameof(marketPlaceId));
 			if (string.IsNullOrWhiteSpace(language))
@@ -45,8 +49,9 @@ namespace AudibleApi
 
 			Name = name.Trim();
 
+			LoginDomain = loginDomain.Trim();
 			CountryCode = countryCode.Trim();
-			TopDomain = domain.Trim();
+			TopDomain = topDomain.Trim();
 			MarketPlaceId = marketPlaceId.Trim();
 			Language = language.Trim();
 		}
@@ -55,6 +60,7 @@ namespace AudibleApi
 		{
 			yield return Name;
 
+			yield return LoginDomain;
 			yield return CountryCode;
 			yield return TopDomain;
 			yield return MarketPlaceId;
