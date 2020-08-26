@@ -88,21 +88,19 @@ namespace AuthorizationShared
 						new JObject {
 							{ "Username", "Uno" },
 							{ "DecryptKey", "11111111" },
-							// TODO: give Locale: us
-							{ "IdentityTokens", getIdentityJObject(time) }
+							{ "IdentityTokens", getIdentityJObject(time, Localization.Get("us")) }
 						},
-						//// TODO: new object. duplicate username. unique username+locale
-						//new JObject {
-						//	{ "Username", "Uno" },
-						//	{ "DecryptKey", "11111111" },
-						//	// TODO: give Locale: uk
-						//	{ "IdentityTokens", GetIdentityJson(time) }
-						//},
+						// duplicate username, diff locale (uk)
+						new JObject {
+							{ "Username", "Uno" },
+							{ "DecryptKey", "11111111" },
+							{ "IdentityTokens", GetIdentityJson(time, Localization.Get("uk")) }
+						},
+						// duplicate locale, diff username
 						new JObject {
 							{ "Username", "Dos" },
 							{ "DecryptKey", "22222222" },
-							// TODO: give Locale: us
-							{ "IdentityTokens", getIdentityJObject(time) }
+							{ "IdentityTokens", getIdentityJObject(time, Localization.Get("us")) }
 						}
 					}
 				}
