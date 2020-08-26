@@ -19,10 +19,11 @@ namespace AudibleApiClientExample
 		private AudibleApiClient() { }
 		public async static Task<AudibleApiClient> CreateClientAsync()
 		{
+			var account = AudibleApiStorage.GetPersistentAccountsSettings().GetAll().FirstOrDefault();
 			var api = await EzApiCreator.GetApiAsync(
-				AudibleApiStorage.TEST_GetFirstAccount().Locale,
+				account.Locale,
 				AudibleApiStorage.AccountsSettingsFile,
-				AudibleApiStorage.TEST_GetFirstIdentityTokensJsonPath(),
+				account.GetIdentityTokensJsonPath(),
 				new LoginCallback());
 			return new AudibleApiClient { _api = api };
 		}
