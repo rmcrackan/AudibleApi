@@ -86,19 +86,19 @@ namespace AuthorizationShared
 				{
 					"Accounts", new JArray {
 						new JObject {
-							{ "Username", "Uno" },
+							{ "AccountId", "Uno" },
 							{ "DecryptKey", "11111111" },
 							{ "IdentityTokens", getIdentityJObject(time, Localization.Get("us")) }
 						},
-						// duplicate username, diff locale (uk)
+						// duplicate AccountId, diff locale (uk)
 						new JObject {
-							{ "Username", "Uno" },
+							{ "AccountId", "Uno" },
 							{ "DecryptKey", "11111111" },
 							{ "IdentityTokens", GetIdentityJson(time, Localization.Get("uk")) }
 						},
-						// duplicate locale, diff username
+						// duplicate locale, diff AccountId
 						new JObject {
-							{ "Username", "Dos" },
+							{ "AccountId", "Dos" },
 							{ "DecryptKey", "22222222" },
 							{ "IdentityTokens", getIdentityJObject(time, Localization.Get("us")) }
 						}
@@ -106,12 +106,8 @@ namespace AuthorizationShared
 				}
 			}.ToString().Replace("\\n", "\n");
 		public static string JsonPathMatch =>
-			//TODO: WITH LOCALE// "$.Accounts[?(@.Username == 'Uno' && @.IdentityTokens.Locale == 'uk')].IdentityTokens"
-			"$.Accounts[?(@.Username == 'Uno')].IdentityTokens"
-			;
+			"$.Accounts[?(@.AccountId == 'Uno' && @.IdentityTokens.LocaleName == 'us')].IdentityTokens";
 		public static string JsonPathNonMatch =>
-			//TODO: WITH LOCALE// "$.Accounts[?(@.Username == 'Juan' && @.IdentityTokens.Locale == 'uk')].IdentityTokens"
-			"$.Accounts[?(@.Username == 'Juan')].IdentityTokens"
-			;
+			"$.Accounts[?(@.AccountId == 'Juan' && @.IdentityTokens.LocaleName == 'us')].IdentityTokens";
 	}
 }

@@ -153,7 +153,7 @@ namespace StackBlockerTests_L1_Pass
 	{
 		[TestMethod]
 		public void access_from_L1_passes()
-			=> new AudibleApi.Authentication.Authenticate(Locale.Empty);
+			=> new AudibleApi.Authentication.Authenticate(Localization.Get("us"));
 	}
 
 	[TestClass]
