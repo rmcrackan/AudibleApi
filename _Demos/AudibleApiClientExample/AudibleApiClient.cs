@@ -50,7 +50,10 @@ namespace AudibleApiClientExample
 
 			url
 				= "/1.0/library"
-				+ "?purchaseAfterDate=01/01/1970&page=23";
+				+ "?purchased_after=1980-01-01T00:00:00Z"
+				+ "&num_results=1000"
+				+ "&page=1"
+				;
 			//url = "/1.0/library/" +
 			//	//TINY_BOOK_ASIN
 			//	MEDIUM_BOOK_ASIN
@@ -68,6 +71,53 @@ namespace AudibleApiClientExample
 			var jObj = await responseMsg.Content.ReadAsJObjectAsync();
 			var str = jObj.ToString(Formatting.Indented);
 			Console.WriteLine(str);
+		}
+
+		// what signafies that a book is part of 'audible plus'?
+		public Task CompareProducts() => wrapCallAsync(compareProductsAsync);
+		private async Task compareProductsAsync()
+		{
+			var asins = new (string asin, string note)[] {
+				("B00FKAHZ62", "borrowing from plus"),
+				("B017V4IM1G", "i own. not in plus"),
+				("B082MQ5TDB", "i own. was a free original. is available in plus"),
+				("B002V19RO6", "i own. was not free. is available in plus")
+			};
+
+			var topLevelFields = new[] { "asin", "title", "subtitle" };
+
+			// write headers
+			Console.Write("note\t");
+			foreach (var f in topLevelFields)
+				Console.Write(f + "\t");
+			Console.Write("isMinerva");
+			Console.WriteLine();
+
+			foreach (var (asin, note) in asins)
+			{
+				Console.Write(note + "\t");
+
+				var url = "/1.0/library/" + asin;
+				url += url.Contains("?") ? "&" : "?";
+				var allGroups = "response_groups=badge_types,category_ladders,claim_code_url,contributors,is_downloaded,is_returnable,media,origin_asin,pdf_url,percent_complete,price,product_attrs,product_desc,product_extended_attrs,product_plan_details,product_plans,provided_review,rating,relationships,review_attrs,reviews,sample,series,sku";
+				url += allGroups;
+
+				var responseMsg = await _api.AdHocAuthenticatedGetAsync(url);
+				var jObj = await responseMsg.Content.ReadAsJObjectAsync();
+				var debugStr = jObj.ToString(Formatting.Indented);
+
+				foreach (var f in topLevelFields)
+				{
+					var s = jObj["item"][f].ToString(Formatting.Indented);
+					Console.Write(s + "\t");
+				}
+
+				// plans
+				var minerva = jObj["item"]["plans"].ToArray().SingleOrDefault(x => x["plan_name"].Value<string>() == "US Minerva");
+				Console.Write(minerva?["start_date"].ToString(Formatting.Indented));
+
+				Console.WriteLine();
+			}
 		}
 
 		public Task AccountInfoAsync() => wrapCallAsync(accountInfoAsync);

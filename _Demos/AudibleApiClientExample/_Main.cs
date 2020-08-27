@@ -23,11 +23,12 @@ namespace AudibleApiClientExample
 			var client = await AudibleApiClient.CreateClientAsync();
 
 			//// use client
-			//await client.PrintLibraryAsync();
+			await client.PrintLibraryAsync();
 			//await client.DownloadBookAsync();
 			//await client.DocumentLibraryResponseGroupOptionsAsync();
 			//await client.DeserializeSingleBookAsync();
-			await client.AccountInfoAsync();
+			//await client.AccountInfoAsync();
+			//await client.CompareProducts();
 		}
 	}
 }
