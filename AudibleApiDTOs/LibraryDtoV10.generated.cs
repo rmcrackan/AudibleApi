@@ -22,25 +22,28 @@ namespace AudibleApiDTOs
 		public string[] ResponseGroups { get; set; }
 	}
 
-	public partial class Item
-	{
-		[JsonProperty("asin")]
-		public string Asin { get; set; }
+    public partial class Item
+    {
+        [JsonProperty("asin")]
+        public string Asin { get; set; }
 
-		[JsonProperty("audible_editors_summary")]
-		public string AudibleEditorsSummary { get; set; }
+        [JsonProperty("audible_editors_summary")]
+        public string AudibleEditorsSummary { get; set; }
 
-		[JsonProperty("authors")]
-		public Person[] Authors { get; set; }
+        [JsonProperty("authors")]
+        public Person[] Authors { get; set; }
 
-		[JsonProperty("availability")]
-		public object Availability { get; set; }
+        [JsonProperty("availability")]
+        public object Availability { get; set; }
 
-		[JsonProperty("available_codecs")]
-		public AvailableCodec[] AvailableCodecs { get; set; }
+        [JsonProperty("available_codecs")]
+        public AvailableCodec[] AvailableCodecs { get; set; }
 
-		[JsonProperty("badge_types")]
-		public object BadgeTypes { get; set; }
+        [JsonProperty("badge_types")]
+        public object BadgeTypes { get; set; }
+
+		[JsonProperty("benefit_id")]
+		public string BenefitId { get; set; }
 
 		[JsonProperty("buying_options")]
 		public object BuyingOptions { get; set; }
@@ -50,6 +53,9 @@ namespace AudibleApiDTOs
 
 		[JsonProperty("claim_code_url")]
 		public object ClaimCodeUrl { get; set; }
+
+		[JsonProperty("collection_ids")]
+		public object CollectionIds { get; set; }
 
 		[JsonProperty("content_delivery_type")]
 		public string ContentDeliveryType { get; set; }
@@ -102,6 +108,9 @@ namespace AudibleApiDTOs
 		[JsonProperty("is_adult_product")]
 		public bool? IsAdultProduct { get; set; }
 
+		[JsonProperty("is_ayce")]
+		public bool? IsAyce { get; set; }
+
 		[JsonProperty("is_buyable")]
 		public object IsBuyable { get; set; }
 
@@ -117,6 +126,12 @@ namespace AudibleApiDTOs
 		[JsonProperty("is_listenable")]
 		public bool? IsListenable { get; set; }
 
+		[JsonProperty("is_pdf_url_available")]
+		public object IsPdfUrlAvailable { get; set; }
+
+		[JsonProperty("is_playable")]
+		public object IsPlayable { get; set; }
+
 		[JsonProperty("is_preorderable")]
 		public object IsPreorderable { get; set; }
 
@@ -125,6 +140,9 @@ namespace AudibleApiDTOs
 
 		[JsonProperty("is_searchable")]
 		public object IsSearchable { get; set; }
+
+		[JsonProperty("is_visible")]
+		public object IsVisible { get; set; }
 
 		[JsonProperty("is_ws4v_companion_asin_owned")]
 		public object IsWs4VCompanionAsinOwned { get; set; }
@@ -141,6 +159,9 @@ namespace AudibleApiDTOs
 		[JsonProperty("language")]
 		public string Language { get; set; }
 
+		[JsonProperty("library_status")]
+		public LibraryStatus LibraryStatus { get; set; }
+
 		[JsonProperty("member_giving_status")]
 		public object MemberGivingStatus { get; set; }
 
@@ -155,6 +176,9 @@ namespace AudibleApiDTOs
 
 		[JsonProperty("narrators")]
 		public Person[] Narrators { get; set; }
+
+		[JsonProperty("new_episode_added_date")]
+		public object NewEpisodeAddedDate { get; set; }
 
 		[JsonProperty("order_id")]
 		public object OrderId { get; set; }
@@ -191,6 +215,12 @@ namespace AudibleApiDTOs
 
 		[JsonProperty("platinum_keywords")]
 		public object PlatinumKeywords { get; set; }
+
+		[JsonProperty("preorder_release_date")]
+		public object PreorderReleaseDate { get; set; }
+
+		[JsonProperty("preorder_status")]
+		public object PreorderStatus { get; set; }
 
 		[JsonProperty("price")]
 		public Price Price { get; set; }
@@ -231,6 +261,9 @@ namespace AudibleApiDTOs
 		[JsonProperty("release_date")]
 		public DateTimeOffset? ReleaseDate { get; set; }
 
+		[JsonProperty("review_status")]
+		public object ReviewStatus { get; set; }
+
 		[JsonProperty("runtime_length_min")]
 		public int? RuntimeLengthMin { get; set; }
 
@@ -260,6 +293,9 @@ namespace AudibleApiDTOs
 
 		[JsonProperty("title")]
 		public string Title { get; set; }
+
+		[JsonProperty("voice_description")]
+		public object VoiceDescription { get; set; }
 
 		[JsonProperty("ws4v_companion_asin")]
 		public object Ws4VCompanionAsin { get; set; }
@@ -444,8 +480,26 @@ namespace AudibleApiDTOs
 		public long? NumUnhelpfulVotes { get; set; }
 	}
 
+	public partial class LibraryStatus
+	{
+		[JsonProperty("date_added")]
+		public DateTimeOffset? DateAdded { get; set; }
+
+		[JsonProperty("is_preordered")]
+		public object IsPreordered { get; set; }
+
+		[JsonProperty("is_removable")]
+		public bool? IsRemovable { get; set; }
+
+		[JsonProperty("is_visible")]
+		public object IsVisible { get; set; }
+	}
+
 	public partial class Plan
 	{
+		[JsonProperty("customer_eligible")]
+		public object CustomerEligible { get; set; }
+
 		[JsonProperty("detail_plan_names")]
 		public object DetailPlanNames { get; set; }
 
