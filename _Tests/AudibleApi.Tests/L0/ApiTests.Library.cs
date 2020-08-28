@@ -381,7 +381,7 @@ namespace ApiTests_L0.Sealed
 			var tester = new ApiCallTester(LibraryFull);
 			await tester.Api.GetLibraryAsync();
 
-			var expected = "/1.0/library?purchaseAfterDate=01/01/1970";
+			var expected = "/1.0/library?purchased_after=1970-01-01T00:00:00Z";
 			tester.CapturedRequest
 				.RequestUri.OriginalString
 				.Should().Be(expected);
@@ -391,7 +391,7 @@ namespace ApiTests_L0.Sealed
 	[TestClass]
 	public class GetLibraryAsync_libraryOptions
 	{
-		const string LibDefault = "/1.0/library?purchaseAfterDate=01/01/1970";
+		const string LibDefault = "/1.0/library?purchased_after=1970-01-01T00:00:00Z";
 
 		[TestMethod]
 		public async Task null_returns_default()
@@ -434,7 +434,7 @@ namespace ApiTests_L0.Sealed
 	[TestClass]
 	public class GetLibraryAsync_string
 	{
-		const string LibDefault = "/1.0/library?purchaseAfterDate=01/01/1970";
+		const string LibDefault = "/1.0/library?purchased_after=1970-01-01T00:00:00Z";
 
 		[TestMethod]
 		public async Task null_returns_default()

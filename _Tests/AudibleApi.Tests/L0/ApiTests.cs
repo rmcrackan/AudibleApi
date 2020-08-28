@@ -180,7 +180,7 @@ namespace ApiTests_L0
 
             api ??= await ApiHttpClientMock.GetApiAsync(LibraryFull);
 
-            var url = "/1.0/library?purchaseAfterDate=01/01/1970";
+            var url = "/1.0/library?purchased_after=1970-01-01T00:00:00Z";
 
             var response = await api.AdHocAuthenticatedGetAsync(url);
 			var str = await response.Content.ReadAsStringAsync();

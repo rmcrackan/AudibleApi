@@ -288,7 +288,7 @@ namespace CryptographyTests
         public void headers_are_populated()
         {
             // no body
-            var request = new HttpRequestMessage(HttpMethod.Get, "/1.0/library?purchaseAfterDate=01/01/1970");
+            var request = new HttpRequestMessage(HttpMethod.Get, "/1.0/library?purchased_after=1970-01-01T00:00:00Z");
 
             Cryptography.SignRequest(request, date, adpToken, privateKey);
 
@@ -313,7 +313,7 @@ namespace CryptographyTests
 		public string CreateGetSignature()
 		{
 			// no body
-			var request = new HttpRequestMessage(HttpMethod.Get, "/1.0/library?purchaseAfterDate=01/01/1970");
+			var request = new HttpRequestMessage(HttpMethod.Get, "/1.0/library?purchased_after=1970-01-01T00:00:00Z");
 
 			var signature = Cryptography.CalculateSignature(request, date, adpToken, privateKey);
 			return signature;
