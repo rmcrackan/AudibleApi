@@ -196,7 +196,7 @@ namespace AudibleApi
 
 		#region GetLibraryAsync
 		public Task<JObject> GetLibraryAsync()
-			=> getLibraryAsync("purchaseAfterDate=01/01/1970");
+			=> getLibraryAsync(new LibraryOptions { PurchasedAfter = new DateTime(1970, 1, 1) }.ToQueryString());
 
 		public async Task<JObject> GetLibraryAsync(LibraryOptions libraryOptions)
 		{
@@ -250,6 +250,46 @@ namespace AudibleApi
 			var response = await AdHocAuthenticatedGetAsync(url);
 			var obj = await response.Content.ReadAsJObjectAsync();
 			return obj;
+		}
+		#endregion
+
+		#region GetAllLibraryItemsAsync
+		public async Task<List<AudibleApiDTOs.Item>> GetAllLibraryItemsAsync()
+		{
+			var allItems = new List<AudibleApiDTOs.Item>();
+
+			for (var i = 1; ; i++)
+			{
+				var page = await GetLibraryAsync(new LibraryOptions
+				{
+					NumberOfResultPerPage = 1000,
+					PageNumber = i,
+					PurchasedAfter = new DateTime(2000, 1, 1),
+					ResponseGroups = LibraryOptions.ResponseGroupOptions.ALL_OPTIONS
+				});
+
+				var pageStr = page.ToString();
+
+				AudibleApiDTOs.LibraryDtoV10 libResult;
+				try
+				{
+					// important! use this convert/deser method
+					libResult = AudibleApiDTOs.LibraryDtoV10.FromJson(pageStr);
+				}
+				catch (Exception ex)
+				{
+					Serilog.Log.Logger.Error(ex, "Error converting library for importing use. Full library:\r\n" + pageStr);
+					throw;
+				}
+
+				if (!libResult.Items.Any())
+					break;
+
+				Serilog.Log.Logger.Information($"Page {i}: {libResult.Items.Length} results");
+				allItems.AddRange(libResult.Items);
+			}
+
+			return allItems;
 		}
 		#endregion
 	}
