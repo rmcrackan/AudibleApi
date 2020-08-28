@@ -24,13 +24,18 @@ namespace L1.Tests
 			}
 		}
 
-		public static Account GetFirstAccount()
-			=> AudibleApiStorage.GetPersistentAccountsSettings().GetAll().FirstOrDefault();
+		public static string JsonPath
+			=> AudibleApiStorage
+				.GetAccountsSettingsPersister()
+				.AccountsSettings
+				.GetAll()
+				.FirstOrDefault()
+				.GetIdentityTokensJsonPath();
 
 		public static Identity GetIdentity()
-			=> Identity.FromJson(File.ReadAllText(_tokenFilePath), GetFirstAccount().GetIdentityTokensJsonPath());
+			=> Identity.FromJson(File.ReadAllText(_tokenFilePath), JsonPath);
 
 		public static IdentityPersister GetIdentityPersister()
-			=> new IdentityPersister(_tokenFilePath, GetFirstAccount().GetIdentityTokensJsonPath());
+			=> new IdentityPersister(_tokenFilePath, JsonPath);
 	}
 }
