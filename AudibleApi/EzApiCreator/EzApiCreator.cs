@@ -47,8 +47,7 @@ namespace AudibleApi
 		private static async Task<Identity> loginAsync(Locale locale, ILoginCallback responder)
 		{
 			Dinah.Core.ArgumentValidator.EnsureNotNull(responder, nameof(responder));
-
-			var (email, password) = responder.GetLogin();
+			var (email, password) = getUserLogin(responder);
 
 			var login = new Authenticate(locale);
 			var loginResult = await login.SubmitCredentialsAsync(email, password);
@@ -58,7 +57,7 @@ namespace AudibleApi
 				switch (loginResult)
 				{
 					case CredentialsPage credentialsPage:
-						var (emailInput, pwInput) = responder.GetLogin();
+						var (emailInput, pwInput) = getUserLogin(responder);
 						loginResult = await credentialsPage.SubmitAsync(emailInput, pwInput);
 						break;
 
@@ -80,6 +79,16 @@ namespace AudibleApi
 						throw new Exception("Unknown LoginResult");
 				}
 			}
+		}
+
+		private static (string email, string password) getUserLogin(ILoginCallback responder)
+		{
+			var (email, password) = responder.GetLogin();
+
+			if (email is null && password is null)
+				throw new Exception("Login attempt cancelled by user");
+
+			return (email, password);
 		}
 
 		private static async Task<byte[]> downloadImageAsync(Uri imageUri)
