@@ -86,6 +86,7 @@ namespace AudibleApi
 			var (email, password) = responder.GetLogin();
 
 			if (email is null && password is null)
+				// TODO: exceptions should not be used for control flow. fix this
 				throw new Exception("Login attempt cancelled by user");
 
 			return (email, password);

@@ -78,7 +78,7 @@ namespace AudibleApi
 			var customer = await GetCustomerInformationAsync(customerOptions);
 			var debugStr = customer.ToString(Formatting.Indented);
 			var marketPlace = customer["customer_details"]["migration_details"][0]["to_marketplaceId"].Value<string>();
-			var locale = Localization.Get(marketPlace);
+			var locale = Localization.Locales.First(l => l.MarketPlaceId == marketPlace);
 			return locale;
 		}
 

@@ -18,7 +18,7 @@ namespace AudibleApi
 
 			var handler = new HttpClientHandler
 			{
-				// AllowAutoRedirect = false needed for DownloadAaxWorkaroundAsync and seems to do no hard anywhere else
+				// AllowAutoRedirect = false needed for DownloadAaxWorkaroundAsync and seems to do no harm anywhere else
 				AllowAutoRedirect = false,
 				AutomaticDecompression =
 					DecompressionMethods.GZip |

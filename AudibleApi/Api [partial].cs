@@ -50,7 +50,7 @@ namespace AudibleApi
 		public Task<HttpResponseMessage> AdHocAuthenticatedGetAsync(string requestUri)
 			=> AdHocAuthenticatedGetAsync(requestUri, _client);
 
-		private async Task<HttpResponseMessage> AdHocAuthenticatedGetAsync(string requestUri, ISealedHttpClient client)
+        public async Task<HttpResponseMessage> AdHocAuthenticatedGetAsync(string requestUri, ISealedHttpClient client)
         {
             if (requestUri is null)
                 throw new ArgumentNullException(nameof(requestUri));
@@ -58,6 +58,13 @@ namespace AudibleApi
                 throw new ArgumentException($"{nameof(requestUri)} may not be blank");
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+
+            var response = await AdHocAuthenticatedGetAsync(request, client);
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> AdHocAuthenticatedGetAsync(HttpRequestMessage request, ISealedHttpClient client)
+        {
             await signRequestAsync(request);
 
             var response = await client.SendAsync(request);
