@@ -7,6 +7,7 @@ using AudibleApi.Authorization;
 using Dinah.Core;
 using Dinah.Core.Net;
 using Dinah.Core.Net.Http;
+using Newtonsoft.Json.Linq;
 
 namespace AudibleApi.Authentication
 {
@@ -71,7 +72,22 @@ namespace AudibleApi.Authentication
 				if (response?.Headers?.Location is null)
                     return null;
 
-                var parameters = System.Web.HttpUtility.ParseQueryString(response.Headers.Location.Query);
+                var location = response.Headers.Location;
+                var query
+                    = location.IsAbsoluteUri ? location.Query
+                    : location.OriginalString.Contains('?') ? location.OriginalString.Split('?').Last()
+                    : throw new NotAuthenticatedException(
+                        response.RequestMessage?.RequestUri,
+                        new JObject
+                        {
+                            { "requestUri", response.RequestMessage?.RequestUri?.OriginalString },
+                            { "statusCode", (int)response.StatusCode },
+                            { "responseLocation", response.Headers.Location.OriginalString },
+                            { "responseHeaders", response.Headers.ToString() },
+                        },
+                        $"{nameof(LoginCompleteFactory)}.{nameof(getAccessToken)}: error parsing response location query");
+
+                var parameters = System.Web.HttpUtility.ParseQueryString(query);
 
                 var tokenKey = "openid.oa2.access_token";
                 if (!parameters.AllKeys.Contains(tokenKey))
