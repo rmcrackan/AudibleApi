@@ -27,16 +27,29 @@ namespace AudibleApi
 			IdentityPersister identityPersister;
 			try
 			{
+				// will fail if no file entry
 				identityPersister = new IdentityPersister(identityFilePath, jsonPath);
+
+				// will fail if there's an invalid file entry. Eg: new account will have no cookies and will fail that validation step. this also means it has not yet logged in
+				var api = await createApiAsync(identityPersister.Identity);
+				return api;
 			}
 			catch (Exception debugEx) // TODO: exceptions should not be used for control flow. fix this
 			{
+				Serilog.Log.Logger.Debug("GetApiAsync. {@DebugInfo}", new
+				{
+					localeName = locale?.Name ?? "[empty]",
+					jsonPath,
+					debugEx_Message = debugEx.Message,
+					debugEx_StackTrace = debugEx.StackTrace
+				});
+
 				var inMemoryIdentity = await loginAsync(locale, loginCallback);
 				identityPersister = new IdentityPersister(inMemoryIdentity, identityFilePath, jsonPath);
-			}
 
-			var api = await createApiAsync(identityPersister.Identity);
-			return api;
+				var api = await createApiAsync(identityPersister.Identity);
+				return api;
+			}
 		}
 
 		// LOGIN PATTERN
