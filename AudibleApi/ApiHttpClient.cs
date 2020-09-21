@@ -7,7 +7,7 @@ using Dinah.Core.Net.Http;
 
 namespace AudibleApi
 {
-	public class ApiHttpClient : HttpClient, IHttpClient, ISealedHttpClient
+	public class ApiHttpClient : HttpClient, IHttpClient, IHttpClientActions
 	{
 		public CookieContainer CookieJar { get; } = new CookieContainer();
 

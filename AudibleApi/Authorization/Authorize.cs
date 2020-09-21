@@ -42,7 +42,7 @@ namespace AudibleApi.Authorization
 		private Locale _locale { get; }
 
 		private IHttpClientSharer _sharer { get; }
-		private ISealedHttpClient _client
+		private IHttpClientActions _client
 			=> _sharer.GetSharedHttpClient(_locale.AmazonApiUri());
 
 		public Authorize(Locale locale) : this(locale, new HttpClientSharer(), new SystemDateTime())

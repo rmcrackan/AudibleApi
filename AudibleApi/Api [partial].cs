@@ -16,7 +16,7 @@ namespace AudibleApi
         private IIdentityMaintainer _identityMaintainer { get; }
         private Locale _locale => _identityMaintainer.Locale;
 
-        private ISealedHttpClient _client
+        private IHttpClientActions _client
             => Sharer.GetSharedHttpClient(_identityMaintainer.Locale.AudibleApiUri());
 
 		public Api(IIdentityMaintainer identityMaintainer)
@@ -50,7 +50,7 @@ namespace AudibleApi
 		public Task<HttpResponseMessage> AdHocAuthenticatedGetAsync(string requestUri)
 			=> AdHocAuthenticatedGetAsync(requestUri, _client);
 
-        public async Task<HttpResponseMessage> AdHocAuthenticatedGetAsync(string requestUri, ISealedHttpClient client)
+        public async Task<HttpResponseMessage> AdHocAuthenticatedGetAsync(string requestUri, IHttpClientActions client)
         {
             if (requestUri is null)
                 throw new ArgumentNullException(nameof(requestUri));
@@ -63,7 +63,7 @@ namespace AudibleApi
             return response;
         }
 
-        public async Task<HttpResponseMessage> AdHocAuthenticatedGetAsync(HttpRequestMessage request, ISealedHttpClient client)
+        public async Task<HttpResponseMessage> AdHocAuthenticatedGetAsync(HttpRequestMessage request, IHttpClientActions client)
         {
             await signRequestAsync(request);
 

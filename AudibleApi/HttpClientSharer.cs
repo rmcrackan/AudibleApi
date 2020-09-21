@@ -31,9 +31,9 @@ namespace AudibleApi
 			_sharedMessageHandler = sharedMessageHandler ?? throw new ArgumentNullException(nameof(sharedMessageHandler));
 		}
 
-		private Dictionary<Uri, ISealedHttpClient> _sharedUrls { get; } = new Dictionary<Uri, ISealedHttpClient>();
-		public ISealedHttpClient GetSharedHttpClient(string uri) => GetSharedHttpClient(new Uri(uri));
-		public ISealedHttpClient GetSharedHttpClient(Uri uri)
+		private Dictionary<Uri, IHttpClientActions> _sharedUrls { get; } = new Dictionary<Uri, IHttpClientActions>();
+		public IHttpClientActions GetSharedHttpClient(string uri) => GetSharedHttpClient(new Uri(uri));
+		public IHttpClientActions GetSharedHttpClient(Uri uri)
 		{
 			if (uri is null)
 				throw new ArgumentNullException(nameof(uri));

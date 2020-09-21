@@ -24,7 +24,7 @@ namespace TestAudibleApiCommon
 				Content = new StringContent(returnString)
 			};
 
-			var mockClient = new Mock<ISealedHttpClient>();
+			var mockClient = new Mock<IHttpClientActions>();
 
 			mockClient
 				.Setup(c => c.SendAsync(It.IsAny<HttpRequestMessage>()))

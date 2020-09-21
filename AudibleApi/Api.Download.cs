@@ -219,7 +219,7 @@ namespace AudibleApi
 			return codec;
 		}
 
-		public async Task<string> GetDownloadLinkAsync(ISealedHttpClient client, string asin, string codec)
+		public async Task<string> GetDownloadLinkAsync(IHttpClientActions client, string asin, string codec)
 		{
 			ArgumentValidator.EnsureNotNull(client, nameof(client));
 			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
