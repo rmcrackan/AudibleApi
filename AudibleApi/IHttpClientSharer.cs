@@ -8,5 +8,6 @@ namespace AudibleApi
 	public interface IHttpClientSharer
 	{
 		ISealedHttpClient GetSharedHttpClient(Uri target);
+		ISealedHttpClient GetSharedHttpClient(string target);
 	}
 }

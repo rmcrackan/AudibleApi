@@ -194,7 +194,7 @@ namespace AudibleApi
 			var codec = await GetCodecAsync(asin);
 
 			// note: remainder of this method requires a DIFFERENT client
-			var client = Sharer.GetSharedHttpClient(new Uri("https://cde-ta-g7g.amazon.com"));
+			var client = Sharer.GetSharedHttpClient("https://cde-ta-g7g.amazon.com");
 
 			var downloadUrl = await GetDownloadLinkAsync(client, asin, codec);
 

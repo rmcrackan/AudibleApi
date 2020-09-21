@@ -32,6 +32,7 @@ namespace AudibleApi
 		}
 
 		private Dictionary<Uri, ISealedHttpClient> _sharedUrls { get; } = new Dictionary<Uri, ISealedHttpClient>();
+		public ISealedHttpClient GetSharedHttpClient(string uri) => GetSharedHttpClient(new Uri(uri));
 		public ISealedHttpClient GetSharedHttpClient(Uri uri)
 		{
 			if (uri is null)
