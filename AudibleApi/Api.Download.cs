@@ -239,5 +239,22 @@ namespace AudibleApi
 
 			return downloadUrl;
 		}
+
+		public async Task<string> GetPdfDownloadLinkAsync(string asin)
+		{
+			//// SEPT 2020:
+
+			//// no longer works. This url now returns 403
+			// var downloadUrl = libraryBook?.Book?.Supplements?.FirstOrDefault()?.Url;
+
+			//// this works for now:
+			// MUST use relative url here
+			var request = new HttpRequestMessage(HttpMethod.Head, $"/companion-file/{asin}");
+			var client = Sharer.GetSharedHttpClient($"https://www.audible.{_locale.TopDomain}");
+			var response = await AdHocAuthenticatedGetAsync(request, client);
+
+			var downloadUrl = response.Headers.Location.AbsoluteUri;
+			return downloadUrl;
+		}
 	}
 }
