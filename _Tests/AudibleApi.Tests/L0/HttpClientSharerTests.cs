@@ -44,7 +44,7 @@ namespace HttpClientSharerTests
 
 		[TestMethod]
 		public void null_param_throws()
-			=> Assert.ThrowsException<ArgumentNullException>(() => new HttpClientSharer(newHandler(() => { })).GetSharedHttpClient(null));
+			=> Assert.ThrowsException<ArgumentNullException>(() => new HttpClientSharer(newHandler(() => { })).GetSharedHttpClient((Uri)null));
 
 		[TestMethod]
 		public async Task uses_SharedMessageHandler()
