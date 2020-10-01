@@ -49,15 +49,21 @@ namespace AudibleApi.Authentication
                 var doc = new HtmlAgilityPack.HtmlDocument();
                 doc.LoadHtml(body);
 
-                //// uncomment for testing
-                //var sources = doc.DocumentNode.SelectNodes("//img").Select(i => i.GetAttributeValue("src", "")).ToList();
-                var docNode = doc
-                    .DocumentNode;
-                var allDEBUG = docNode.InnerHtml;
-                var node = docNode
+                var node = doc
+                    .DocumentNode
                     .SelectNodes("//img[@id='auth-captcha-image']")
                     ?.SingleOrDefault();
-                var captchaUrl = System.Web.HttpUtility.HtmlDecode(node?.Attributes["src"].Value);
+
+                var sourceUrl = node?.Attributes["src"]?.Value;
+
+                if (sourceUrl is null)
+                {
+                    var errorMsg = "CAPTCHA image cannot be retrieved";
+                    Serilog.Log.Error(errorMsg);
+                    throw new Exception(errorMsg);
+                }
+
+                var captchaUrl = System.Web.HttpUtility.HtmlDecode(sourceUrl);
                 return new Uri(captchaUrl);
             }
         }
