@@ -51,9 +51,11 @@ namespace AudibleApi.Authentication
 
                 //// uncomment for testing
                 //var sources = doc.DocumentNode.SelectNodes("//img").Select(i => i.GetAttributeValue("src", "")).ToList();
-                var node = doc
-                    .DocumentNode
-                    .SelectNodes("//img[@alt='Visual CAPTCHA image, continue down for an audio option.']")
+                var docNode = doc
+                    .DocumentNode;
+                var allDEBUG = docNode.InnerHtml;
+                var node = docNode
+                    .SelectNodes("//img[@id='auth-captcha-image']")
                     ?.SingleOrDefault();
                 var captchaUrl = System.Web.HttpUtility.HtmlDecode(node?.Attributes["src"].Value);
                 return new Uri(captchaUrl);
