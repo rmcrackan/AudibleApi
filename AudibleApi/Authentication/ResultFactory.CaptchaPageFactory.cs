@@ -59,7 +59,7 @@ namespace AudibleApi.Authentication
                 if (sourceUrl is null)
                 {
                     var errorMsg = "CAPTCHA image cannot be retrieved";
-                    Serilog.Log.Error(errorMsg);
+                    Serilog.Log.Logger.Error(errorMsg);
                     throw new Exception(errorMsg);
                 }
 

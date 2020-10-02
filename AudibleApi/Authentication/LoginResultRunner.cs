@@ -112,7 +112,7 @@ namespace AudibleApi.Authentication
                 redirectUri = new Uri(uri.GetOrigin() + redirectUri);
 			
 			var debugMsg = $"Redirecting to {redirectUri}";
-			Serilog.Log.Information(debugMsg);
+			Serilog.Log.Logger.Information(debugMsg);
             Console.WriteLine(debugMsg);
 
 			// re-directs should always be GET
