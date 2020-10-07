@@ -22,6 +22,9 @@ namespace AudibleApi.Authentication
 			if (inputs is null)
 				throw new ArgumentNullException(nameof(inputs));
 
+			// only used for debugging LoginFailedException
+			var oldInputs = getSanitizedInputs(inputs);
+
 			// uses client to make the POST request
 			var response = await makeRequestAsync(
 				client,
@@ -35,10 +38,45 @@ namespace AudibleApi.Authentication
                 if (await factory.IsMatchAsync(response))
                     return await factory.CreateResultAsync(client, systemDateTime, locale, response, inputs);
 
-            throw new LoginFailedException();
+			// no match. log inputs before throwing: old and new. hide pw
+			var body = await response.Content.ReadAsStringAsync();
+			var newInputs = HtmlHelper.GetInputs(body);
+			var responseInputs = getSanitizedInputs(newInputs);
+
+			Serilog.Log.Logger.Information("No matching result page type. {@DebugInfo}",
+				new
+				{
+					OldInputFields = oldInputs,
+					ResponseInputFields = responseInputs
+				});
+
+			throw new LoginFailedException();
         }
 
-        private static async Task<HttpResponseMessage> makeRequestAsync(IHttpClient client, Locale locale, HttpMethod method, Uri uri, HttpContent content = null)
+		private static Dictionary<string, string> getSanitizedInputs(Dictionary<string, string> inputs)
+		{
+			if (inputs == null || !inputs.Any())
+				return inputs;
+
+			return inputs
+				.Select(kvp =>
+				new
+				{
+					kvp.Key,
+					Value
+						= !kvp.Key.ContainsInsensitive("password")
+						? kvp.Value
+						: (
+							kvp.Value is null ? "[null]"
+							: kvp.Value == "" ? "[empty]"
+							: string.IsNullOrWhiteSpace(kvp.Value) ? "[blank]"
+							: "[password hidden]"
+						)
+				})
+				.ToDictionary(x => x.Key, x => x.Value);
+		}
+
+		private static async Task<HttpResponseMessage> makeRequestAsync(IHttpClient client, Locale locale, HttpMethod method, Uri uri, HttpContent content = null)
         {
 			#region debug
 			var preCallCookies = client.CookieJar
