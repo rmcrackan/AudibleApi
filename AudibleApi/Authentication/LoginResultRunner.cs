@@ -12,9 +12,9 @@ namespace AudibleApi.Authentication
     public static class LoginResultRunner
     {
         public static async Task<LoginResult> GetResultsPageAsync(IHttpClient client, ISystemDateTime systemDateTime, Locale locale, Dictionary<string, string> inputs)
-        {
-            if (client is null)
-                throw new ArgumentNullException(nameof(client));
+		{
+			if (client is null)
+				throw new ArgumentNullException(nameof(client));
 			if (systemDateTime is null)
 				throw new ArgumentNullException(nameof(systemDateTime));
 			if (locale is null)
@@ -23,7 +23,7 @@ namespace AudibleApi.Authentication
 				throw new ArgumentNullException(nameof(inputs));
 
 			// only used for debugging LoginFailedException
-			var oldInputs = getSanitizedInputs(inputs);
+			var requestInputs = getSanitizedInputs(inputs);
 
 			// uses client to make the POST request
 			var response = await makeRequestAsync(
@@ -33,46 +33,46 @@ namespace AudibleApi.Authentication
 				new Uri(locale.AmazonLoginUri(), "/ap/signin"),
 				new FormUrlEncodedContent(inputs));
 
-            // passes client for later use. ie: client is not used in this call
-            foreach (var factory in ResultFactory.GetAll())
-                if (await factory.IsMatchAsync(response))
-                    return await factory.CreateResultAsync(client, systemDateTime, locale, response, inputs);
+			// passes client for later use. ie: client is not used in this call
+			foreach (var factory in ResultFactory.GetAll())
+				if (await factory.IsMatchAsync(response))
+					return await factory.CreateResultAsync(client, systemDateTime, locale, response, inputs);
 
-			// no match. log inputs before throwing: old and new. hide pw
+			// no match. throw exception
 			var body = await response.Content.ReadAsStringAsync();
 			var newInputs = HtmlHelper.GetInputs(body);
 			var responseInputs = getSanitizedInputs(newInputs);
 
-			Serilog.Log.Logger.Information("No matching result page type. {@DebugInfo}",
-				new
-				{
-					OldInputFields = oldInputs,
-					ResponseInputFields = responseInputs
-				});
+			var loginFailedException = new LoginFailedException("No matching result page type")
+			{
+				RequestInputFields = requestInputs,
+				RequestUrl = response.RequestMessage?.RequestUri?.AbsoluteUri,
+				ResponseStatusCode = response.StatusCode,
+				ResponseInputFields = responseInputs,
+			};
+			loginFailedException.SaveResponseBodyFile(body, $"{nameof(LoginFailedException)}_ResponseBody_{DateTime.Now.Ticks}.tmp");
 
-			throw new LoginFailedException();
-        }
+			throw loginFailedException;
+		}
 
 		private static Dictionary<string, string> getSanitizedInputs(Dictionary<string, string> inputs)
 		{
 			if (inputs == null || !inputs.Any())
 				return inputs;
 
+			static string mask(KeyValuePair<string, string> kvp)
+				=> kvp.Key.EqualsInsensitive("showPasswordChecked") || kvp.Key.EqualsInsensitive("encryptedPasswordExpected") ? kvp.Value
+				: kvp.Key.ContainsInsensitive("password") ? (
+					kvp.Value is null ? "[null]"
+					: kvp.Value == "" ? "[empty]"
+					: string.IsNullOrWhiteSpace(kvp.Value) ? "[blank]"
+					: "[password hidden]")
+				: kvp.Key.EqualsInsensitive("metadata1") || kvp.Key.EqualsInsensitive("workflowState") || kvp.Key.EqualsInsensitive("ces") ? kvp.Value.Truncate(20) + "..."
+				: kvp.Key.EqualsInsensitive("email") ? kvp.Value.ToMask()
+				: kvp.Value;
+
 			return inputs
-				.Select(kvp =>
-				new
-				{
-					kvp.Key,
-					Value
-						= !kvp.Key.ContainsInsensitive("password")
-						? kvp.Value
-						: (
-							kvp.Value is null ? "[null]"
-							: kvp.Value == "" ? "[empty]"
-							: string.IsNullOrWhiteSpace(kvp.Value) ? "[blank]"
-							: "[password hidden]"
-						)
-				})
+				.Select(kvp => new { kvp.Key, Value = mask(kvp) })
 				.ToDictionary(x => x.Key, x => x.Value);
 		}
 
@@ -148,10 +148,8 @@ namespace AudibleApi.Authentication
             var redirectUri = response.Headers.Location;
             if (!redirectUri.IsAbsoluteUri)
                 redirectUri = new Uri(uri.GetOrigin() + redirectUri);
-			
-			var debugMsg = $"Redirecting to {redirectUri}";
-			Serilog.Log.Logger.Information(debugMsg);
-            Console.WriteLine(debugMsg);
+
+			Serilog.Log.Logger.Information($"Redirecting to {redirectUri}");
 
 			// re-directs should always be GET
             return await makeRequestAsync(client, locale, HttpMethod.Get, redirectUri);
