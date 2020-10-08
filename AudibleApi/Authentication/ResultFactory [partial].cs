@@ -13,7 +13,8 @@ namespace AudibleApi.Authentication
     /// </summary>
     public abstract partial class ResultFactory : Enumeration<ResultFactory>
     {
-        public static ResultFactory CredentialsPage { get; }
+		#region expose for unit testing
+		public static ResultFactory CredentialsPage { get; }
             = new CredentialsPageFactory();
         public static ResultFactory CaptchaPage { get; }
             = new CaptchaPageFactory();
@@ -21,6 +22,10 @@ namespace AudibleApi.Authentication
             = new TwoFactorAuthenticationPageFactory();
         public static ResultFactory LoginComplete { get; }
             = new LoginCompleteFactory();
+		#endregion
+
+        public static Task<bool> IsCompleteAsync(HttpResponseMessage response)
+            => new LoginCompleteFactory().IsMatchAsync(response);
 
         private static int value = 0;
         protected ResultFactory(string displayName) : base(value++, displayName) { }
@@ -28,11 +33,9 @@ namespace AudibleApi.Authentication
         public virtual Task<bool> IsMatchAsync(HttpResponseMessage response)
             => Task.FromResult(response?.Content != null);
 
-        public virtual async Task<LoginResult> CreateResultAsync(IHttpClient client, ISystemDateTime systemDateTime,Locale locale,  HttpResponseMessage response, Dictionary<string, string> oldInputs)
+        public virtual async Task<LoginResult> CreateResultAsync(Authenticate authenticate, HttpResponseMessage response, Dictionary<string, string> oldInputs)
         {
-            ArgumentValidator.EnsureNotNull(client, nameof(client));
-            ArgumentValidator.EnsureNotNull(systemDateTime, nameof(systemDateTime));
-            ArgumentValidator.EnsureNotNull(locale, nameof(locale));
+            ArgumentValidator.EnsureNotNull(authenticate, nameof(authenticate));
             ArgumentValidator.EnsureNotNull(response, nameof(response));
             ArgumentValidator.EnsureNotNull(oldInputs, nameof(oldInputs));
 

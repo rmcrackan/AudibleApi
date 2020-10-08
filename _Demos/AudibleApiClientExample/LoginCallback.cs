@@ -59,5 +59,10 @@ namespace AudibleApiClientExample
 			var pw = Dinah.Core.ConsoleLib.ConsoleExt.ReadPassword();
 			return (e, pw);
 		}
+
+		public void ShowApprovalNeeded()
+		{
+			return;
+		}
 	}
 }

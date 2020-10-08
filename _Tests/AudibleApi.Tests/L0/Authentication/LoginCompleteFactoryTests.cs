@@ -102,9 +102,7 @@ namespace Authentic.ResultFactoryTests.LoginCompleteFactoryTests
 			apiHttpClient.CookieJar.Add(new Cookie { Name = "session-id-time", Value = "2193073634l", Domain = ".amazon.com", Expires = DateTime.Parse("Thu, 30-Jun-2039 19:07:14 GMT"), Path = "/" });
 
 			var loginComplete = await ResultFactory.LoginComplete.CreateResultAsync(
-				apiHttpClient,
-				sysDateTime,
-                locale,
+                new Authenticate(locale, apiHttpClient, sysDateTime),
 				response,
 				inputs
 				) as LoginComplete;

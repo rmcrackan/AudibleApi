@@ -10,33 +10,43 @@ using Dinah.Core.Net.Http;
 namespace AudibleApi.Authentication
 {
     public static class LoginResultRunner
-    {
-        public static async Task<LoginResult> GetResultsPageAsync(IHttpClient client, ISystemDateTime systemDateTime, Locale locale, Dictionary<string, string> inputs)
+	{
+		public static async Task<LoginResult> GetResultsPageAsync(Authenticate authenticate, string url)
 		{
-			if (client is null)
-				throw new ArgumentNullException(nameof(client));
-			if (systemDateTime is null)
-				throw new ArgumentNullException(nameof(systemDateTime));
-			if (locale is null)
-				throw new ArgumentNullException(nameof(locale));
+			if (authenticate is null)
+				throw new ArgumentNullException(nameof(authenticate));
+			if (url is null)
+				throw new ArgumentNullException(nameof(url));
+
+			// uses client to make the POST request
+			var response = await makeRequestAsync(authenticate, HttpMethod.Get, new Uri(url));
+
+			return await getResultsPageAsync(authenticate, new Dictionary<string, string>(), response);
+		}
+
+		public static async Task<LoginResult> GetResultsPageAsync(Authenticate authenticate, Dictionary<string, string> inputs)
+		{
+			if (authenticate is null)
+				throw new ArgumentNullException(nameof(authenticate));
 			if (inputs is null)
 				throw new ArgumentNullException(nameof(inputs));
 
-			// only used for debugging LoginFailedException
-			var requestInputs = getSanitizedInputs(inputs);
-
 			// uses client to make the POST request
 			var response = await makeRequestAsync(
-				client,
-				locale,
+				authenticate,
 				HttpMethod.Post,
-				new Uri(locale.AmazonLoginUri(), "/ap/signin"),
+				new Uri(authenticate.Locale.AmazonLoginUri(), "/ap/signin"),
 				new FormUrlEncodedContent(inputs));
 
+			return await getResultsPageAsync(authenticate, inputs, response);
+		}
+
+		private static async Task<LoginResult> getResultsPageAsync(Authenticate authenticate, Dictionary<string, string> inputs, HttpResponseMessage response)
+		{
 			// passes client for later use. ie: client is not used in this call
 			foreach (var factory in ResultFactory.GetAll())
 				if (await factory.IsMatchAsync(response))
-					return await factory.CreateResultAsync(client, systemDateTime, locale, response, inputs);
+					return await factory.CreateResultAsync(authenticate, response, inputs);
 
 			// no match. throw exception
 			var body = await response.Content.ReadAsStringAsync();
@@ -45,7 +55,6 @@ namespace AudibleApi.Authentication
 
 			var loginFailedException = new LoginFailedException("No matching result page type")
 			{
-				RequestInputFields = requestInputs,
 				RequestUrl = response.RequestMessage?.RequestUri?.AbsoluteUri,
 				ResponseStatusCode = response.StatusCode,
 				ResponseInputFields = responseInputs,
@@ -76,11 +85,11 @@ namespace AudibleApi.Authentication
 				.ToDictionary(x => x.Key, x => x.Value);
 		}
 
-		private static async Task<HttpResponseMessage> makeRequestAsync(IHttpClient client, Locale locale, HttpMethod method, Uri uri, HttpContent content = null)
+		private static async Task<HttpResponseMessage> makeRequestAsync(Authenticate authenticate, HttpMethod method, Uri uri, HttpContent content = null)
         {
 			#region debug
-			var preCallCookies = client.CookieJar
-				.EnumerateCookies(locale.AmazonLoginUri())
+			var preCallCookies = authenticate.LoginClient.CookieJar
+				.EnumerateCookies(authenticate.Locale.AmazonLoginUri())
 				?.ToList()
 				.Select(c => $"{c.Name}={c.Value}")
 				.Aggregate("", (a, b) => $"{a};{b}")
@@ -93,11 +102,11 @@ namespace AudibleApi.Authentication
 				RequestUri = uri,
 				Content = content
 			};
-			var response = await client.SendAsync(request);
+			var response = await authenticate.LoginClient.SendAsync(request);
 
 			#region debug
-			var postCallCookies = client.CookieJar
-				.EnumerateCookies(locale.AmazonLoginUri())
+			var postCallCookies = authenticate.LoginClient.CookieJar
+				.EnumerateCookies(authenticate.Locale.AmazonLoginUri())
 				?.ToList()
 				.Select(c => $"{c.Name}={c.Value}")
 				.Aggregate("", (a, b) => $"{a};{b}")
@@ -134,7 +143,7 @@ namespace AudibleApi.Authentication
 
 			// check for is-complete exit condition before checking status code.
 			// is-complete might be a redirect or 404
-			if (await ResultFactory.LoginComplete.IsMatchAsync(response))
+			if (await ResultFactory.IsCompleteAsync(response))
                 return response;
 
 			// if not a redirect, we're done
@@ -152,7 +161,7 @@ namespace AudibleApi.Authentication
 			Serilog.Log.Logger.Information($"Redirecting to {redirectUri}");
 
 			// re-directs should always be GET
-            return await makeRequestAsync(client, locale, HttpMethod.Get, redirectUri);
+            return await makeRequestAsync(authenticate, HttpMethod.Get, redirectUri);
         }
     }
 }

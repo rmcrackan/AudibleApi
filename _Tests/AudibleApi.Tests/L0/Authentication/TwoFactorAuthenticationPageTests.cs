@@ -26,13 +26,13 @@ namespace Authentic.TwoFactorAuthenticationPageTests
     {
 		[TestMethod]
         public async Task null_param_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new TwoFactorAuthenticationPage(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, Locales.Us, "x").SubmitAsync(null));
+            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new TwoFactorAuthenticationPage(AuthenticateShared.GetAuthenticate(), "x").SubmitAsync(null));
 
         [TestMethod]
         public async Task blank_param_throws()
         {
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => new TwoFactorAuthenticationPage(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, Locales.Us, "body").SubmitAsync(""));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => new TwoFactorAuthenticationPage(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, Locales.Us, "body").SubmitAsync("   "));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => new TwoFactorAuthenticationPage(AuthenticateShared.GetAuthenticate(), "body").SubmitAsync(""));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => new TwoFactorAuthenticationPage(AuthenticateShared.GetAuthenticate(), "body").SubmitAsync("   "));
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@ namespace Authentic.TwoFactorAuthenticationPageTests
         {
             var responseToCaptureRequest = new HttpResponseMessage();
 
-			var page = new TwoFactorAuthenticationPage(ApiHttpClientMock.GetClient(responseToCaptureRequest), StaticSystemDateTime.Past, Locales.Us, "body");
+			var page = new TwoFactorAuthenticationPage(AuthenticateShared.GetAuthenticate(responseToCaptureRequest), "body");
 
 			await Assert.ThrowsExceptionAsync<LoginFailedException>(() => page.SubmitAsync("2fa"));
 

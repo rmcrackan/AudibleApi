@@ -10,7 +10,7 @@ namespace AudibleApi.Authentication
 {
 	public class CredentialsPage : LoginResult
 	{
-		public CredentialsPage(IHttpClient client, ISystemDateTime systemDateTime, Locale locale, string responseBody) : base(client, systemDateTime, locale, responseBody) { }
+		public CredentialsPage(Authenticate authenticate, string responseBody) : base(authenticate, responseBody) { }
 
 		public async Task<LoginResult> SubmitAsync(string email, string password)
 		{
@@ -26,14 +26,14 @@ namespace AudibleApi.Authentication
 
 			Inputs["email"] = email;
 			Inputs["password"] = password;
-			Inputs["metadata1"] = getEncryptedMetadata(SystemDateTime.UtcNow.ToUnixTimeStamp());
+			Inputs["metadata1"] = getEncryptedMetadata(Authenticate.SystemDateTime.UtcNow.ToUnixTimeStamp());
 
-			return await GetResultsPageAsync(Inputs);
+			return await LoginResultRunner.GetResultsPageAsync(Authenticate, Inputs);
 		}
 
 		private string getEncryptedMetadata(long nowUnixTimeStamp)
 		{
-			var raw_metadata = GenerateMetadata(Locale, nowUnixTimeStamp);
+			var raw_metadata = GenerateMetadata(Authenticate.Locale, nowUnixTimeStamp);
 			var metadata = Cryptography.EncryptMetadata(raw_metadata);
 			return metadata;
 		}

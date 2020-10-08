@@ -23,11 +23,7 @@ namespace Authentic.CredentialsPageTests
     public class SubmitAsync
     {
         private CredentialsPage getPage()
-			=> new CredentialsPage(
-				ApiHttpClientMock.GetClient(),
-				StaticSystemDateTime.Past,
-                Locales.Us,
-                "body");
+            => new CredentialsPage(AuthenticateShared.GetAuthenticate(), "body");
 
 		[TestMethod]
         public async Task null_email_throws()
@@ -56,11 +52,7 @@ namespace Authentic.CredentialsPageTests
         {
             var responseToCaptureRequest = new HttpResponseMessage();
 
-			var page = new CredentialsPage(
-				ApiHttpClientMock.GetClient(responseToCaptureRequest),
-				StaticSystemDateTime.Past,
-                Locales.Us,
-                "body");
+            var page = new CredentialsPage(AuthenticateShared.GetAuthenticate(responseToCaptureRequest), "body");
 			await Assert.ThrowsExceptionAsync<LoginFailedException>(() => page.SubmitAsync("e", "pw"));
 
             var content = await responseToCaptureRequest.RequestMessage.Content.ReadAsStringAsync();

@@ -7,7 +7,6 @@ namespace AudibleApi.Authentication
     // do not derive from ApiErrorException. those are errors returned by API calls. Login is pre-API calls
     public class LoginFailedException : Exception
     {
-        public Dictionary<string, string> RequestInputFields { get; set; }
         public string RequestUrl { get; set; }
         public System.Net.HttpStatusCode ResponseStatusCode { get; set; }
         public Dictionary<string, string> ResponseInputFields { get; set; }

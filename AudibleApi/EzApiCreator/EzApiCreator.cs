@@ -62,8 +62,7 @@ namespace AudibleApi
 			Dinah.Core.ArgumentValidator.EnsureNotNull(responder, nameof(responder));
 			var (email, password) = getUserLogin(responder);
 
-			var login = new Authenticate(locale);
-			var loginResult = await login.SubmitCredentialsAsync(email, password);
+			var loginResult = await Authenticate.SubmitCredentialsAsync(locale, email, password);
 
 			while (true)
 			{
@@ -83,6 +82,11 @@ namespace AudibleApi
 					case TwoFactorAuthenticationPage _2fa:
 						var _2faCode = responder.Get2faCode();
 						loginResult = await _2fa.SubmitAsync(_2faCode);
+						break;
+
+					case ApprovalNeeded approvalNeeded:
+						responder.ShowApprovalNeeded();
+						loginResult = await approvalNeeded.SubmitAsync();
 						break;
 
 					case LoginComplete final:

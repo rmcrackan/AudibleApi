@@ -25,20 +25,12 @@ namespace Authentic.LoginResultRunnerTests
     public class GetResultsPageAsync
     {
 		[TestMethod]
-        public async Task null_client_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => LoginResultRunner.GetResultsPageAsync(null, StaticSystemDateTime.Past, Locales.Us, new Dictionary<string, string>()));
-
-        [TestMethod]
-        public async Task null_systemDateTime_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => LoginResultRunner.GetResultsPageAsync(ApiHttpClientMock.GetClient(), null, Locales.Us, new Dictionary<string, string>()));
-
-        [TestMethod]
-        public async Task null_locale_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => LoginResultRunner.GetResultsPageAsync(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, null, new Dictionary<string, string>()));
+        public async Task null_authenticate_throws()
+            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => LoginResultRunner.GetResultsPageAsync(null, new Dictionary<string, string>()));
 
         [TestMethod]
         public async Task null_inputs_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => LoginResultRunner.GetResultsPageAsync(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, Locales.Us, null));
+            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => LoginResultRunner.GetResultsPageAsync(AuthenticateShared.GetAuthenticate(), (Dictionary<string, string>)null));
 
         [TestMethod]
         public async Task returns_CredentialsPage()
@@ -47,7 +39,7 @@ namespace Authentic.LoginResultRunnerTests
                 = "<input name='email' value='e' />"
                 + "<input name='password' value='pw' />";
             var client = ApiHttpClientMock.GetClient(response);
-            var result = await LoginResultRunner.GetResultsPageAsync(client, StaticSystemDateTime.Past, Locales.Us, new Dictionary<string, string>());
+            var result = await LoginResultRunner.GetResultsPageAsync(AuthenticateShared.GetAuthenticate(client), new Dictionary<string, string>());
             var page = result as CredentialsPage;
             page.Should().NotBeNull();
         }
@@ -61,7 +53,7 @@ namespace Authentic.LoginResultRunnerTests
                 + "<input name='use_image_captcha' value='true' />"
                 + "<img src='http://a.com/foo.png' alt='Visual CAPTCHA image, continue down for an audio option.' />";
             var client = ApiHttpClientMock.GetClient(response);
-            var result = await LoginResultRunner.GetResultsPageAsync(client, StaticSystemDateTime.Past, Locales.Us, new Dictionary<string, string> { ["password"] = "pw" });
+            var result = await LoginResultRunner.GetResultsPageAsync(AuthenticateShared.GetAuthenticate(client), new Dictionary<string, string> { ["password"] = "pw" });
             var page = result as CaptchaPage;
             page.Should().NotBeNull();
         }
@@ -71,7 +63,7 @@ namespace Authentic.LoginResultRunnerTests
         {
             var response = "<input name='otpCode' value='2fa' />";
             var client = ApiHttpClientMock.GetClient(response);
-            var result = await LoginResultRunner.GetResultsPageAsync(client, StaticSystemDateTime.Past, Locales.Us, new Dictionary<string, string>());
+            var result = await LoginResultRunner.GetResultsPageAsync(AuthenticateShared.GetAuthenticate(client), new Dictionary<string, string>());
             var page = result as TwoFactorAuthenticationPage;
             page.Should().NotBeNull();
         }
@@ -86,7 +78,7 @@ namespace Authentic.LoginResultRunnerTests
             response.Headers.Add("Set-Cookie", "session-id-time=987654321; Domain=.amazon.com; Expires=Thu, 30-Jun-2039 19:07:14 GMT; Path=/");
 
             var client = ApiHttpClientMock.GetClient(response);
-            var result = await LoginResultRunner.GetResultsPageAsync(client, StaticSystemDateTime.Past, Locales.Us, new Dictionary<string, string>());
+            var result = await LoginResultRunner.GetResultsPageAsync(AuthenticateShared.GetAuthenticate(client), new Dictionary<string, string>());
             var page = result as LoginComplete;
             page.Should().NotBeNull();
         }

@@ -9,7 +9,7 @@ namespace AudibleApi.Authentication
 {
     public class TwoFactorAuthenticationPage : LoginResult
     {
-        public TwoFactorAuthenticationPage(IHttpClient client, ISystemDateTime systemDateTime, Locale locale, string responseBody) : base(client, systemDateTime, locale, responseBody) { }
+        public TwoFactorAuthenticationPage(Authenticate authenticate, string responseBody) : base(authenticate, responseBody) { }
 
         public async Task<LoginResult> SubmitAsync(string _2faCode)
         {
@@ -23,7 +23,7 @@ namespace AudibleApi.Authentication
 			Inputs["mfaSubmit"] = "Submit";
 			Inputs["rememberDevice"] = "false";
 
-			return await GetResultsPageAsync(Inputs);
+            return await LoginResultRunner.GetResultsPageAsync(Authenticate, Inputs);
         }
     }
 }

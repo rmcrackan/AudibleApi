@@ -56,7 +56,7 @@ namespace Authentic.ResultFactoryTests.CaptchaPageFactoryTests
                 = "<input name='email' />"
                 + "<input name='password' />"
                 + "<input name='use_image_captcha' />";
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => ResultFactory.CaptchaPage.CreateResultAsync(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, Locales.Us, new HttpResponseMessage { Content = new StringContent(body) }, new Dictionary<string, string>()));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => ResultFactory.CaptchaPage.CreateResultAsync(AuthenticateShared.GetAuthenticate(), new HttpResponseMessage { Content = new StringContent(body) }, new Dictionary<string, string>()));
         }
 
         [TestMethod]
@@ -73,7 +73,7 @@ namespace Authentic.ResultFactoryTests.CaptchaPageFactoryTests
 
             var r = new HttpResponseMessage { Content = new StringContent(body) };
 
-            var captchaPage = await ResultFactory.CaptchaPage.CreateResultAsync(ApiHttpClientMock.GetClient(response), StaticSystemDateTime.Past, Locales.Us, r, new Dictionary<string, string> { ["password"] = "abc" }) as CaptchaPage;
+            var captchaPage = await ResultFactory.CaptchaPage.CreateResultAsync(AuthenticateShared.GetAuthenticate(response), r, new Dictionary<string, string> { ["password"] = "abc" }) as CaptchaPage;
 
             captchaPage.CaptchaImage.Should().Be(new Uri(imageUri));
         }

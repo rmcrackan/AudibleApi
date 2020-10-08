@@ -13,25 +13,20 @@ namespace AudibleApi.Authentication
     /// </summary>
     public abstract class LoginResult
     {
-        private IHttpClient _client { get; }
-		protected ISystemDateTime SystemDateTime { get; }
-        protected Locale Locale { get; }
+        protected Authenticate Authenticate { get; }
+
 		protected Dictionary<string, string> Inputs { get; }
 
 		public IDictionary<string, string> GetInputsReadOnly()
             => new Dictionary<string, string>(Inputs);
 
-        protected LoginResult(IHttpClient client, ISystemDateTime systemDateTime, Locale locale, string responseBody)
+        protected LoginResult(Authenticate authenticate, string responseBody)
         {
-            _client = client ?? throw new ArgumentNullException(nameof(client));
-            SystemDateTime = systemDateTime ?? throw new ArgumentNullException(nameof(systemDateTime));
-            Locale = locale ?? throw new ArgumentNullException(nameof(locale));
-            if (responseBody is null)
-				throw new ArgumentNullException(nameof(responseBody));
-			Inputs = HtmlHelper.GetInputs(responseBody);
-		}
+            Authenticate = authenticate ?? throw new ArgumentNullException(nameof(authenticate));
 
-        protected Task<LoginResult> GetResultsPageAsync(Dictionary<string, string> inputs)
-            => LoginResultRunner.GetResultsPageAsync(_client, SystemDateTime, Locale, inputs);
+            if (responseBody is null)
+                throw new ArgumentNullException(nameof(responseBody));
+            Inputs = HtmlHelper.GetInputs(responseBody);
+        }
     }
 }

@@ -61,41 +61,33 @@ namespace Authentic.ResultFactoryTests
     public class CreateResultAsync
     {
         [TestMethod]
-        public async Task null_client_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(null, StaticSystemDateTime.Past, Locales.Us, new HttpResponseMessage { Content = new StringContent("x") }, new Dictionary<string, string>()));
-
-        [TestMethod]
-        public async Task null_systemDateTime_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(ApiHttpClientMock.GetClient(), null, Locales.Us, new HttpResponseMessage { Content = new StringContent("x") }, new Dictionary<string, string>()));
-
-        [TestMethod]
-        public async Task null_locale_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, null, new HttpResponseMessage { Content = new StringContent("x") }, new Dictionary<string, string>()));
+        public async Task null_authenticate_throws()
+            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(null, new HttpResponseMessage { Content = new StringContent("x") }, new Dictionary<string, string>()));
 
         [TestMethod]
 		public async Task null_response_throws()
-			=> await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, Locales.Us, null, new Dictionary<string, string>()));
+			=> await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(AuthenticateShared.GetAuthenticate(), null, new Dictionary<string, string>()));
 
 		[TestMethod]
         public async Task null_content_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentException>(() => new ConcreteResultFactory().CreateResultAsync(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, Locales.Us, new HttpResponseMessage(), new Dictionary<string, string>()));
+            => await Assert.ThrowsExceptionAsync<ArgumentException>(() => new ConcreteResultFactory().CreateResultAsync(AuthenticateShared.GetAuthenticate(), new HttpResponseMessage(), new Dictionary<string, string>()));
 
         [TestMethod]
         public async Task null_inputs_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, Locales.Us, new HttpResponseMessage { Content = new StringContent("x") }, null));
+            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(AuthenticateShared.GetAuthenticate(), new HttpResponseMessage { Content = new StringContent("x") }, null));
 
         [TestMethod]
         public async Task false_IsMatch_throws()
         {
             var badMatch = "x";
-            await Assert.ThrowsExceptionAsync<LoginFailedException>(() => new ConcreteResultFactory().CreateResultAsync(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, Locales.Us, new HttpResponseMessage { Content = new StringContent(badMatch) }, new Dictionary<string, string>())
+            await Assert.ThrowsExceptionAsync<LoginFailedException>(() => new ConcreteResultFactory().CreateResultAsync(AuthenticateShared.GetAuthenticate(), new HttpResponseMessage { Content = new StringContent(badMatch) }, new Dictionary<string, string>())
             );
         }
 
         [TestMethod]
         public async Task valid_returns_null()
         {
-            var result = await new ConcreteResultFactory().CreateResultAsync(ApiHttpClientMock.GetClient(), StaticSystemDateTime.Past, Locales.Us, new HttpResponseMessage { Content = new StringContent("IsMatch") }, new Dictionary<string, string>());
+            var result = await new ConcreteResultFactory().CreateResultAsync(AuthenticateShared.GetAuthenticate(), new HttpResponseMessage { Content = new StringContent("IsMatch") }, new Dictionary<string, string>());
             result.Should().BeNull();
         }
     }

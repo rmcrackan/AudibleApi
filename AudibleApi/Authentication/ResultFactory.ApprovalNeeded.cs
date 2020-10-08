@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Dinah.Core;
@@ -10,9 +11,9 @@ namespace AudibleApi.Authentication
 {
     public abstract partial class ResultFactory
     {
-        private class CredentialsPageFactory : ResultFactory
+        private class ApprovalNeededFactory : ResultFactory
         {
-            public CredentialsPageFactory() : base(nameof(CredentialsPageFactory)) { }
+            public ApprovalNeededFactory() : base(nameof(ApprovalNeededFactory)) { }
 
             public override async Task<bool> IsMatchAsync(HttpResponseMessage response)
             {
@@ -22,20 +23,16 @@ namespace AudibleApi.Authentication
 
                 var body = await response.Content.ReadAsStringAsync();
                 var newInputs = HtmlHelper.GetInputs(body);
-                return
-                    newInputs.ContainsKey("email") &&
-                    newInputs.ContainsKey("password") &&
-                    !newInputs.ContainsKey("use_image_captcha");
+                return newInputs.ContainsKey("openid.return_to");
             }
 
-			public override async Task<LoginResult> CreateResultAsync(Authenticate authenticate, HttpResponseMessage response, Dictionary<string, string> oldInputs)
-			{
+            public override async Task<LoginResult> CreateResultAsync(Authenticate authenticate, HttpResponseMessage response, Dictionary<string, string> oldInputs)
+            {
                 // shared validation
                 await base.CreateResultAsync(authenticate, response, oldInputs);
 
-                // do not extract email or pw from inputs. if we're here then a previous login failed
                 var body = await response.Content.ReadAsStringAsync();
-                return new CredentialsPage(authenticate, body);
+                return new ApprovalNeeded(authenticate, body);
             }
         }
     }

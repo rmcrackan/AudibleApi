@@ -11,7 +11,7 @@ namespace AudibleApi.Authentication
     {
         public Uri CaptchaImage { get; }
 
-        public CaptchaPage(IHttpClient client, ISystemDateTime systemDateTime, Locale locale, string responseBody, Uri img, string password) : base(client, systemDateTime, locale, responseBody)
+        public CaptchaPage(Authenticate authenticate, string responseBody, Uri img, string password) : base(authenticate, responseBody)
         {
             if (img is null)
                 throw new ArgumentNullException(nameof(img));
@@ -39,7 +39,7 @@ namespace AudibleApi.Authentication
             Inputs["use_image_captcha"] = "true";
             Inputs["use_audio_captcha"] = "false";
 
-            return await GetResultsPageAsync(Inputs);
+            return await LoginResultRunner.GetResultsPageAsync(Authenticate, Inputs);
         }
     }
 }

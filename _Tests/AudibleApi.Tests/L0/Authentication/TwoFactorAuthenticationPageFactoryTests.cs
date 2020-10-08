@@ -62,7 +62,7 @@ namespace Authentic.ResultFactoryTests.TwoFactorAuthenticationPageFactoryTests
 
             var response = new HttpResponseMessage { Content = new StringContent(body) };
 
-            var _2faPage = await ResultFactory.TwoFactorAuthenticationPage.CreateResultAsync(ApiHttpClientMock.GetClient(AuthenticateResponse), StaticSystemDateTime.Past, Locales.Us, response, new Dictionary<string, string>()) as TwoFactorAuthenticationPage;
+            var _2faPage = await ResultFactory.TwoFactorAuthenticationPage.CreateResultAsync(AuthenticateShared.GetAuthenticate(AuthenticateResponse), response, new Dictionary<string, string>()) as TwoFactorAuthenticationPage;
 
             var inputs = _2faPage.GetInputsReadOnly();
             inputs.Count.Should().Be(3);
