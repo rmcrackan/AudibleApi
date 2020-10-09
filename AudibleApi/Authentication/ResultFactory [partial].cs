@@ -13,8 +13,10 @@ namespace AudibleApi.Authentication
     /// </summary>
     public abstract partial class ResultFactory : Enumeration<ResultFactory>
     {
-		#region expose for unit testing
-		public static ResultFactory CredentialsPage { get; }
+        #region enumeration single instances
+        // MANDATORY to include here so that ResultFactory.GetAll() can find them.
+        // also convenient exposure for unit testing
+        public static ResultFactory CredentialsPage { get; }
             = new CredentialsPageFactory();
         public static ResultFactory CaptchaPage { get; }
             = new CaptchaPageFactory();
@@ -22,7 +24,9 @@ namespace AudibleApi.Authentication
             = new TwoFactorAuthenticationPageFactory();
         public static ResultFactory LoginComplete { get; }
             = new LoginCompleteFactory();
-		#endregion
+        public static ResultFactory ApprovalNeeded { get; }
+            = new ApprovalNeededFactory();
+        #endregion
 
         public static Task<bool> IsCompleteAsync(HttpResponseMessage response)
             => new LoginCompleteFactory().IsMatchAsync(response);
