@@ -43,7 +43,6 @@ namespace AudibleApi.Authentication
 
 		private static async Task<LoginResult> getResultsPageAsync(Authenticate authenticate, Dictionary<string, string> inputs, HttpResponseMessage response)
 		{
-			// passes client for later use. ie: client is not used in this call
 			foreach (var factory in ResultFactory.GetAll())
 				if (await factory.IsMatchAsync(response))
 					return await factory.CreateResultAsync(authenticate, response, inputs);
