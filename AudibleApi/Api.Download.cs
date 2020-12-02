@@ -216,6 +216,13 @@ namespace AudibleApi
 				.Select(ac => ac.EnhancedCodec);
 			// since Intersect() doesn't guarantee order, do not use it here
 			var codec = codecPreferenceOrder.FirstOrDefault(p => codecs.Contains(p));
+
+			// found a codec among this list
+			if (codec is not null)
+				return codec;
+
+			// else return first available
+			codec = codecs.FirstOrDefault();
 			return codec;
 		}
 
