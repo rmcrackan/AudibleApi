@@ -26,6 +26,7 @@ namespace AudibleApi
 			var namespaces = frames
 				.Select(f => f.GetMethod().ReflectedType.Namespace)
 				.Distinct()
+				.Where(n => n is not null)
 				.ToList();
 
 			// L1 tests are allowed to use methods which rely on ApiTestBlocker() and the also often call L0
