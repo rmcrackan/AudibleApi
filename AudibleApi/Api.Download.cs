@@ -210,10 +210,14 @@ namespace AudibleApi
 			var codecPreferenceOrder = new[] { EnhancedCodec.Lc128_44100_Stereo, EnhancedCodec.Lc64_44100_Stereo, EnhancedCodec.Lc64_22050_Stereo, EnhancedCodec.Lc32_22050_Stereo, EnhancedCodec.Aax, EnhancedCodec.Mp444128, EnhancedCodec.Mp44464, EnhancedCodec.Mp42264, EnhancedCodec.Mp42232, EnhancedCodec.Piff44128, EnhancedCodec.Piff4464, EnhancedCodec.Piff2232, EnhancedCodec.Piff2264 };
 
 			var bookJObj = await GetLibraryBookAsync(asin, LibraryOptions.ResponseGroupOptions.ProductAttrs | LibraryOptions.ResponseGroupOptions.Relationships);
-			var codecs = BookDtoV10.FromJson(bookJObj.ToString())
-				.Item
-				.AvailableCodecs
-				.Select(ac => ac.EnhancedCodec);
+
+			var bookJson = bookJObj.ToString(Formatting.Indented);
+			var availableCodecs = BookDtoV10.FromJson(bookJson).Item.AvailableCodecs;
+
+			if (availableCodecs is null)
+				throw new ApplicationException("Book's 'AvailableCodecs' is null. Full book data:\r\n" + bookJson);
+
+			var codecs = availableCodecs.Select(ac => ac.EnhancedCodec);
 			// since Intersect() doesn't guarantee order, do not use it here
 			var codec = codecPreferenceOrder.FirstOrDefault(p => codecs.Contains(p));
 
