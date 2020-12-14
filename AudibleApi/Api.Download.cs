@@ -207,17 +207,10 @@ namespace AudibleApi
 		{
 			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
 
+			var codecs = await getAllCodecsAsync(asin);
+
 			var codecPreferenceOrder = new[] { EnhancedCodec.Lc128_44100_Stereo, EnhancedCodec.Lc64_44100_Stereo, EnhancedCodec.Lc64_22050_Stereo, EnhancedCodec.Lc32_22050_Stereo, EnhancedCodec.Aax, EnhancedCodec.Mp444128, EnhancedCodec.Mp44464, EnhancedCodec.Mp42264, EnhancedCodec.Mp42232, EnhancedCodec.Piff44128, EnhancedCodec.Piff4464, EnhancedCodec.Piff2232, EnhancedCodec.Piff2264 };
 
-			var bookJObj = await GetLibraryBookAsync(asin, LibraryOptions.ResponseGroupOptions.ProductAttrs | LibraryOptions.ResponseGroupOptions.Relationships);
-
-			var bookJson = bookJObj.ToString(Formatting.Indented);
-			var availableCodecs = BookDtoV10.FromJson(bookJson).Item.AvailableCodecs;
-
-			if (availableCodecs is null)
-				throw new ApplicationException("Book's 'AvailableCodecs' is null. Full book data:\r\n" + bookJson);
-
-			var codecs = availableCodecs.Select(ac => ac.EnhancedCodec);
 			// since Intersect() doesn't guarantee order, do not use it here
 			var codec = codecPreferenceOrder.FirstOrDefault(p => codecs.Contains(p));
 
@@ -226,8 +219,37 @@ namespace AudibleApi
 				return codec;
 
 			// else return first available
-			codec = codecs.FirstOrDefault();
-			return codec;
+			return codecs[0];
+		}
+
+		private async Task<List<string>> getAllCodecsAsync(string asin)
+		{
+			const int maxAttempts = 2;
+
+			string bookJson;
+
+			var currAttempt = 0;
+			do
+			{
+				currAttempt++;
+
+				var bookJObj = await GetLibraryBookAsync(asin, LibraryOptions.ResponseGroupOptions.ProductAttrs | LibraryOptions.ResponseGroupOptions.Relationships);
+				bookJson = bookJObj.ToString(Formatting.Indented);
+				var availableCodecs = BookDtoV10.FromJson(bookJson)?.Item?.AvailableCodecs;
+				var codecs = availableCodecs?
+					.Where(ac => !string.IsNullOrWhiteSpace(ac.EnhancedCodec))
+					.Select(ac => ac.EnhancedCodec)
+					.ToList();
+
+				if (codecs is not null && codecs.Any())
+					return codecs;
+
+				// if no codec, try once more
+			}
+			while (currAttempt < maxAttempts);
+
+			// if still no codec: error
+			throw new ApplicationException("Book has no codec specified. Cannot continue with download. Full book data:\r\n" + bookJson);
 		}
 
 		public async Task<string> GetDownloadLinkAsync(IHttpClientActions client, string asin, string codec)
