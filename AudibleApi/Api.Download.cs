@@ -228,12 +228,14 @@ namespace AudibleApi
 
 			string bookJson;
 
+			var libraryOptions = LibraryOptions.ResponseGroupOptions.ProductAttrs | LibraryOptions.ResponseGroupOptions.Relationships;
+
 			var currAttempt = 0;
 			do
 			{
 				currAttempt++;
 
-				var bookJObj = await GetLibraryBookAsync(asin, LibraryOptions.ResponseGroupOptions.ProductAttrs | LibraryOptions.ResponseGroupOptions.Relationships);
+				var bookJObj = await GetLibraryBookAsync(asin, libraryOptions);
 				bookJson = bookJObj.ToString(Formatting.Indented);
 				var availableCodecs = BookDtoV10.FromJson(bookJson)?.Item?.AvailableCodecs;
 				var codecs = availableCodecs?
@@ -244,7 +246,8 @@ namespace AudibleApi
 				if (codecs is not null && codecs.Any())
 					return codecs;
 
-				// if no codec, try once more
+				// if no codec, try once more with all options enbled
+				libraryOptions = LibraryOptions.ResponseGroupOptions.ALL_OPTIONS;
 			}
 			while (currAttempt < maxAttempts);
 
