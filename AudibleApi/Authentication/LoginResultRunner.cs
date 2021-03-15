@@ -85,57 +85,104 @@ namespace AudibleApi.Authentication
 		}
 
 		private static async Task<HttpResponseMessage> makeRequestAsync(Authenticate authenticate, HttpMethod method, Uri uri, HttpContent content = null)
-        {
-			#region debug
-			var preCallCookies = authenticate.LoginClient.CookieJar
+		{
+			Serilog.Log.Logger.Information("Send request {@DebugInfo}", new {
+				method,
+				uri,
+				absoluteUri = uri.IsAbsoluteUri ? uri.AbsoluteUri : "[relative]",
+			});
+			ArgumentValidator.EnsureNotNull(uri, nameof(uri));
+
+			// PRIVACY WARNING
+			// when turning on debug to share logs, some privacy settings may not be obscured
+			var isDebug = Serilog.Log.Logger.IsEnabled(Serilog.Events.LogEventLevel.Debug);
+
+			string debug_getCookies()
+				=> authenticate.LoginClient.CookieJar
 				.EnumerateCookies(authenticate.Locale.AmazonLoginUri())
 				?.ToList()
 				.Select(c => $"{c.Name}={c.Value}")
 				.Aggregate("", (a, b) => $"{a};{b}")
 				.Trim(';');
+
+
+			#region debug: enumerate pre-call cookies
+			if (isDebug)
+			{
+				try
+				{
+					Serilog.Log.Logger.Debug("Cookies before request. {@DebugInfo}", debug_getCookies());
+				}
+				catch (Exception ex)
+				{
+					Serilog.Log.Error(ex, "pre-call cookies debug failure");
+				}
+			}
 			#endregion
 
-			var request = new HttpRequestMessage()
+			HttpRequestMessage request;
+			try
 			{
-				Method = method,
-				RequestUri = uri,
-				Content = content
-			};
+				request = new HttpRequestMessage()
+				{
+					Method = method,
+					RequestUri = uri,
+					Content = content
+				};
+			}
+			catch (Exception ex)
+			{
+				var contentLength = "null";
+				if (content is not null)
+					contentLength = (await content.ReadAsStringAsync()).Length.ToString();
+
+				Serilog.Log.Logger.Error(ex, "Error constructing request message. {@DebugInfo}", contentLength);
+				throw;
+			}
+
 			var response = await authenticate.LoginClient.SendAsync(request);
 
-			#region debug
-			var postCallCookies = authenticate.LoginClient.CookieJar
-				.EnumerateCookies(authenticate.Locale.AmazonLoginUri())
-				?.ToList()
-				.Select(c => $"{c.Name}={c.Value}")
-				.Aggregate("", (a, b) => $"{a};{b}")
-				.Trim(';');
+			#region debug: enumerate post-call cookies
+			if (isDebug)
+			{
+				try
+				{
+					Serilog.Log.Logger.Debug("Cookies after request. {@DebugInfo}", debug_getCookies());
+				}
+				catch (Exception ex)
+				{
+					Serilog.Log.Error(ex, "post-call cookies debug failure");
+				}
+			}
 			#endregion
 
-			#region debug
-			string input = null;
-			if (content != null)
-				input = await content?.ReadAsStringAsync();
-			var requestUri = response.RequestMessage.RequestUri.AbsoluteUri;
-			var requestHeaders = response.RequestMessage.Headers;
-			var sCode = response.StatusCode;
-			var codeInt = (int)sCode;
-			var headers = response.Headers.ToString();
-			string body = null;
-			if (response.Content != null)
-				body = await response.Content.ReadAsStringAsync();
-			var debugLog
-				= $"method: {method}\r\n"
-				+ $"request uri: {uri.AbsoluteUri}\r\n"
-				+ $"request headers: {requestHeaders}\r\n"
-				+ $"cookies before request: {preCallCookies}\r\n"
-				+ $"content input: {input}\r\n"
-				+ $"RESPONSE\r\n"
-				+ $"code: {sCode}={codeInt}\r\n"
-				+ $"headers: {headers}\r\n"
-				+ $"cookies after request: {postCallCookies}\r\n"
-				+ $"body length: {body?.Length}";
-			var debug2 = debugLog;
+			#region debug: request/response details
+			if (isDebug)
+			{
+				var requestContentLength = "null";
+				if (content is not null)
+					requestContentLength = (await content.ReadAsStringAsync()).Length.ToString();
+
+				var responseContentLength = "null";
+				if (response?.Content is not null)
+					responseContentLength = (await response.Content.ReadAsStringAsync()).Length.ToString();
+
+				try
+				{
+					Serilog.Log.Logger.Debug("Request/Response details. {@DebugInfo}", new {
+						requestUri_fromResponse = response.RequestMessage.RequestUri.AbsoluteUri,
+						requestHeaders = response.RequestMessage.Headers,
+						requestContentLength,
+						responseCode = $"{response.StatusCode}={(int)response.StatusCode}",
+						responseHeaders = response.Headers,
+						responseContentLength
+					});
+				}
+				catch (Exception ex)
+				{
+					Serilog.Log.Error(ex, "request/response details debug failure");
+				}
+			}
 			#endregion
 
 			// We want to handle redirects ourselves so that we can determine the final redirect Location (via header)

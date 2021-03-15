@@ -66,6 +66,8 @@ namespace AudibleApi
 
 			while (true)
 			{
+				Serilog.Log.Logger.Information("Login result: {@DebugInfo}", loginResult.GetType());
+
 				switch (loginResult)
 				{
 					case CredentialsPage credentialsPage:
