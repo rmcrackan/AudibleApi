@@ -87,9 +87,12 @@ namespace AudibleApi.Authentication
 		private static async Task<HttpResponseMessage> makeRequestAsync(Authenticate authenticate, HttpMethod method, Uri uri, HttpContent content = null)
 		{
 			Serilog.Log.Logger.Information("Send request {@DebugInfo}", new {
-				method,
+				method = method.Method,
 				uri,
-				absoluteUri = uri.IsAbsoluteUri ? uri.AbsoluteUri : "[relative]",
+				absoluteUri
+					= !uri.IsAbsoluteUri ? "[relative]"
+					: uri.ToString() == uri.AbsoluteUri ? "[== uri]"
+					: uri.AbsoluteUri
 			});
 			ArgumentValidator.EnsureNotNull(uri, nameof(uri));
 
