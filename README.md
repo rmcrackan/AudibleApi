@@ -11,6 +11,9 @@ Thanks to these other Audible APIs which I used for reference and whose authors 
 https://github.com/omarroth/audible.cr -- Crystal interface for Audible's internal API  
 https://github.com/mkb79/Audible -- Python interface for Audible's internal API
 
+### If you found this useful, tell a friend. If you found this REALLY useful, you can click here to [PalPal.me](https://paypal.me/mcrackan?locale.x=en_us)
+...or just tell more friends. As long as I'm maintaining this software, it will remain **free** and **open source**.
+
 ## response_groups
 
 Since the API is undocumented, it can at times be difficult to tell how to use it. The links above have some good findings. I've found "response_groups" particularly difficult to figure out. To be safe, you can just include them all. All info below is based on analysis of using these response_groups on a library of 700+ titles.
