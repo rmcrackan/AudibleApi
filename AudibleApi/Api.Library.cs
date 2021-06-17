@@ -262,7 +262,10 @@ namespace AudibleApi
 			{
 				var page = await GetLibraryAsync(new LibraryOptions
 				{
-					NumberOfResultPerPage = 1000,
+					// max 1000 however with higher numbers it stops returning 'provided_review' and 'reviews' groups.
+					// Sometimes this threshold is as high as 900, sometimes as low as 400. I can't find the pattern.
+					// Using 300 to be conservative
+					NumberOfResultPerPage = 300,
 					PageNumber = i,
 					PurchasedAfter = new DateTime(2000, 1, 1),
 					ResponseGroups = LibraryOptions.ResponseGroupOptions.ALL_OPTIONS
