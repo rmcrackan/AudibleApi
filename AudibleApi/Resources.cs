@@ -10,6 +10,9 @@ namespace AudibleApi
 		private static string _audibleApiUrl(this Locale locale) => $"https://api.audible.{locale.TopDomain}";
 		public static Uri AudibleApiUri(this Locale locale) => new Uri(locale._audibleApiUrl());
 
+		private static string _audibleLoginUrl(this Locale locale) => $"https://www.audible.{locale.TopDomain}";
+		public static Uri AudibleLoginUri(this Locale locale) => new Uri(locale._audibleLoginUrl());
+
 		private static string _amazonApiUrl(this Locale locale) => $"https://api.amazon.{locale.TopDomain}";
 		public static Uri AmazonApiUri(this Locale locale) => new Uri(locale._amazonApiUrl());
 

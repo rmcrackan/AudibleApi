@@ -253,6 +253,35 @@ namespace AudibleApi
 		}
 		#endregion
 
+		#region GetLibraryBookChapters
+		public async Task<AudibleApiDTOs.ContentMetadata> GetLibraryBookMetadataAsync(string asin)
+		{
+			if (asin is null)
+				throw new ArgumentNullException(nameof(asin));
+			if (string.IsNullOrWhiteSpace(asin))
+				throw new ArgumentException("asin may not be blank", nameof(asin));
+
+			asin = asin.ToUpper().Trim();
+
+			var url = $"{CONTENT_PATH}/{asin}/metadata?response_groups=chapter_info,content_reference";
+			var response = await AdHocAuthenticatedGetAsync(url);
+			var bookJObj = await response.Content.ReadAsJObjectAsync();
+			var metadataJson = bookJObj.ToString();
+
+			AudibleApiDTOs.MetadataDtoV10 contentMetadata;
+			try
+			{
+				contentMetadata = AudibleApiDTOs.MetadataDtoV10.FromJson(metadataJson);
+			}
+			catch (Exception ex)
+			{
+				Serilog.Log.Logger.Error(ex, $"Error retrieving content metadata for asin: {asin}");
+				throw;
+			}
+			return contentMetadata?.ContentMetadata;
+		}
+		#endregion
+
 		#region GetAllLibraryItemsAsync
 		public async Task<List<AudibleApiDTOs.Item>> GetAllLibraryItemsAsync()
 		{
