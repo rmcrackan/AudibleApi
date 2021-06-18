@@ -24,9 +24,15 @@ namespace AudibleApi.Authorization
 
         IEnumerable<KVP<string, string>> Cookies { get; }
 
-		void Update(AccessToken accessToken);
+        string DeviceSerialNumber { get; }
 
-		void Update(PrivateKey privateKey, AdpToken adpToken, AccessToken accessToken, RefreshToken refreshToken);
+        string DeviceType { get; }
+
+        string AmazonAccountId { get; }
+
+        void Update(AccessToken accessToken);
+
+		void Update(PrivateKey privateKey, AdpToken adpToken, AccessToken accessToken, RefreshToken refreshToken, string deviceSN = null, string deviceType = null, string amazonAccountId = null);
 
 		void Invalidate();
 	}

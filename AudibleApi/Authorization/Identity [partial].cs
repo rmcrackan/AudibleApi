@@ -36,6 +36,12 @@ namespace AudibleApi.Authorization
         protected List<KVP<string, string>> _cookies { private get; set; }
         public IEnumerable<KVP<string, string>> Cookies => _cookies.AsReadOnly();
 
+		public string DeviceSerialNumber { get; private set; }
+
+		public string DeviceType { get; private set; }
+
+		public string AmazonAccountId { get; private set; }
+
 		protected Identity() { }
 
 		public Identity(Locale locale)
@@ -64,7 +70,7 @@ namespace AudibleApi.Authorization
 			Updated?.Invoke(this, new EventArgs());
 		}
 
-		public void Update(PrivateKey privateKey, AdpToken adpToken, AccessToken accessToken, RefreshToken refreshToken)
+		public void Update(PrivateKey privateKey, AdpToken adpToken, AccessToken accessToken, RefreshToken refreshToken, string deviceSN = null, string deviceType = null, string amazonAccountId = null)
 		{
 			if (privateKey is null)
 				throw new ArgumentNullException(nameof(privateKey));
@@ -79,6 +85,10 @@ namespace AudibleApi.Authorization
 			AdpToken = new AdpToken(adpToken);
 			ExistingAccessToken = accessToken;
 			RefreshToken = new RefreshToken(refreshToken);
+
+			DeviceSerialNumber = deviceSN ?? string.Empty;
+			DeviceType = deviceType ?? string.Empty;
+			AmazonAccountId = amazonAccountId ?? string.Empty;
 
 			Updated?.Invoke(this, new EventArgs());
 
@@ -95,5 +105,5 @@ namespace AudibleApi.Authorization
 
 			IsValid = false;
 		}
-	}
+    }
 }
