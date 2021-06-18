@@ -15,6 +15,12 @@ namespace AudibleApi.Authorization
 		private IIdentity _identity { get; }
 		private IAuthorize _authorize { get; }
 
+		public string DeviceSerialNumber => _identity.DeviceSerialNumber;
+
+		public string DeviceType => _identity.DeviceType;
+
+		public string AmazonAccountId => _identity.AmazonAccountId;
+
 		public static async Task<IdentityMaintainer> CreateAsync(IIdentity identity)
 		{
 			StackBlocker.ApiTestBlocker();

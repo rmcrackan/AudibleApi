@@ -36,10 +36,13 @@ namespace AudibleApi.Authorization
         protected List<KVP<string, string>> _cookies { private get; set; }
         public IEnumerable<KVP<string, string>> Cookies => _cookies.AsReadOnly();
 
+		[JsonProperty]
 		public string DeviceSerialNumber { get; private set; }
 
+		[JsonProperty]
 		public string DeviceType { get; private set; }
 
+		[JsonProperty]
 		public string AmazonAccountId { get; private set; }
 
 		protected Identity() { }
