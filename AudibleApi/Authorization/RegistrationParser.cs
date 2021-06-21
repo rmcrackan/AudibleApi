@@ -15,6 +15,12 @@ namespace AudibleApi.Authorization
 			if (systemDateTime is null)
 				throw new ArgumentNullException(nameof(systemDateTime));
 
+			var extensions = authRegister["response"]["success"]["extensions"];
+
+			var deviceSN = extensions["device_info"]["device_serial_number"].ToString();
+			var deviceType = extensions["device_info"]["device_type"].ToString();
+			var amazonAccountId = extensions["customer_info"]["user_id"].ToString();
+
 			var tokens = authRegister["response"]["success"]["tokens"];
 
 			var privateKey = tokens["mac_dms"]["device_private_key"].ToString();
@@ -29,7 +35,10 @@ namespace AudibleApi.Authorization
 				new PrivateKey(privateKey),
 				new AdpToken(adpToken),
 				new AccessToken(accessToken, expiresDateTime),
-				new RefreshToken(refreshToken)
+				new RefreshToken(refreshToken),
+				deviceSN,
+				deviceType,
+				amazonAccountId
 				);
 		}
 	}

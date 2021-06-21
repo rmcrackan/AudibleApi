@@ -73,9 +73,8 @@ namespace AudibleApi.Authorization
 
 				response.EnsureSuccessStatusCode();
 
-				var postResponseBody = await response.Content.ReadAsStringAsync();
-				var jObj = JObject.Parse(postResponseBody);
-				return jObj;
+				var postResponseJObj = await response.Content.ReadAsJObjectAsync();
+				return postResponseJObj;
 			}
 			catch (Exception ex)
 			{

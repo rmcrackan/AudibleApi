@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using AudibleApiDTOs;
 using Dinah.Core;
@@ -170,15 +171,143 @@ namespace AudibleApi
             return link;
 		}
 
-		/// <summary>
-		/// download aax book file.
-		/// note that this is always a single-file download, even with normally multi-part books
-		/// 
-		/// this is the 'aax workaround' to the AAXC problem
-		/// https://github.com/mkb79/Audible/issues/3
-		/// </summary>
-		/// <returns>Filename of downloaded file</returns>
-		public async Task<string> DownloadAaxWorkaroundAsync(string asin, string destinationFilePath, IProgress<DownloadProgress> progress = null)
+		#region Download License
+		public async Task<DownloadLicense> GetDownloadLicenseAsync(string asin)
+		{
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
+
+			var body = new JObject
+			{
+				{ "consumption_type", "Download" },
+				{ "drm_type", "Adrm" },
+				{ "quality", "Extreme" }
+			};
+			var url = $"{CONTENT_PATH}/{asin}/licenserequest";
+
+			var request = new HttpRequestMessage(HttpMethod.Post, url);
+			request.AddContent(body);
+			await signRequestAsync(request);
+
+			var response = await _client.SendAsync(request);
+			var responseJobj = await response.Content.ReadAsJObjectAsync();
+
+
+			// if we get "message" on this level means something went wrong.
+			// "message" should be nested under "content_license"
+			if (responseJobj.TryGetValue("message", out var val))
+			{
+				var responseMessage = val.Value<string>();
+				throw new ApiErrorException(response.Headers.Location, new JObject { { "error", responseMessage } });
+			}
+
+			var status_code = responseJobj["content_license"]["status_code"].Value<string>();
+			if (status_code.EqualsInsensitive("Denied"))
+				return null;
+
+			if (!status_code.EqualsInsensitive("Granted"))
+				throw new ApiErrorException(response.Headers.Location, new JObject { { "error", "Unexpected status_code: " + status_code } });
+
+			var offline_url = responseJobj["content_license"]["content_metadata"]["content_url"]["offline_url"].Value<string>();
+
+			var licResp = responseJobj["content_license"]["license_response"].Value<string>();
+
+			(string audible_key, string audible_iv) = getAaxcDecryptionKey(licResp, asin);
+
+			var downloadLic = new DownloadLicense
+			{
+				DownloadUri = new Uri(offline_url),
+				AudibleKey = audible_key,
+				AudibleIV = audible_iv
+			};
+
+			return downloadLic;
+		}
+
+		public class DownloadLicense
+		{
+			public Uri DownloadUri { get; internal set; }
+			public string AudibleKey { get; internal set; }
+			public string AudibleIV { get; internal set; }
+		}
+
+		private (string audible_key, string audible_iv) getAaxcDecryptionKey(string license_response, string asin)
+		{
+			//AAXC scheme described in:
+			//https://patchwork.ffmpeg.org/project/ffmpeg/patch/17559601585196510@sas2-2fa759678732.qloud-c.yandex.net/
+
+			(byte[] key, byte[] iv) = getLicenseResponseDecryptionKey(asin);
+
+			var licJobj = decryptLicenseResponse(license_response, key, iv);
+
+			var audible_key = licJobj["key"].Value<string>();
+			var audible_iv = licJobj["iv"].Value<string>();
+
+			return (audible_key, audible_iv);
+		}
+
+		private JObject decryptLicenseResponse(string license_response, byte[] key, byte[] iv)
+        {
+			var cipherText = Convert.FromBase64String(license_response);
+
+			string plainText;
+
+			using (var aes = Aes.Create())
+			{
+				aes.Mode = CipherMode.CBC;
+				aes.Padding = PaddingMode.None;
+
+				using (var decryptor = aes.CreateDecryptor(key, iv))
+				{
+					using (var msDecrypt = new MemoryStream(cipherText))
+					{
+						using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+						{
+							//No padding used, so plaintext same size as ciphertext
+							byte[] ptBuff = new byte[cipherText.Length];
+							csDecrypt.Read(ptBuff, 0, ptBuff.Length);
+							//No padding, so only use non-null values
+							plainText = System.Text.Encoding.ASCII.GetString(ptBuff.TakeWhile(b => b != 0).ToArray());
+						}
+					}
+				}
+			}
+
+			var licJobj = JObject.Parse(plainText);
+			return licJobj;
+		}
+		private (byte[] key, byte[] iv) getLicenseResponseDecryptionKey(string asin)
+        {
+			byte[] keyComponents = System.Text.Encoding.ASCII.GetBytes(
+				_identityMaintainer.DeviceType +
+				_identityMaintainer.DeviceSerialNumber + 
+				_identityMaintainer.AmazonAccountId + 
+				asin
+				);
+
+			byte[] key = new byte[16];
+			byte[] iv = new byte[16];
+
+			using (var sha256 = SHA256.Create())
+			{
+				sha256.ComputeHash(keyComponents);
+				Array.Copy(sha256.Hash, 0, key, 0, 16);
+				Array.Copy(sha256.Hash, 16, iv, 0, 16);
+			}
+
+			return (key, iv);
+		}
+        #endregion
+
+
+        /// <summary>
+        /// download aax book file.
+        /// note that this is always a single-file download, even with normally multi-part books
+        /// 
+        /// this is the 'aax workaround' to the AAXC problem
+        /// https://github.com/mkb79/Audible/issues/3
+        /// </summary>
+        /// <returns>Filename of downloaded file</returns>
+        public async Task<string> DownloadAaxWorkaroundAsync(string asin, string destinationFilePath, IProgress<DownloadProgress> progress = null)
 		{
 			#region // downloading via cds.audible.com
 			// there are probably other options to play with later.

@@ -11,7 +11,9 @@ namespace AudibleApi.Authorization
 	{
 		ISystemDateTime SystemDateTime { get; }
 		Locale Locale { get; }
-
+		string DeviceSerialNumber { get; }
+		string DeviceType { get; }
+		string AmazonAccountId { get; }
 		Task<AccessToken> GetAccessTokenAsync();
 		Task<AdpToken> GetAdpTokenAsync();
 		Task<PrivateKey> GetPrivateKeyAsync();
