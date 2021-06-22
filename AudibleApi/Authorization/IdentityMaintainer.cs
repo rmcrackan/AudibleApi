@@ -74,14 +74,6 @@ namespace AudibleApi.Authorization
 			try
 			{
 				await RefreshAccessTokenAsync();
-
-				if (string.IsNullOrWhiteSpace(DeviceType)
-				|| string.IsNullOrWhiteSpace(DeviceSerialNumber)
-				|| string.IsNullOrWhiteSpace(AmazonAccountId))
-				{
-					await DeregisterAsync();
-					await RegisterAsync();
-				}
 			}
 			catch
 			{
