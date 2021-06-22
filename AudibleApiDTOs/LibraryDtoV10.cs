@@ -75,7 +75,7 @@ namespace AudibleApiDTOs
 		//       {
 		//         'plan_name': 'US Minerva'
 		#endregion
-		public bool IsNonLibraryAudiblePlus => BenefitId == "AYCL" && IsAyce.HasValue && IsAyce.Value;
+		public bool IsAudiblePlus => BenefitId != "AYCL" || !IsAyce.HasValue || !IsAyce.Value;
 		public string PictureId => ProductImages?.PictureId;
 		public string SupplementUrl => PdfUrl?.AbsoluteUri;
 		public DateTime DateAdded => PurchaseDate.UtcDateTime;

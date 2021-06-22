@@ -215,19 +215,12 @@ namespace AudibleApi
 
 			var downloadLic = new DownloadLicense
 			{
-				DownloadUri = new Uri(offline_url),
+				DownloadUrl = offline_url,
 				AudibleKey = audible_key,
 				AudibleIV = audible_iv
 			};
 
 			return downloadLic;
-		}
-
-		public class DownloadLicense
-		{
-			public Uri DownloadUri { get; internal set; }
-			public string AudibleKey { get; internal set; }
-			public string AudibleIV { get; internal set; }
 		}
 
 		private (string audible_key, string audible_iv) getAaxcDecryptionKey(string license_response, string asin)
