@@ -58,24 +58,5 @@ namespace Authentic.ResultFactoryTests.CaptchaPageFactoryTests
                 + "<input name='use_image_captcha' />";
             await Assert.ThrowsExceptionAsync<ArgumentException>(() => ResultFactory.CaptchaPage.CreateResultAsync(AuthenticateShared.GetAuthenticate(), new HttpResponseMessage { Content = new StringContent(body) }, new Dictionary<string, string>()));
         }
-
-        [TestMethod]
-        public async Task valid_returns_CaptchaPage()
-        {
-			var imageUri = "http://a.com/foo.png";
-            var response = new HttpResponseMessage();
-
-            var body
-                = $"<img src='{imageUri}' alt='Visual CAPTCHA image, continue down for an audio option.' />"
-                + "<input name='email' />"
-                + "<input name='password' />"
-                + "<input name='use_image_captcha' />";
-
-            var r = new HttpResponseMessage { Content = new StringContent(body) };
-
-            var captchaPage = await ResultFactory.CaptchaPage.CreateResultAsync(AuthenticateShared.GetAuthenticate(response), r, new Dictionary<string, string> { ["password"] = "abc" }) as CaptchaPage;
-
-            captchaPage.CaptchaImage.Should().Be(new Uri(imageUri));
-        }
     }
 }

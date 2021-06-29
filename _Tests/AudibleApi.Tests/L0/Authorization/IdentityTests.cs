@@ -26,7 +26,7 @@ namespace Authoriz.IdentityTests
 	public class KVP_class
 	{
 		[TestMethod]
-		public new void ToString()
+		public void KvpToString()
 			=> new KVP<string, string> { Key = "k", Value = "val" }
 			.ToString()
 			.Should().Be("[k=val]");

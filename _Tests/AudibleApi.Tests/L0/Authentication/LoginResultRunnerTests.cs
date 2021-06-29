@@ -45,20 +45,6 @@ namespace Authentic.LoginResultRunnerTests
         }
 
         [TestMethod]
-        public async Task returns_CaptchaPage()
-        {
-            var response
-                = "<input name='email' value='e' />"
-                + "<input name='password' value='pw' />"
-                + "<input name='use_image_captcha' value='true' />"
-                + "<img src='http://a.com/foo.png' alt='Visual CAPTCHA image, continue down for an audio option.' />";
-            var client = ApiHttpClientMock.GetClient(response);
-            var result = await LoginResultRunner.GetResultsPageAsync(AuthenticateShared.GetAuthenticate(client), new Dictionary<string, string> { ["password"] = "pw" });
-            var page = result as CaptchaPage;
-            page.Should().NotBeNull();
-        }
-
-        [TestMethod]
         public async Task returns_TwoFactorAuthenticationPage()
         {
             var response = "<input name='otpCode' value='2fa' />";

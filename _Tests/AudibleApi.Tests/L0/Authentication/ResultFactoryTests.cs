@@ -68,10 +68,6 @@ namespace Authentic.ResultFactoryTests
 		public async Task null_response_throws()
 			=> await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(AuthenticateShared.GetAuthenticate(), null, new Dictionary<string, string>()));
 
-		[TestMethod]
-        public async Task null_content_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentException>(() => new ConcreteResultFactory().CreateResultAsync(AuthenticateShared.GetAuthenticate(), new HttpResponseMessage(), new Dictionary<string, string>()));
-
         [TestMethod]
         public async Task null_inputs_throws()
             => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(AuthenticateShared.GetAuthenticate(), new HttpResponseMessage { Content = new StringContent("x") }, null));

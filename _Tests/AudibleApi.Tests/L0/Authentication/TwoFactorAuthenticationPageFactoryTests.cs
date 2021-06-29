@@ -30,7 +30,6 @@ namespace Authentic.ResultFactoryTests.TwoFactorAuthenticationPageFactoryTests
         public async Task null_content_returns_false()
         {
             var response = new HttpResponseMessage();
-            response.Content.Should().BeNull();
             (await ResultFactory.TwoFactorAuthenticationPage.IsMatchAsync(response)).Should().BeFalse();
         }
 
