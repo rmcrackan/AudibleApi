@@ -29,7 +29,16 @@ namespace Authorize_L1
 	[TestClass]
 	public class AuthorizeTests
 	{
-		[TestMethod]
+		/// <summary>
+		/// This method registers the test ib as an amazon device using tokens from
+		/// your AccountsSettings.json copied into the test bin folder. Thic can if 
+		/// the auth tokens from your initial login have not expired (6-hours from 
+		/// the time Libation logged in with username and password). Once the test
+		/// has been registered, all authorization data will be coppied into the
+		/// test bin flder and this method should not be called again.
+		/// </summary>
+		/// <returns></returns>
+		[TestMethod]		
 		public async Task<string> GetRegisterStringAsync()
 		{
 			var locale = Localization.Get("us");

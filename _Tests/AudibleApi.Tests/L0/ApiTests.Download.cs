@@ -62,7 +62,7 @@ namespace ApiTests_L0
 		public async Task book_not_in_library()
 		{
 			var msg = @"
-{""content_license"":{""acr"":""E1FYA"",""asin"":""172137406X"",""content_metadata"":{},""drm_type"":""Adrm"",""message"":""Client does not have plans that support asin benefits.]]. Licensing details:[License not granted]"",""request_id"":""13_S8"",""status_code"":""Denied"",""voucher_id"":""cdn:13_S8""},""response_groups"":[""always-returned""]}
+{""content_license"":{""acr"":""E1FYA"",""asin"":""172137406X"",""content_metadata"":{},""drm_type"":""Adrm"",""message"":""License not granted to customer [AAAAAAAAAAAAAA] for asin [172137406X]"",""request_id"":""13_S8"",""status_code"":""Denied"",""voucher_id"":""cdn:13_S8""},""response_groups"":[""always-returned""]}
 ".Trim();
 			var response = new HttpResponseMessage
 			{
@@ -297,9 +297,21 @@ namespace ApiTests_L0.Sealed
 		[TestMethod]
 		public async Task book_in_library()
 		{
+			var asin = "B07L162HDY";
+			var voucherJson = "{\"key\":\"00000000000000000000000000000000\",\"iv\":\"11111111111111111111111111111111\",\"refreshDate\":\"2021-06-21T19:52:32Z\",\"removalOnExpirationDate\":\"2021-08-25T19:52:32Z\",\"rules\":[{\"parameters\":[{\"expireDate\":\"2021-07-31T19:52:32Z\",\"type\":\"EXPIRES\"}],\"name\":\"DefaultExpiresRule\"},{\"parameters\":[{\"directedIds\":[\"amzn1.account.AAAAAAAAAAAAAAAAAAAAAAAAAAAA\"],\"type\":\"DIRECTED_IDS\"}],\"name\":\"AllowedUsersRule\"}]}";
+			var voucherObj = AudibleApiDTOs.VoucherDtoV10.FromJson(voucherJson);
+			voucherObj.Should().NotBeNull();
+
+			var license_response = AudibleApi.Tests.EncryptionHelper.EncryptVoucher(asin, voucherJson);
+			var decryptedVoucher = AudibleApi.Tests.EncryptionHelper.DecryptVoucher(asin, license_response);
+
+			decryptedVoucher.Should().BeEquivalentTo(voucherJson, "It was encrypted then decrypted with same parameters.");
+
+
+
 			var downloadLink = "ht" + "tps://dc.cloudfront.net/42/bk_2.aax?voucherId=cdn:6G&Policy=eQ__&Key-Pair-Id=AA";
 			var msg = $@"
-{{""content_license"":{{""acr"":""CRQ"",""asin"":""B07L162HDY"",""content_metadata"":{{""content_url"":{{""offline_url"":""{downloadLink}""}}}},""drm_type"":""Adrm"",""license_response"":""I="",""message"":""foo"",""request_id"":""66_SG"",""status_code"":""Granted"",""voucher_id"":""cdn:66_SG""}},""response_groups"":[""always-returned""]}}
+{{""content_license"":{{""acr"":""CRQ"",""asin"":""B07L162HDY"",""content_metadata"":{{""content_url"":{{""offline_url"":""{downloadLink}""}}}},""drm_type"":""Adrm"",""license_response"":""{license_response}"",""message"":""foo"",""request_id"":""66_SG"",""status_code"":""Granted"",""voucher_id"":""cdn:66_SG""}},""response_groups"":[""always-returned""]}}
 ".Trim();
 			var response = new HttpResponseMessage
 			{
@@ -307,9 +319,11 @@ namespace ApiTests_L0.Sealed
 			};
 
 			var api = await ApiHttpClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
+			var license = await api.GetDownloadLicenseAsync(asin);
 
-			var license = await api.GetDownloadLicenseAsync("B07L162HDY");
 			license.ContentMetadata.ContentUrl.OfflineUrl.Should().Be(downloadLink);
+			license.Voucher.Key.Should().Be(voucherObj.Key);
+			license.Voucher.Iv.Should().Be(voucherObj.Iv);
 		}
 	}
 
@@ -325,7 +339,7 @@ namespace ApiTests_L0.Sealed
 			// RESPONSE 1
 			var downloadLink = "ht" + $"tps://dc.cloudfront.net/42/bk_2{goodExt}?voucherId=cdn:6G&Policy=eQ__&Key-Pair-Id=AA";
 			var msg = $@"
-{{""content_license"":{{""acr"":""CQ"",""asin"":""B07L162HDY"",""content_metadata"":{{""content_url"":{{""offline_url"":""{downloadLink}""}}}},""drm_type"":""Adrm"",""license_response"":""I="",""message"":""Eligibility details"",""request_id"":""66_SG"",""status_code"":""Granted"",""voucher_id"":""cdn:66_SG""}},""response_groups"":[""always-returned""]}}
+{{""content_license"":{{""acr"":""CQ"",""asin"":""B07L162HDY"",""content_metadata"":{{""content_url"":{{""offline_url"":""{downloadLink}""}}}},""drm_type"":""Adrm"",""license_response"":""yLXFlyRjOkwFgxO/11ICXyE1U/N//C7CDH5F/6yMFsmxNGG4YaiA9op6/PrfkV7bPt5Q/KOQQ8XgAVvKvHW8q4xVrY59VUU0UCLg2NpK3chltOmVfUAT162qL0OZwxzCNJTlZ2GsgVacO5jCLqeJmutEHcuySp42kp5/HQ3SbAcweCeoT6QCOHe+5yEhqrDBgtDmZ8/15AvLSo6Y1kb0b2Erg1KfIRUj/v+sYLHdn04LcDim7UEmMQD1AR4kiZGqo+QOGSPitBmmOToh0suiI0AbSfjrxVJgHMQtAsg+igDK1NlyJPFQUCAgxkXwkJJxXX4vLR9iQMTDFl3doMGgMwCTsdk5w/HQVPmtZ9cH1TicVbN2atfPUR4WW8pexEWL06UIl2911zZm4rOH3LOdCkg64fuqYqp3d9DTWsnZQOgzYT2x8amxbePDAvweqxMKGWDWZKOJ+B5uABvuOr0vS+35BFi9EGWxhI5siYyy+NM2Dy6jtEh65CUKY0trCkdLC9OXy6L4Dh3qThNONb4Qvz/q8s8vdSwMR9eZ9FyclHY="",""message"":""Eligibility details"",""request_id"":""66_SG"",""status_code"":""Granted"",""voucher_id"":""cdn:66_SG""}},""response_groups"":[""always-returned""]}}
 ".Trim();
 			var linkResponse = new HttpResponseMessage
 			{ Content = new StringContent(msg), RequestMessage = new HttpRequestMessage() };
@@ -861,7 +875,7 @@ namespace ApiTests_L0.Sealed
 				// RESPONSE 2: get download url
 				var downloadLink = "ht" + $"tps://dc.cloudfront.net/42/bk_2.aax?voucherId=cdn:6G&Policy=eQ__&Key-Pair-Id=AA";
 				var msg = $@"
-{{""content_license"":{{""acr"":""CQ"",""asin"":""B07L162HDY"",""content_metadata"":{{""content_url"":{{""offline_url"":""{downloadLink}""}}}},""drm_type"":""Adrm"",""license_response"":""I="",""message"":""Eligibility details"",""request_id"":""66_SG"",""status_code"":""Granted"",""voucher_id"":""cdn:66_SG""}},""response_groups"":[""always-returned""]}}
+{{""content_license"":{{""acr"":""CQ"",""asin"":""B07L162HDY"",""content_metadata"":{{""content_url"":{{""offline_url"":""{downloadLink}""}}}},""drm_type"":""Adrm"",""license_response"":""yLXFlyRjOkwFgxO/11ICXyE1U/N//C7CDH5F/6yMFsmxNGG4YaiA9op6/PrfkV7bPt5Q/KOQQ8XgAVvKvHW8q4xVrY59VUU0UCLg2NpK3chltOmVfUAT162qL0OZwxzCNJTlZ2GsgVacO5jCLqeJmutEHcuySp42kp5/HQ3SbAcweCeoT6QCOHe+5yEhqrDBgtDmZ8/15AvLSo6Y1kb0b2Erg1KfIRUj/v+sYLHdn04LcDim7UEmMQD1AR4kiZGqo+QOGSPitBmmOToh0suiI0AbSfjrxVJgHMQtAsg+igDK1NlyJPFQUCAgxkXwkJJxXX4vLR9iQMTDFl3doMGgMwCTsdk5w/HQVPmtZ9cH1TicVbN2atfPUR4WW8pexEWL06UIl2911zZm4rOH3LOdCkg64fuqYqp3d9DTWsnZQOgzYT2x8amxbePDAvweqxMKGWDWZKOJ+B5uABvuOr0vS+35BFi9EGWxhI5siYyy+NM2Dy6jtEh65CUKY0trCkdLC9OXy6L4Dh3qThNONb4Qvz/q8s8vdSwMR9eZ9FyclHY="",""message"":""Eligibility details"",""request_id"":""66_SG"",""status_code"":""Granted"",""voucher_id"":""cdn:66_SG""}},""response_groups"":[""always-returned""]}}
 ".Trim();
 				var linkResponse = new HttpResponseMessage
 				{ Content = new StringContent(msg), RequestMessage = new HttpRequestMessage() };

@@ -47,7 +47,8 @@ namespace ApiTests_L1
 			link.Should().Contain("cloudfront.net");
 			link.Should().Contain("/bk_potr_000001");
 			link.Should().Contain(".aax");
-			link.Should().Contain("&Policy=");
+			link.Should().Contain("?voucherId=");
+			link.Should().Contain("&Expires=");
 			link.Should().Contain("&Signature=");
 			link.Should().Contain("&Key-Pair-Id=");
 		}
