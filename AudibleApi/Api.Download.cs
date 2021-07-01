@@ -173,6 +173,14 @@ namespace AudibleApi
 			var response = await _client.SendAsync(request);
 			var responseJobj = await response.Content.ReadAsJObjectAsync();
 
+			// if we get "message" on this level means something went wrong.
+			// "message" should be nested under "content_license"
+			if (responseJobj.TryGetValue("message", out var val))
+			{
+				var responseMessage = val.Value<string>();
+				throw new ApiErrorException(response.Headers.Location, new JObject { { "error", responseMessage } });
+			}
+
 			ContentLicenseDtoV10 contentLicenseDtoV10;
 			try
 			{
