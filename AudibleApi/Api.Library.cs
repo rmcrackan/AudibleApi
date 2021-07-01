@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Dinah.Core;
-using Dinah.Core.Net;
 using Dinah.Core.Net.Http;
 using Newtonsoft.Json.Linq;
 

@@ -104,15 +104,15 @@ namespace AudibleApiDTOs
         {
             var license = json.ToObject<ContentLicenseDtoV10>();
 
-            string licenseKey = deviceType + deviceSerialNumber + amazonAccountId + license.ContentLicense.Asin;
-
-            license.ContentLicense.Voucher = DcryptLicenseResponse(license, deviceType, deviceSerialNumber, amazonAccountId);
+            license.ContentLicense.Voucher = DecryptLicenseResponse(license, deviceType, deviceSerialNumber, amazonAccountId);
 
             return license;
         }
 
-        private static VoucherDtoV10 DcryptLicenseResponse(ContentLicenseDtoV10 contentLicense, string deviceType, string deviceSerialNumber, string amazonAccountId)
+        private static VoucherDtoV10 DecryptLicenseResponse(ContentLicenseDtoV10 contentLicense, string deviceType, string deviceSerialNumber, string amazonAccountId)
         {
+            //AAXC scheme described in:
+            //https://patchwork.ffmpeg.org/project/ffmpeg/patch/17559601585196510@sas2-2fa759678732.qloud-c.yandex.net/
 
             byte[] keyComponents = System.Text.Encoding.ASCII.GetBytes(
                 deviceType +
