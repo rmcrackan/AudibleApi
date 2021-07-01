@@ -14,6 +14,13 @@ using Newtonsoft.Json.Linq;
 
 namespace AudibleApi
 {
+	public enum DownloadQuality
+    {
+		Extreme,
+		High,
+		Normal,
+		Low
+	}
     public partial class Api
     {
         const string CONTENT_PATH = "/1.0/content";
@@ -113,8 +120,11 @@ namespace AudibleApi
         {
 			ArgumentValidator.EnsureNotNullOrWhiteSpace(file, nameof(file));
 
-            var downloadLink = await GetDownloadLinkAsync(asin);
-            if (downloadLink == null)
+            var downloadLicense = await GetDownloadLicenseAsync(asin);
+
+			var downloadLink = downloadLicense?.ContentMetadata?.ContentUrl?.OfflineUrl;
+
+			if (downloadLink == null)
                 return null;
 
             // fix extension
@@ -126,53 +136,25 @@ namespace AudibleApi
             return file;
         }
 
-        /// <returns>Return download link if successful. null if denied</returns>
-        public async Task<string> GetDownloadLinkAsync(string asin)
-        {
-			//
-			// this method has the potential to return files of the new .aaxc format which is currently un-broken and cannot be decrypted
-			//
-
-			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
-
-            var body = new JObject
-            {
-                { "consumption_type", "Download" },
-                { "drm_type", "Adrm" },
-                { "quality", "Extreme" }
-            };
-            var url = $"{CONTENT_PATH}/{asin}/licenserequest";
-
-            var request = new HttpRequestMessage(HttpMethod.Post, url);
-            request.AddContent(body);
-            await signRequestAsync(request);
-
-            var response = await _client.SendAsync(request);
-            var responseString = await response.Content.ReadAsStringAsync();
-
-            var obj = JObject.Parse(responseString);
-
-            // if we get "message" on this level means something went wrong.
-            // "message" should be nested under "content_license"
-            if (obj.TryGetValue("message", out var val))
-            {
-                var responseMessage = val.Value<string>();
-                throw new ApiErrorException(response.Headers.Location, new JObject { { "error", responseMessage } });
-            }
-
-            var status_code = obj["content_license"]["status_code"].Value<string>();
-            if (status_code.EqualsInsensitive("Denied"))
-                return null;
-
-            if (!status_code.EqualsInsensitive("Granted"))
-                throw new ApiErrorException(response.Headers.Location, new JObject { { "error", "Unexpected status_code: " + status_code } });
-
-            var link = obj["content_license"]["content_metadata"]["content_url"]["offline_url"].Value<string>();
-            return link;
-		}
 
 		#region Download License
-		public async Task<DownloadLicense> GetDownloadLicenseAsync(string asin)
+
+		/// <summary>
+		/// Requests a license to download <see cref="DownloadQuality.Extreme"/> Audible content.
+		/// </summary>
+		/// <param name="asin">Audible Asin of book</param>
+		/// <returns>Return a valid <see cref="ContentLicense"/> if successful; null if denied.</returns>
+		public async Task<ContentLicense> GetDownloadLicenseAsync(string asin)
+		{
+			return await GetDownloadLicenseAsync(asin, DownloadQuality.Extreme);
+		}
+		/// <summary>
+		/// Requests a license to download Audible content.
+		/// </summary>
+		/// <param name="asin">Audible Asin of book</param>
+		/// <param name="quality">Desired audio Quality</param>
+		/// <returns>Return a valid <see cref="ContentLicense"/> if successful; null if denied.</returns>
+		public async Task<ContentLicense> GetDownloadLicenseAsync(string asin, DownloadQuality quality)
 		{
 			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
 
@@ -180,7 +162,8 @@ namespace AudibleApi
 			{
 				{ "consumption_type", "Download" },
 				{ "drm_type", "Adrm" },
-				{ "quality", "Extreme" }
+				{ "quality", quality.ToString() },
+				{ "response_groups", "last_position_heard,pdf_url,content_reference,chapter_info"}
 			};
 			var url = $"{CONTENT_PATH}/{asin}/licenserequest";
 
@@ -191,104 +174,29 @@ namespace AudibleApi
 			var response = await _client.SendAsync(request);
 			var responseJobj = await response.Content.ReadAsJObjectAsync();
 
-
-			// if we get "message" on this level means something went wrong.
-			// "message" should be nested under "content_license"
-			if (responseJobj.TryGetValue("message", out var val))
+			ContentLicenseDtoV10 contentLicenseDtoV10;
+			try
 			{
-				var responseMessage = val.Value<string>();
-				throw new ApiErrorException(response.Headers.Location, new JObject { { "error", responseMessage } });
+				contentLicenseDtoV10 = ContentLicenseDtoV10.FromJson(responseJobj, _identityMaintainer.DeviceType, _identityMaintainer.DeviceSerialNumber, _identityMaintainer.AmazonAccountId);
+			}
+			catch (Exception ex)
+			{
+				Serilog.Log.Logger.Error(ex, $"Error retrieving content metadata for asin: {asin}");
+				throw;
 			}
 
-			var status_code = responseJobj["content_license"]["status_code"].Value<string>();
-			if (status_code.EqualsInsensitive("Denied"))
+			if (contentLicenseDtoV10?.ContentLicense?.StatusCode is null)
 				return null;
 
-			if (!status_code.EqualsInsensitive("Granted"))
-				throw new ApiErrorException(response.Headers.Location, new JObject { { "error", "Unexpected status_code: " + status_code } });
+			if (contentLicenseDtoV10.ContentLicense.StatusCode.EqualsInsensitive("Denied"))
+				return null;
 
-			var offline_url = responseJobj["content_license"]["content_metadata"]["content_url"]["offline_url"].Value<string>();
+			if (!contentLicenseDtoV10.ContentLicense.StatusCode.EqualsInsensitive("Granted"))
+				throw new ApiErrorException(response.Headers.Location, new JObject { { "error", "Unexpected status_code: " + contentLicenseDtoV10.ContentLicense.StatusCode } });
 
-			var licResp = responseJobj["content_license"]["license_response"].Value<string>();
-
-			(string audible_key, string audible_iv) = getAaxcDecryptionKey(licResp, asin);
-
-			var downloadLic = new DownloadLicense
-			{
-				DownloadUrl = offline_url,
-				AudibleKey = audible_key,
-				AudibleIV = audible_iv
-			};
-
-			return downloadLic;
+			return contentLicenseDtoV10.ContentLicense;
 		}
 
-		private (string audible_key, string audible_iv) getAaxcDecryptionKey(string license_response, string asin)
-		{
-			//AAXC scheme described in:
-			//https://patchwork.ffmpeg.org/project/ffmpeg/patch/17559601585196510@sas2-2fa759678732.qloud-c.yandex.net/
-
-			(byte[] key, byte[] iv) = getLicenseResponseDecryptionKey(asin);
-
-			var licJobj = decryptLicenseResponse(license_response, key, iv);
-
-			var audible_key = licJobj["key"].Value<string>();
-			var audible_iv = licJobj["iv"].Value<string>();
-
-			return (audible_key, audible_iv);
-		}
-
-		private JObject decryptLicenseResponse(string license_response, byte[] key, byte[] iv)
-        {
-			var cipherText = Convert.FromBase64String(license_response);
-
-			string plainText;
-
-			using (var aes = Aes.Create())
-			{
-				aes.Mode = CipherMode.CBC;
-				aes.Padding = PaddingMode.None;
-
-				using (var decryptor = aes.CreateDecryptor(key, iv))
-				{
-					using (var msDecrypt = new MemoryStream(cipherText))
-					{
-						using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
-						{
-							//No padding used, so plaintext same size as ciphertext
-							byte[] ptBuff = new byte[cipherText.Length];
-							csDecrypt.Read(ptBuff, 0, ptBuff.Length);
-							//No padding, so only use non-null values
-							plainText = System.Text.Encoding.ASCII.GetString(ptBuff.TakeWhile(b => b != 0).ToArray());
-						}
-					}
-				}
-			}
-
-			var licJobj = JObject.Parse(plainText);
-			return licJobj;
-		}
-		private (byte[] key, byte[] iv) getLicenseResponseDecryptionKey(string asin)
-        {
-			byte[] keyComponents = System.Text.Encoding.ASCII.GetBytes(
-				_identityMaintainer.DeviceType +
-				_identityMaintainer.DeviceSerialNumber + 
-				_identityMaintainer.AmazonAccountId + 
-				asin
-				);
-
-			byte[] key = new byte[16];
-			byte[] iv = new byte[16];
-
-			using (var sha256 = SHA256.Create())
-			{
-				sha256.ComputeHash(keyComponents);
-				Array.Copy(sha256.Hash, 0, key, 0, 16);
-				Array.Copy(sha256.Hash, 16, iv, 0, 16);
-			}
-
-			return (key, iv);
-		}
         #endregion
 
 
