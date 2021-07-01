@@ -14,7 +14,7 @@ namespace AudibleApiDTOs
 
     public partial class ContentLicenseDtoV10
     {
-        [JsonProperty("content_license")]
+        [JsonProperty("content_license", Required = Required.Always)]
         public ContentLicense ContentLicense { get; set; }
 
         [JsonProperty("response_groups")]
@@ -104,7 +104,8 @@ namespace AudibleApiDTOs
         {
             var license = json.ToObject<ContentLicenseDtoV10>();
 
-            license.ContentLicense.Voucher = DecryptLicenseResponse(license, deviceType, deviceSerialNumber, amazonAccountId);
+            if (license.ContentLicense?.LicenseResponse is not null)
+                license.ContentLicense.Voucher = DecryptLicenseResponse(license, deviceType, deviceSerialNumber, amazonAccountId);
 
             return license;
         }
