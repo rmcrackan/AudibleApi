@@ -29,14 +29,20 @@ namespace ApiTests_L1
 	[Ignore]
 #endif
 	[TestClass]
-	public class GetDownloadLinkAsync
+	public class GetDownloadLicenseAsync
 	{
 		[TestMethod]
 		public async Task get_harry_potter_link()
 		{
 			var api = await InitializeState.REAL_InitAndGetApi();
 
-			var link = await api.GetDownloadLinkAsync("B017V4IM1G");
+			var license = await api.GetDownloadLicenseAsync("B017V4IM1G");
+			license.Should().NotBeNull();
+			license.ContentMetadata.Should().NotBeNull();
+			license.ContentMetadata.ContentUrl.Should().NotBeNull();
+			license.ContentMetadata.ContentUrl.OfflineUrl.Should().NotBeNull();
+
+			var link = license.ContentMetadata.ContentUrl.OfflineUrl;
 
 			link.Should().Contain("cloudfront.net");
 			link.Should().Contain("/bk_potr_000001");
@@ -254,9 +260,9 @@ namespace ApiTests_L1.Inherited
 	[Ignore]
 #endif
 	[TestClass]
-	public class GetDownloadLinkAsync : ApiTests_L0.GetDownloadLinkAsync
+	public class GetDownloadLicenseAsync : ApiTests_L0.GetDownloadLicenseAsync
 	{
-		public GetDownloadLinkAsync()
+		public GetDownloadLicenseAsync()
 			=> api = InitializeState.REAL_InitAndGetApi().GetAwaiter().GetResult();
 	}
 

@@ -23,7 +23,7 @@ using static TestAudibleApiCommon.ComputedTestValues;
 namespace ApiTests_L0
 {
 	[TestClass]
-	public class GetDownloadLinkAsync
+	public class GetDownloadLicenseAsync
 	{
 		public Api api { get; set; }
 
@@ -32,7 +32,7 @@ namespace ApiTests_L0
 		{
 			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
-			await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => api.GetDownloadLinkAsync(null));
+			await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => api.GetDownloadLicenseAsync(null));
 		}
 
 		[TestMethod]
@@ -40,8 +40,8 @@ namespace ApiTests_L0
 		{
 			api ??= await ApiHttpClientMock.GetApiAsync("x");
 
-			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.GetDownloadLinkAsync(""));
-			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.GetDownloadLinkAsync("   "));
+			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.GetDownloadLicenseAsync(""));
+			await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.GetDownloadLicenseAsync("   "));
 		}
 
 		[TestMethod]
@@ -55,7 +55,7 @@ namespace ApiTests_L0
 
 			api ??= await ApiHttpClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
 
-			await Assert.ThrowsExceptionAsync<ApiErrorException>(() => api.GetDownloadLinkAsync("0X0X0X0XXX"));
+			await Assert.ThrowsExceptionAsync<ApiErrorException>(() => api.GetDownloadLicenseAsync("0X0X0X0XXX"));
 		}
 
 		[TestMethod]
@@ -71,8 +71,8 @@ namespace ApiTests_L0
 
 			api ??= await ApiHttpClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
 
-			var link = await api.GetDownloadLinkAsync("172137406X");
-			link.Should().BeNull();
+			var license = await api.GetDownloadLicenseAsync("172137406X");
+			license.Should().BeNull();
 		}
 
 		[TestMethod]
@@ -94,7 +94,7 @@ namespace ApiTests_L0
 
 			api ??= await ApiHttpClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
 
-			await Assert.ThrowsExceptionAsync<ApiErrorException>(() => api.GetDownloadLinkAsync("B07D84P11M"));
+			await Assert.ThrowsExceptionAsync<ApiErrorException>(() => api.GetDownloadLicenseAsync("B07D84P11M"));
 		}
 	}
 
@@ -276,7 +276,7 @@ namespace ApiTests_L0
 namespace ApiTests_L0.Sealed
 {
 	[TestClass]
-	public class GetDownloadLinkAsync_asin
+	public class GetDownloadLicenseAsync_asin
 	{
 		[TestMethod]
 		public async Task unknown_status_code()
@@ -291,7 +291,7 @@ namespace ApiTests_L0.Sealed
 
 			var api = await ApiHttpClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
 
-			await Assert.ThrowsExceptionAsync<ApiErrorException>(() => api.GetDownloadLinkAsync("172137406X"));
+			await Assert.ThrowsExceptionAsync<ApiErrorException>(() => api.GetDownloadLicenseAsync("172137406X"));
 		}
 
 		[TestMethod]
@@ -308,8 +308,8 @@ namespace ApiTests_L0.Sealed
 
 			var api = await ApiHttpClientMock.GetApiAsync(HttpMock.CreateMockHttpClientHandler(response).Object);
 
-			var link = await api.GetDownloadLinkAsync("B07L162HDY");
-			link.Should().Be(downloadLink);
+			var license = await api.GetDownloadLicenseAsync("B07L162HDY");
+			license.ContentMetadata.ContentUrl.OfflineUrl.Should().Be(downloadLink);
 		}
 	}
 
