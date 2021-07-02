@@ -36,7 +36,10 @@ namespace AuthorizationShared
 			=> DateTime.Parse(GetAccessTokenExpires(time));
 
 		private static JObject getIdentityJObject(AccessTokenTemporality time, Locale locale = null)
-			=> new JObject {
+        {
+			var authResp = JObject.Parse(AuthenticateResponse);
+
+			var jobj = new JObject {
 				{
 					"LocaleName", locale?.Name ?? "us"
 				},
@@ -72,8 +75,20 @@ namespace AuthorizationShared
 							{ "Value", "value 2" }
 						}
 					}
+				},
+				{
+					"DeviceSerialNumber", authResp["response"]["success"]["extensions"]["device_info"]["device_serial_number"].Value<string>()
+				},
+				{
+					"DeviceType", authResp["response"]["success"]["extensions"]["device_info"]["device_type"].Value<string>()
+				},
+				{
+					"AmazonAccountId", authResp["response"]["success"]["extensions"]["customer_info"]["user_id"].Value<string>()
 				}
+
 			};
+			return jobj;
+		}
 
 		public static Identity GetIdentity(AccessTokenTemporality time, Locale locale = null)
 			=> Identity.FromJson(GetIdentityJson(time, locale));
