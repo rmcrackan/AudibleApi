@@ -336,10 +336,14 @@ namespace ApiTests_L0.Sealed
 			var badExt = ".xyz";
 			var goodExt = ".aax";
 
+			var asin = "B07L162HDY";
+			var voucherJson = "{\"key\":\"00000000000000000000000000000000\",\"iv\":\"11111111111111111111111111111111\",\"refreshDate\":\"2021-06-21T19:52:32Z\",\"removalOnExpirationDate\":\"2021-08-25T19:52:32Z\",\"rules\":[{\"parameters\":[{\"expireDate\":\"2021-07-31T19:52:32Z\",\"type\":\"EXPIRES\"}],\"name\":\"DefaultExpiresRule\"},{\"parameters\":[{\"directedIds\":[\"amzn1.account.AAAAAAAAAAAAAAAAAAAAAAAAAAAA\"],\"type\":\"DIRECTED_IDS\"}],\"name\":\"AllowedUsersRule\"}]}";
+			var license_response = AudibleApi.Tests.EncryptionHelper.EncryptVoucher(asin, voucherJson);
+
 			// RESPONSE 1
 			var downloadLink = "ht" + $"tps://dc.cloudfront.net/42/bk_2{goodExt}?voucherId=cdn:6G&Policy=eQ__&Key-Pair-Id=AA";
 			var msg = $@"
-{{""content_license"":{{""acr"":""CQ"",""asin"":""B07L162HDY"",""content_metadata"":{{""content_url"":{{""offline_url"":""{downloadLink}""}}}},""drm_type"":""Adrm"",""license_response"":""yLXFlyRjOkwFgxO/11ICXyE1U/N//C7CDH5F/6yMFsmxNGG4YaiA9op6/PrfkV7bPt5Q/KOQQ8XgAVvKvHW8q4xVrY59VUU0UCLg2NpK3chltOmVfUAT162qL0OZwxzCNJTlZ2GsgVacO5jCLqeJmutEHcuySp42kp5/HQ3SbAcweCeoT6QCOHe+5yEhqrDBgtDmZ8/15AvLSo6Y1kb0b2Erg1KfIRUj/v+sYLHdn04LcDim7UEmMQD1AR4kiZGqo+QOGSPitBmmOToh0suiI0AbSfjrxVJgHMQtAsg+igDK1NlyJPFQUCAgxkXwkJJxXX4vLR9iQMTDFl3doMGgMwCTsdk5w/HQVPmtZ9cH1TicVbN2atfPUR4WW8pexEWL06UIl2911zZm4rOH3LOdCkg64fuqYqp3d9DTWsnZQOgzYT2x8amxbePDAvweqxMKGWDWZKOJ+B5uABvuOr0vS+35BFi9EGWxhI5siYyy+NM2Dy6jtEh65CUKY0trCkdLC9OXy6L4Dh3qThNONb4Qvz/q8s8vdSwMR9eZ9FyclHY="",""message"":""Eligibility details"",""request_id"":""66_SG"",""status_code"":""Granted"",""voucher_id"":""cdn:66_SG""}},""response_groups"":[""always-returned""]}}
+{{""content_license"":{{""acr"":""CQ"",""asin"":""{asin}"",""content_metadata"":{{""content_url"":{{""offline_url"":""{downloadLink}""}}}},""drm_type"":""Adrm"",""license_response"":""{license_response}"",""message"":""Eligibility details"",""request_id"":""66_SG"",""status_code"":""Granted"",""voucher_id"":""cdn:66_SG""}},""response_groups"":[""always-returned""]}}
 ".Trim();
 			var linkResponse = new HttpResponseMessage
 			{ Content = new StringContent(msg), RequestMessage = new HttpRequestMessage() };
@@ -373,7 +377,7 @@ namespace ApiTests_L0.Sealed
 
 			try
 			{
-				await api.DownloadPartAsync("B07L162HDY", badFileName);
+				await api.DownloadPartAsync(asin, badFileName);
 				await Task.Delay(100);
 
 				// verify file "download", incl corrected extension
@@ -872,10 +876,14 @@ namespace ApiTests_L0.Sealed
 
 			for (var i = 0; i < qtyBooks; i++)
 			{
+				var asin = "B07L162HDY";
+				var voucherJson = "{\"key\":\"00000000000000000000000000000000\",\"iv\":\"11111111111111111111111111111111\",\"refreshDate\":\"2021-06-21T19:52:32Z\",\"removalOnExpirationDate\":\"2021-08-25T19:52:32Z\",\"rules\":[{\"parameters\":[{\"expireDate\":\"2021-07-31T19:52:32Z\",\"type\":\"EXPIRES\"}],\"name\":\"DefaultExpiresRule\"},{\"parameters\":[{\"directedIds\":[\"amzn1.account.AAAAAAAAAAAAAAAAAAAAAAAAAAAA\"],\"type\":\"DIRECTED_IDS\"}],\"name\":\"AllowedUsersRule\"}]}";
+				var license_response = AudibleApi.Tests.EncryptionHelper.EncryptVoucher(asin, voucherJson);
+
 				// RESPONSE 2: get download url
 				var downloadLink = "ht" + $"tps://dc.cloudfront.net/42/bk_2.aax?voucherId=cdn:6G&Policy=eQ__&Key-Pair-Id=AA";
 				var msg = $@"
-{{""content_license"":{{""acr"":""CQ"",""asin"":""B07L162HDY"",""content_metadata"":{{""content_url"":{{""offline_url"":""{downloadLink}""}}}},""drm_type"":""Adrm"",""license_response"":""yLXFlyRjOkwFgxO/11ICXyE1U/N//C7CDH5F/6yMFsmxNGG4YaiA9op6/PrfkV7bPt5Q/KOQQ8XgAVvKvHW8q4xVrY59VUU0UCLg2NpK3chltOmVfUAT162qL0OZwxzCNJTlZ2GsgVacO5jCLqeJmutEHcuySp42kp5/HQ3SbAcweCeoT6QCOHe+5yEhqrDBgtDmZ8/15AvLSo6Y1kb0b2Erg1KfIRUj/v+sYLHdn04LcDim7UEmMQD1AR4kiZGqo+QOGSPitBmmOToh0suiI0AbSfjrxVJgHMQtAsg+igDK1NlyJPFQUCAgxkXwkJJxXX4vLR9iQMTDFl3doMGgMwCTsdk5w/HQVPmtZ9cH1TicVbN2atfPUR4WW8pexEWL06UIl2911zZm4rOH3LOdCkg64fuqYqp3d9DTWsnZQOgzYT2x8amxbePDAvweqxMKGWDWZKOJ+B5uABvuOr0vS+35BFi9EGWxhI5siYyy+NM2Dy6jtEh65CUKY0trCkdLC9OXy6L4Dh3qThNONb4Qvz/q8s8vdSwMR9eZ9FyclHY="",""message"":""Eligibility details"",""request_id"":""66_SG"",""status_code"":""Granted"",""voucher_id"":""cdn:66_SG""}},""response_groups"":[""always-returned""]}}
+{{""content_license"":{{""acr"":""CQ"",""asin"":""{asin}"",""content_metadata"":{{""content_url"":{{""offline_url"":""{downloadLink}""}}}},""drm_type"":""Adrm"",""license_response"":""{license_response}"",""message"":""Eligibility details"",""request_id"":""66_SG"",""status_code"":""Granted"",""voucher_id"":""cdn:66_SG""}},""response_groups"":[""always-returned""]}}
 ".Trim();
 				var linkResponse = new HttpResponseMessage
 				{ Content = new StringContent(msg), RequestMessage = new HttpRequestMessage() };
