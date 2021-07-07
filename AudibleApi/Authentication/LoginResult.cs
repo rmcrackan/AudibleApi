@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Dinah.Core;
-using Dinah.Core.Net;
-using Dinah.Core.Net.Http;
 
 namespace AudibleApi.Authentication
 {
@@ -20,13 +16,14 @@ namespace AudibleApi.Authentication
 		public IDictionary<string, string> GetInputsReadOnly()
             => new Dictionary<string, string>(Inputs);
 
+        protected string ResponseBody { get; }
+
         protected LoginResult(Authenticate authenticate, string responseBody)
         {
             Authenticate = authenticate ?? throw new ArgumentNullException(nameof(authenticate));
+            ResponseBody = responseBody ?? throw new ArgumentNullException(nameof(responseBody));
 
-            if (responseBody is null)
-                throw new ArgumentNullException(nameof(responseBody));
-            Inputs = HtmlHelper.GetInputs(responseBody);
+            Inputs = HtmlHelper.GetInputs(ResponseBody);
         }
     }
 }

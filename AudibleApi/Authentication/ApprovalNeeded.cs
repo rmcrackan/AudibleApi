@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Dinah.Core;
-using Dinah.Core.Net;
-using Dinah.Core.Net.Http;
 
 namespace AudibleApi.Authentication
 {
@@ -11,6 +8,12 @@ namespace AudibleApi.Authentication
     {
         public ApprovalNeeded(Authenticate authenticate, string responseBody) : base(authenticate, responseBody) { }
 
-        public Task<LoginResult> SubmitAsync() => LoginResultRunner.GetResultsPageAsync(Authenticate, System.Web.HttpUtility.UrlDecode(Inputs["openid.return_to"]));
+        public Task<LoginResult> SubmitAsync()
+		{
+            // links[0] == "#"
+            // links[1] is the correct redirect link
+            var links = HtmlHelper.GetLinks(this.ResponseBody, "a-link-normal");
+            return LoginResultRunner.GetResultsPageAsync(Authenticate, links[1]);
+        }
     }
 }
