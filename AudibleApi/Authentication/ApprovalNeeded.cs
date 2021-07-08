@@ -12,7 +12,7 @@ namespace AudibleApi.Authentication
 		{
             // links[0] == "#"
             // links[1] is the correct redirect link
-            var links = HtmlHelper.GetLinks(this.ResponseBody, "a-link-normal");
+            var links = HtmlHelper.GetLinks(ResponseBody, "a-link-normal");
             return LoginResultRunner.GetResultsPageAsync(Authenticate, links[1]);
         }
     }

@@ -18,7 +18,6 @@ namespace AudibleApi.Authentication
 			if (url is null)
 				throw new ArgumentNullException(nameof(url));
 
-			// uses client to make the POST request
 			var response = await makeRequestAsync(authenticate, HttpMethod.Get, new Uri(url));
 
 			return await getResultsPageAsync(authenticate, new Dictionary<string, string>(), response);
