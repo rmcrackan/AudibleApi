@@ -15,9 +15,8 @@ namespace AudibleApi.Authentication
         {
             public CaptchaPageFactory() : base(nameof(CaptchaPageFactory)) { }
 
-            protected override async Task<bool> _isMatchAsync(HttpResponseMessage response)
+            protected override bool _isMatchAsync(HttpResponseMessage response, string body)
             {
-                var body = await response.Content.ReadAsStringAsync();
                 var newInputs = HtmlHelper.GetInputs(body);
                 return
                     newInputs.ContainsKey("email") &&
@@ -25,16 +24,12 @@ namespace AudibleApi.Authentication
                     newInputs.ContainsKey("use_image_captcha");
             }
 
-			public override async Task<LoginResult> CreateResultAsync(Authenticate authenticate, HttpResponseMessage response, Dictionary<string, string> oldInputs)
-			{
-                // shared validation
-                await base.CreateResultAsync(authenticate, response, oldInputs);
-
+            protected override LoginResult _createResultAsync(Authenticate authenticate, HttpResponseMessage response, string body, Dictionary<string, string> oldInputs)
+            {
                 if (!oldInputs.ContainsKey("password"))
                     throw new ArgumentException("Provided inputs do not contain a password", nameof(oldInputs));
                 var password = oldInputs["password"];
 
-                var body = await response.Content.ReadAsStringAsync();
                 var captchaUri = getCaptchaUri(body);
 
                 return new CaptchaPage(authenticate, body, captchaUri, password);
@@ -42,16 +37,11 @@ namespace AudibleApi.Authentication
 
             private static Uri getCaptchaUri(string body)
             {
-                var doc = new HtmlAgilityPack.HtmlDocument();
-                doc.LoadHtml(body);
-
-                var node = doc
-                    .DocumentNode
-                    .SelectNodes("//img[@id='auth-captcha-image']")
-                    ?.SingleOrDefault();
-
-                var sourceUrl = node?.Attributes["src"]?.Value;
-
+                var sourceUrl
+                    = HtmlHelper.GetElements(body, "img", "id", "auth-captcha-image")
+                    ?.SingleOrDefault()
+                    ?.Attributes["src"]
+                    ?.Value;
                 if (sourceUrl is null)
                 {
                     var errorMsg = "CAPTCHA image cannot be retrieved";

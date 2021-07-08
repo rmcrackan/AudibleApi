@@ -4,9 +4,9 @@ using Dinah.Core;
 
 namespace AudibleApi.Authentication
 {
-    public class ApprovalNeeded : LoginResult
+    public class ApprovalNeededPage : LoginResult
     {
-        public ApprovalNeeded(Authenticate authenticate, string responseBody) : base(authenticate, responseBody) { }
+        public ApprovalNeededPage(Authenticate authenticate, string responseBody) : base(authenticate, responseBody) { }
 
         public Task<LoginResult> SubmitAsync()
 		{

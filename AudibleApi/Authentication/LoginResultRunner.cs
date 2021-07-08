@@ -23,7 +23,19 @@ namespace AudibleApi.Authentication
 			return await getResultsPageAsync(authenticate, new Dictionary<string, string>(), response);
 		}
 
-		public static async Task<LoginResult> GetResultsPageAsync(Authenticate authenticate, Dictionary<string, string> inputs)
+		public enum SignInPage { Signin , MFA }
+		public static async Task<LoginResult> GetResultsPageAsync(Authenticate authenticate, Dictionary<string, string> inputs, SignInPage signInPage = SignInPage.Signin)
+		{
+			var url = signInPage switch
+			{
+				SignInPage.Signin => "/ap/signin",
+				SignInPage.MFA => "/ap/mfa",
+				_ => throw new ArgumentException(message: "Invalid signInPage value", paramName: nameof(signInPage)),
+			};
+
+			return await GetResultsPageAsync(authenticate, inputs, url);
+		}
+		private static async Task<LoginResult> GetResultsPageAsync(Authenticate authenticate, Dictionary<string, string> inputs, string url)
 		{
 			if (authenticate is null)
 				throw new ArgumentNullException(nameof(authenticate));
@@ -34,7 +46,7 @@ namespace AudibleApi.Authentication
 			var response = await makeRequestAsync(
 				authenticate,
 				HttpMethod.Post,
-				new Uri(authenticate.Locale.AmazonLoginUri(), "/ap/signin"),
+				new Uri(authenticate.Locale.AmazonLoginUri(), url),
 				new FormUrlEncodedContent(inputs));
 
 			return await getResultsPageAsync(authenticate, inputs, response);

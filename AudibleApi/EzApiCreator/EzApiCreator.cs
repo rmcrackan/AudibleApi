@@ -86,9 +86,14 @@ namespace AudibleApi
 						loginResult = await _2fa.SubmitAsync(_2faCode);
 						break;
 
-					case ApprovalNeeded approvalNeeded:
+					case ApprovalNeededPage approvalNeeded:
 						responder.ShowApprovalNeeded();
 						loginResult = await approvalNeeded.SubmitAsync();
+						break;
+
+					case MfaSelectionPage mfaSelection:
+						(var name, var value) = responder.GetMfaChoice(mfaSelection.MfaConfig);
+						loginResult = await mfaSelection.SubmitAsync(name, value);
 						break;
 
 					case LoginComplete final:

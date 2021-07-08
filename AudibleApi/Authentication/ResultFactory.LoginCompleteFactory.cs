@@ -15,17 +15,14 @@ namespace AudibleApi.Authentication
     {
         private class LoginCompleteFactory : ResultFactory
         {
-            public LoginCompleteFactory() : base(nameof(LoginCompleteFactory)) { }
+			protected override bool AllowBlankBodyIn_IsMatch => true;
 
-            protected override Task<bool> _isMatchAsync(HttpResponseMessage response) => Task.FromResult(getAccessToken(response) is not null);
+			public LoginCompleteFactory() : base(nameof(LoginCompleteFactory)) { }
 
-            public override async Task<LoginResult> CreateResultAsync(Authenticate authenticate, HttpResponseMessage response, Dictionary<string, string> oldInputs)
+            protected override bool _isMatchAsync(HttpResponseMessage response, string body) => getAccessToken(response) is not null;
+
+            protected override LoginResult _createResultAsync(Authenticate authenticate, HttpResponseMessage response, string body, Dictionary<string, string> oldInputs)
             {
-                // shared validation
-                await base.CreateResultAsync(authenticate, response, oldInputs);
-
-				var body = await response.Content.ReadAsStringAsync();
-
 				var cookies = authenticate.LoginClient.CookieJar
 					.EnumerateCookies(authenticate.Locale.AmazonLoginUri())
 					?.Select(c => new KeyValuePair<string, string>(c.Name, c.Value))

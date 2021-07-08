@@ -14,9 +14,8 @@ namespace AudibleApi.Authentication
         {
             public CredentialsPageFactory() : base(nameof(CredentialsPageFactory)) { }
 
-            protected override async Task<bool> _isMatchAsync(HttpResponseMessage response)
+            protected override bool _isMatchAsync(HttpResponseMessage response, string body)
             {
-                var body = await response.Content.ReadAsStringAsync();
                 var newInputs = HtmlHelper.GetInputs(body);
                 return
                     newInputs.ContainsKey("email") &&
@@ -24,15 +23,9 @@ namespace AudibleApi.Authentication
                     !newInputs.ContainsKey("use_image_captcha");
             }
 
-			public override async Task<LoginResult> CreateResultAsync(Authenticate authenticate, HttpResponseMessage response, Dictionary<string, string> oldInputs)
-			{
-                // shared validation
-                await base.CreateResultAsync(authenticate, response, oldInputs);
-
+            protected override LoginResult _createResultAsync(Authenticate authenticate, HttpResponseMessage response, string body, Dictionary<string, string> oldInputs)
                 // do not extract email or pw from inputs. if we're here then a previous login failed
-                var body = await response.Content.ReadAsStringAsync();
-                return new CredentialsPage(authenticate, body);
-            }
+                => new CredentialsPage(authenticate, body);
         }
     }
 }

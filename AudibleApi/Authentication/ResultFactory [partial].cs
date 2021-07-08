@@ -22,11 +22,18 @@ namespace AudibleApi.Authentication
             = new CaptchaPageFactory();
         public static ResultFactory TwoFactorAuthenticationPage { get; }
             = new TwoFactorAuthenticationPageFactory();
+        public static ResultFactory ApprovalNeededPage { get; }
+            = new ApprovalNeededPageFactory();
+        public static ResultFactory MfaSelectionPage { get; }
+            = new MfaSelectionPageFactory();
         public static ResultFactory LoginComplete { get; }
             = new LoginCompleteFactory();
-        public static ResultFactory ApprovalNeeded { get; }
-            = new ApprovalNeededFactory();
         #endregion
+
+        /// <summary>
+        /// If true, the body sent to the IsMatch check may be blank
+        /// </summary>
+        protected virtual bool AllowBlankBodyIn_IsMatch => false;
 
         public static Task<bool> IsCompleteAsync(HttpResponseMessage response)
             => new LoginCompleteFactory().IsMatchAsync(response);
@@ -39,23 +46,29 @@ namespace AudibleApi.Authentication
             if (response?.Content is null)
                 return false;
 
-            return await _isMatchAsync(response);
-        }
-        protected abstract Task<bool> _isMatchAsync(HttpResponseMessage response);
+            var body = await response.Content.ReadAsStringAsync();
+            if (!AllowBlankBodyIn_IsMatch && string.IsNullOrWhiteSpace(body))
+                return false;
 
-        public virtual async Task<LoginResult> CreateResultAsync(Authenticate authenticate, HttpResponseMessage response, Dictionary<string, string> oldInputs)
+            return _isMatchAsync(response, body);
+        }
+        protected abstract bool _isMatchAsync(HttpResponseMessage response, string body);
+
+        public async Task<LoginResult> CreateResultAsync(Authenticate authenticate, HttpResponseMessage response, Dictionary<string, string> oldInputs)
         {
             ArgumentValidator.EnsureNotNull(authenticate, nameof(authenticate));
             ArgumentValidator.EnsureNotNull(response, nameof(response));
             ArgumentValidator.EnsureNotNull(oldInputs, nameof(oldInputs));
 
             if (response.Content is null)
-                throw new ArgumentException();
+                throw new ArgumentException("response Content is null");
 
             if (!await IsMatchAsync(response))
                 throw new LoginFailedException("IsMatch validation failed");
 
-            return null;
+            var body = await response.Content.ReadAsStringAsync();
+            return _createResultAsync(authenticate, response, body, oldInputs);
         }
+        protected abstract LoginResult _createResultAsync(Authenticate authenticate, HttpResponseMessage response, string body, Dictionary<string, string> oldInputs);
     }
 }

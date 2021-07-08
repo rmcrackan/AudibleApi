@@ -30,7 +30,6 @@ namespace AudibleApi.Authentication
         {
             if (guess is null)
                 throw new ArgumentNullException(nameof(guess));
-
             if (string.IsNullOrWhiteSpace(guess))
                 throw new ArgumentException("Guess may not be blank", nameof(guess));
 
