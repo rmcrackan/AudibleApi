@@ -161,16 +161,16 @@ namespace AudibleApi.Authentication
 			#region debug: request/response details
 			if (isDebug)
 			{
-				var requestContentLength = "null";
-				if (content is not null)
-					requestContentLength = (await content.ReadAsStringAsync()).Length.ToString();
-
-				var responseContentLength = "null";
-				if (response?.Content is not null)
-					responseContentLength = (await response.Content.ReadAsStringAsync()).Length.ToString();
-
 				try
 				{
+					var requestContentLength = "null";
+					if (content is not null)
+						requestContentLength = (await content.ReadAsStringAsync()).Length.ToString();
+
+					var responseContentLength = "null";
+					if (response?.Content is not null)
+						responseContentLength = (await response.Content.ReadAsStringAsync()).Length.ToString();
+
 					Serilog.Log.Logger.Debug("Request/Response details. {@DebugInfo}", new {
 						requestUri_fromResponse = response.RequestMessage.RequestUri.AbsoluteUri,
 						requestHeaders = response.RequestMessage.Headers,

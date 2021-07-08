@@ -17,14 +17,7 @@ namespace AudibleApi.Authentication
         {
             public LoginCompleteFactory() : base(nameof(LoginCompleteFactory)) { }
 
-            public override async Task<bool> IsMatchAsync(HttpResponseMessage response)
-            {
-                // shared validation
-                if (!await base.IsMatchAsync(response))
-                    return false;
-
-                return getAccessToken(response) != null;
-            }
+            protected override Task<bool> _isMatchAsync(HttpResponseMessage response) => Task.FromResult(getAccessToken(response) is not null);
 
             public override async Task<LoginResult> CreateResultAsync(Authenticate authenticate, HttpResponseMessage response, Dictionary<string, string> oldInputs)
             {

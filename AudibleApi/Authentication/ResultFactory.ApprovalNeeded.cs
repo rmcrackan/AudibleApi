@@ -4,8 +4,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Dinah.Core;
-using Dinah.Core.Net;
-using Dinah.Core.Net.Http;
 
 namespace AudibleApi.Authentication
 {
@@ -15,15 +13,11 @@ namespace AudibleApi.Authentication
         {
             public ApprovalNeededFactory() : base(nameof(ApprovalNeededFactory)) { }
 
-            public override async Task<bool> IsMatchAsync(HttpResponseMessage response)
+            protected override async Task<bool> _isMatchAsync(HttpResponseMessage response)
             {
-                // shared validation
-                if (!await base.IsMatchAsync(response))
-                    return false;
-
                 var body = await response.Content.ReadAsStringAsync();
-                var newInputs = HtmlHelper.GetInputs(body);
-                return newInputs.ContainsKey("openid.return_to");
+                var hasDiv = HtmlHelper.GetDivCount(body, "resend-approval-alert") > 0;
+                return hasDiv;
             }
 
             public override async Task<LoginResult> CreateResultAsync(Authenticate authenticate, HttpResponseMessage response, Dictionary<string, string> oldInputs)

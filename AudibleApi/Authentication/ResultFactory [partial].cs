@@ -34,8 +34,14 @@ namespace AudibleApi.Authentication
         private static int value = 0;
         protected ResultFactory(string displayName) : base(value++, displayName) { }
 
-        public virtual Task<bool> IsMatchAsync(HttpResponseMessage response)
-            => Task.FromResult(response?.Content != null);
+        public async Task<bool> IsMatchAsync(HttpResponseMessage response)
+        {
+            if (response?.Content is null)
+                return false;
+
+            return await _isMatchAsync(response);
+        }
+        protected abstract Task<bool> _isMatchAsync(HttpResponseMessage response);
 
         public virtual async Task<LoginResult> CreateResultAsync(Authenticate authenticate, HttpResponseMessage response, Dictionary<string, string> oldInputs)
         {

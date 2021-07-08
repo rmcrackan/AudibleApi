@@ -14,12 +14,8 @@ namespace AudibleApi.Authentication
         {
             public CredentialsPageFactory() : base(nameof(CredentialsPageFactory)) { }
 
-            public override async Task<bool> IsMatchAsync(HttpResponseMessage response)
+            protected override async Task<bool> _isMatchAsync(HttpResponseMessage response)
             {
-                // shared validation
-                if (!await base.IsMatchAsync(response))
-                    return false;
-
                 var body = await response.Content.ReadAsStringAsync();
                 var newInputs = HtmlHelper.GetInputs(body);
                 return
