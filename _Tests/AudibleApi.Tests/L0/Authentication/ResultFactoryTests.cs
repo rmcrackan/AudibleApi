@@ -25,16 +25,8 @@ namespace Authentic.ResultFactoryTests
     {
         public ConcreteResultFactory() : base(nameof(ConcreteResultFactory)) { }
 
-        public override async Task<bool> IsMatchAsync(HttpResponseMessage response)
-        {
-            // shared validation
-            if (!await base.IsMatchAsync(response))
-                return false;
-
-            var body = await response.Content.ReadAsStringAsync();
-
-            return body == "IsMatch";
-        }
+        protected override async Task<bool> _isMatchAsync(HttpResponseMessage response)
+            => await response.Content.ReadAsStringAsync() == "IsMatch";
     }
 
     [TestClass]
