@@ -25,9 +25,12 @@ namespace Authentic.ResultFactoryTests
     {
         public ConcreteResultFactory() : base(nameof(ConcreteResultFactory)) { }
 
-        protected override async Task<bool> _isMatchAsync(HttpResponseMessage response)
-            => await response.Content.ReadAsStringAsync() == "IsMatch";
-    }
+		protected override LoginResult _createResultAsync(Authenticate authenticate, HttpResponseMessage response, string body, Dictionary<string, string> oldInputs)
+            => throw new NotImplementedException();
+
+        protected override bool _isMatchAsync(HttpResponseMessage response, string body)
+            => response.Content.ReadAsStringAsync().GetAwaiter().GetResult() == "IsMatch";
+	}
 
     [TestClass]
     public class IsMatchAsync
