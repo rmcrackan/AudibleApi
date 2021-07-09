@@ -16,26 +16,40 @@ namespace AudibleApi.Authentication
             // see: HtmlHelperTests.GetElements.parse_sample()
 
             static string getText(HtmlAgilityPack.HtmlNode node)
-                => node.SelectSingleNode(".//span")
-                ?.InnerText
-                .Trim();
+            {
+                var text = node.SelectSingleNode(".//span")
+                    ?.InnerText
+                    .Trim();
+                Serilog.Log.Logger.Debug("getText: {@DebugInfo}", new { node.OuterHtml, text = text ?? "[null]"});
+                return text;
+            }
 
             static string getName(HtmlAgilityPack.HtmlNode node)
-                => node.SelectSingleNode(".//input")
-                .Attributes["name"]
-                ?.Value;
+            {
+                var name = node.SelectSingleNode(".//input")
+                    .Attributes["name"]
+                    ?.Value;
+                Serilog.Log.Logger.Debug("getName: {@DebugInfo}", new { node.OuterHtml, name = name ?? "[null]" });
+                return name;
+            }
 
             static string getValue(HtmlAgilityPack.HtmlNode node)
-                => node.SelectSingleNode(".//input")
-                .Attributes["value"]?
-                .Value;
+            {
+                var value = node.SelectSingleNode(".//input")
+                    .Attributes["value"]
+                    ?.Value;
+                Serilog.Log.Logger.Debug("getValue: {@DebugInfo}", new { node.OuterHtml, valueCount = value ?? "[null]" });
+                return value;
+            }
 
             var divs = HtmlHelper.GetElements(ResponseBody, "div", "data-a-input-name", "otpDeviceContext");
+            var title = HtmlHelper.GetElements(ResponseBody, "title").FirstOrDefault()?.InnerText;
+            Serilog.Log.Logger.Information("Page info {@DebugInfo}", new { divs.Count, title });
 
             MfaConfig = new MfaConfig
             {
                 // optional settings
-                Title = HtmlHelper.GetElements(ResponseBody, "title").FirstOrDefault()?.InnerText,
+                Title = title,
 
                 Button1Text = getText(divs[0]),
                 Button2Text = getText(divs[1]),
@@ -55,15 +69,8 @@ namespace AudibleApi.Authentication
 
         public async Task<LoginResult> SubmitAsync(string name, string value)
         {
-            if (name is null)
-                throw new ArgumentNullException(nameof(name));
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Selected name may not be blank", nameof(name));
-
-            if (value is null)
-                throw new ArgumentNullException(nameof(value));
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("Selected value may not be blank", nameof(value));
+            ArgumentValidator.EnsureNotNullOrWhiteSpace(name, nameof(name));
+            ArgumentValidator.EnsureNotNullOrWhiteSpace(value, nameof(value));
 
             Inputs[name] = value;
 
