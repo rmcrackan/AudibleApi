@@ -43,7 +43,7 @@ namespace AudibleApi.Authentication
             }
 
             var divs = HtmlHelper.GetElements(ResponseBody, "div", "data-a-input-name", "otpDeviceContext");
-            var title = HtmlHelper.GetElements(ResponseBody, "title").FirstOrDefault()?.InnerText;
+            var title = HtmlHelper.GetElements(ResponseBody, "title").FirstOrDefault()?.InnerText.Trim();
             Serilog.Log.Logger.Information("Page info {@DebugInfo}", new { divs.Count, title });
 
             MfaConfig = new MfaConfig

@@ -2,7 +2,7 @@
 
 namespace AudibleApi
 {
-	public class MfaConfig
+	public record MfaConfig
 	{
 		// optional string settings
 		public string Title { get; set; }
