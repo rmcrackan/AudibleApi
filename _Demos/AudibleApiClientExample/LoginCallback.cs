@@ -62,6 +62,6 @@ namespace AudibleApiClientExample
 
 		public (string name, string value) GetMfaChoice(MfaConfig mfaConfig) => throw new NotImplementedException();
 
-		public void ShowApprovalNeeded() { }
+		public void ShowApprovalNeeded() => throw new NotImplementedException();
 	}
 }

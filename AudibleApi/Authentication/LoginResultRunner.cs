@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Dinah.Core;
 using Dinah.Core.Net;
-using Dinah.Core.Net.Http;
+using Dinah.Core.Logging;
 
 namespace AudibleApi.Authentication
 {
@@ -69,7 +69,7 @@ namespace AudibleApi.Authentication
 				ResponseStatusCode = response.StatusCode,
 				ResponseInputFields = responseInputs,
 			};
-			loginFailedException.SaveResponseBodyFile(body, $"{nameof(LoginFailedException)}_ResponseBody_{DateTime.Now.Ticks}.tmp");
+			loginFailedException.SetFile($"{nameof(LoginFailedException)}_ResponseBody_{DateTime.Now.Ticks}.tmp", body);
 
 			throw loginFailedException;
 		}
@@ -107,25 +107,12 @@ namespace AudibleApi.Authentication
 			});
 			ArgumentValidator.EnsureNotNull(uri, nameof(uri));
 
-			// PRIVACY WARNING
-			// when turning on debug to share logs, some privacy settings may not be obscured
-			var isDebug = Serilog.Log.Logger.IsEnabled(Serilog.Events.LogEventLevel.Debug);
-
-			string debug_getCookies()
-				=> authenticate.LoginClient.CookieJar
-				.EnumerateCookies(authenticate.Locale.AmazonLoginUri())
-				?.ToList()
-				.Select(c => $"{c.Name}={c.Value}")
-				.Aggregate("", (a, b) => $"{a};{b}")
-				.Trim(';');
-
-
 			#region debug: enumerate pre-call cookies
-			if (isDebug)
+			if (Serilog.Log.Logger.IsDebugEnabled())
 			{
 				try
 				{
-					Serilog.Log.Logger.Debug("Cookies before request. {@DebugInfo}", debug_getCookies());
+					Serilog.Log.Logger.Debug("Cookies before request. {@DebugInfo}", authenticate.LoginClient.CookieJar.Debug_GetCookies(authenticate.Locale.AmazonLoginUri()));
 				}
 				catch (Exception ex)
 				{
@@ -157,11 +144,11 @@ namespace AudibleApi.Authentication
 			var response = await authenticate.LoginClient.SendAsync(request);
 
 			#region debug: enumerate post-call cookies
-			if (isDebug)
+			if (Serilog.Log.Logger.IsDebugEnabled())
 			{
 				try
 				{
-					Serilog.Log.Logger.Debug("Cookies after request. {@DebugInfo}", debug_getCookies());
+					Serilog.Log.Logger.Debug("Cookies after request. {@DebugInfo}", authenticate.LoginClient.CookieJar.Debug_GetCookies(authenticate.Locale.AmazonLoginUri()));
 				}
 				catch (Exception ex)
 				{
@@ -171,7 +158,7 @@ namespace AudibleApi.Authentication
 			#endregion
 
 			#region debug: request/response details
-			if (isDebug)
+			if (Serilog.Log.Logger.IsDebugEnabled())
 			{
 				try
 				{
@@ -195,6 +182,34 @@ namespace AudibleApi.Authentication
 				catch (Exception ex)
 				{
 					Serilog.Log.Error(ex, "request/response details debug failure");
+				}
+			}
+			#endregion
+
+			#region VERBOSE debugging only: save page content
+			if (Serilog.Log.Logger.IsVerboseEnabled())
+			{
+				try
+				{
+					var body = await response?.Content?.ReadAsStringAsync();
+					if (body is null)
+						Serilog.Log.Logger.Verbose("Response body is null");
+					else
+					{
+						// save inputs
+						var newInputs = HtmlHelper.GetInputs(body);
+						var responseInputs = getSanitizedInputs(newInputs);
+						Serilog.Log.Logger.Verbose("ResponseInputFields: {@DebugInfo}", responseInputs);
+
+						// save page content
+						var filename = $"Verbose_ResponseBody_{DateTime.Now.Ticks}.tmp";
+						var path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Libation", "Verbose", filename);
+						System.IO.File.WriteAllText(path, body);
+					}
+				}
+				catch (Exception ex)
+				{
+					Serilog.Log.Error(ex, "save page content verbose-debug failure");
 				}
 			}
 			#endregion
