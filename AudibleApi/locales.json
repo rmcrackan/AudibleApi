@@ -72,6 +72,14 @@
     "language": "ja"
   },
   {
+    "name": "spain",
+    "loginDomain": "amazon",
+    "countryCode": "es",
+    "topDomain": "es",
+    "marketPlaceId": "ALMIKO4SZCSAR",
+    "language": "es"
+  },
+  {
     "name": "pre-amazon",
     "loginDomain": "audible",
     "countryCode": "us",
