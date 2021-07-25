@@ -48,23 +48,18 @@ namespace AudibleApi.Authentication
 
             MfaConfig = new MfaConfig
             {
-                // optional settings
-                Title = title,
-
-                Button1Text = getText(divs[0]),
-                Button2Text = getText(divs[1]),
-                Button3Text = getText(divs[2]),
-
-                // mandatory values
-                Button1Name = getName(divs[0]),
-                Button1Value = getValue(divs[0]),
-
-                Button2Name = getName(divs[1]),
-                Button2Value = getValue(divs[1]),
-
-                Button3Name = getName(divs[2]),
-                Button3Value = getValue(divs[2])
+                // optional
+                Title = title
             };
+            foreach (var div in divs)
+                MfaConfig.Buttons.Add(new MfaConfigButton
+                {
+                    // optional
+                    Text = getText(div),
+                    // mandatory
+                    Name = getName(div),
+                    Value = getValue(div)
+                });
         }
 
         public async Task<LoginResult> SubmitAsync(string name, string value)

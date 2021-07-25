@@ -54,27 +54,15 @@ namespace Authentic.MfaSelectionPageTests
 		{
             var mfa = new MfaSelectionPage(AuthenticateShared.GetAuthenticate(), SAMPLE);
 
-            var mfaConfig = new MfaConfig
-            {
-                // optional settings
-                Title = "My title",
+            var mfaConfig = new MfaConfig { Title = "My title" };
+            mfaConfig.Buttons.Add(new() { Text = "Enter the OTP from the authenticator app", Name = "otpDeviceContext", Value = "aAbBcC=, TOTP" });
+            mfaConfig.Buttons.Add(new() { Text = "Send an SMS to my number ending with 123", Name = "otpDeviceContext", Value = "dDeEfE=, SMS" });
+            mfaConfig.Buttons.Add(new() { Text = "Call me on my number ending with 123", Name = "otpDeviceContext", Value = "dDeEfE=, VOICE" });
 
-                Button1Text = "Enter the OTP from the authenticator app",
-                Button2Text = "Send an SMS to my number ending with 123",
-                Button3Text = "Call me on my number ending with 123",
-
-                // mandatory values
-                Button1Name = "otpDeviceContext",
-                Button1Value = "aAbBcC=, TOTP",
-
-                Button2Name = "otpDeviceContext",
-                Button2Value = "dDeEfE=, SMS",
-
-                Button3Name = "otpDeviceContext",
-                Button3Value = "dDeEfE=, VOICE"
-            };
-
-            mfa.MfaConfig.Should().Be(mfaConfig);
+            mfa.MfaConfig.Title.Should().Be(mfaConfig.Title);
+            mfa.MfaConfig.Buttons.Count.Should().Be(mfaConfig.Buttons.Count);
+            for (var i = 0; i < mfa.MfaConfig.Buttons.Count; i++)
+                mfa.MfaConfig.Buttons[i].Should().Be(mfaConfig.Buttons[i]);
         }
     }
 }
