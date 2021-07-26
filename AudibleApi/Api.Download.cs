@@ -181,6 +181,8 @@ namespace AudibleApi
 				throw new ApiErrorException(response.Headers.Location, new JObject { { "error", responseMessage } });
 			}
 
+			Serilog.Log.Logger.Verbose("Trying to debug mysterious null ref exception {@DebugInfo}", new { contentLicenseDtoV10 = responseJobj.ToString(Formatting.None) });
+
 			ContentLicenseDtoV10 contentLicenseDtoV10;
 			try
 			{
