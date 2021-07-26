@@ -99,6 +99,19 @@ namespace AudibleApiDTOs
 		public Ladder ParentCategory => Categories?.FirstOrDefault();
 		public Ladder ChildCategory => Categories.Length > 1 ? Categories[1] : null;
 
+		/// <summary>Add any subtitle after the title title</summary>
+		public string TitleWithSubtitle
+		{
+			get
+			{
+				var title = Title?.Trim();
+				var subtitle = Subtitle?.Trim();
+				return !string.IsNullOrWhiteSpace(subtitle)
+					? $"{title}: {subtitle}"
+					: title;
+			}
+		}
+
 		public override string ToString() => $"[{ProductId}] {Title}";
 	}
 	public partial class Person
