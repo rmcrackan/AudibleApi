@@ -69,6 +69,9 @@ namespace AudibleApiDTOs
 
         [JsonProperty("voucher_id")]
         public string VoucherId { get; set; }
+
+        [JsonProperty("license_denial_reasons")]
+        public LicenseDenialReason[] LicenseDenialReasons { get; set; }
     }
 
     public partial class ContentMetadata
@@ -96,6 +99,17 @@ namespace AudibleApiDTOs
 
         [JsonProperty("status")]
         public string Status { get; set; }
+    }
+    public partial class LicenseDenialReason
+    {
+        [JsonProperty("message")]
+        public string Message { get; set; }
+
+        [JsonProperty("rejectionReason")]
+        public string RejectionReason { get; set; }
+
+        [JsonProperty("validationType")]
+        public string ValidationType { get; set; }
     }
 
     public partial class ContentLicenseDtoV10
@@ -125,35 +139,26 @@ namespace AudibleApiDTOs
             byte[] key = new byte[16];
             byte[] iv = new byte[16];
 
-            using (var sha256 = System.Security.Cryptography.SHA256.Create())
-            {
-                sha256.ComputeHash(keyComponents);
-                Array.Copy(sha256.Hash, 0, key, 0, 16);
-                Array.Copy(sha256.Hash, 16, iv, 0, 16);
-            }
+            using var sha256 = System.Security.Cryptography.SHA256.Create();
+            sha256.ComputeHash(keyComponents);
+            Array.Copy(sha256.Hash, 0, key, 0, 16);
+            Array.Copy(sha256.Hash, 16, iv, 0, 16);
 
             var cipherText = Convert.FromBase64String(contentLicense.ContentLicense.LicenseResponse);
 
             string plainText;
 
-            using (var aes = System.Security.Cryptography.Aes.Create())
-            {
-                aes.Mode = System.Security.Cryptography.CipherMode.CBC;
-                aes.Padding = System.Security.Cryptography.PaddingMode.None;
+            using var aes = System.Security.Cryptography.Aes.Create();
+            aes.Mode = System.Security.Cryptography.CipherMode.CBC;
+            aes.Padding = System.Security.Cryptography.PaddingMode.None;
 
-                using (var decryptor = aes.CreateDecryptor(key, iv))
+            using var decryptor = aes.CreateDecryptor(key, iv);
 
-                using (var msDecrypt = new System.IO.MemoryStream(cipherText))
+            using var csDecrypt = new System.Security.Cryptography.CryptoStream(new System.IO.MemoryStream(cipherText), decryptor, System.Security.Cryptography.CryptoStreamMode.Read);
 
-                using (var csDecrypt = new System.Security.Cryptography.CryptoStream(msDecrypt, decryptor, System.Security.Cryptography.CryptoStreamMode.Read))
-                {
-                    //No padding used, so plaintext same size as ciphertext
-                    byte[] ptBuff = new byte[cipherText.Length];
-                    csDecrypt.Read(ptBuff, 0, ptBuff.Length);
-                    //No padding, so only use non-null values
-                    plainText = System.Text.Encoding.ASCII.GetString(ptBuff.TakeWhile(b => b != 0).ToArray());
-                }
-            }
+            csDecrypt.Read(cipherText, 0, cipherText.Length & 0x7ffffff0);
+
+            plainText = System.Text.Encoding.ASCII.GetString(cipherText.TakeWhile(b => b != 0).ToArray());
 
             return VoucherDtoV10.FromJson(plainText);
         }
