@@ -181,8 +181,6 @@ namespace AudibleApi
 				throw new ApiErrorException(response.Headers.Location, new JObject { { "error", responseMessage } });
 			}
 
-			Serilog.Log.Logger.Verbose("Trying to debug mysterious null ref exception {@DebugInfo}", new { contentLicenseDtoV10 = responseJobj.ToString(Formatting.None) });
-
 			ContentLicenseDtoV10 contentLicenseDtoV10;
 			try
 			{
@@ -195,13 +193,25 @@ namespace AudibleApi
 			}
 
 			if (contentLicenseDtoV10?.ContentLicense?.StatusCode is null)
-				return null;
+			{
+				var ex = new ApiErrorException(response.Headers.Location, responseJobj,  "License response does not contain a valid status code.");
+				Serilog.Log.Logger.Error(ex, "No status code {@DebugInfo}");
+				throw ex;
+			}
 
 			if (contentLicenseDtoV10.ContentLicense.StatusCode.EqualsInsensitive("Denied"))
-				return null;
+            {
+				var ex = new ValidationErrorException(response.Headers.Location, responseJobj?["content_license"]?["license_denial_reasons"]?.Value<JObject>());
+				Serilog.Log.Logger.Error(ex, "Content License denied {@DebugInfo}");
+				throw ex;
+			}
 
 			if (!contentLicenseDtoV10.ContentLicense.StatusCode.EqualsInsensitive("Granted"))
-				throw new ApiErrorException(response.Headers.Location, new JObject { { "error", "Unexpected status_code: " + contentLicenseDtoV10.ContentLicense.StatusCode } });
+			{
+				var ex = new ValidationErrorException(response.Headers.Location, new JObject { { "error", "Unexpected status_code: " + contentLicenseDtoV10.ContentLicense.StatusCode } });
+				Serilog.Log.Logger.Error(ex, "Unrecognized status code {@DebugInfo}");
+				throw ex;
+			}
 
 			return contentLicenseDtoV10.ContentLicense;
 		}
