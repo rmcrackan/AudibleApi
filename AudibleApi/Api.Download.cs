@@ -208,10 +208,10 @@ namespace AudibleApi
 
 			if (!contentLicenseDtoV10.ContentLicense.StatusCode.EqualsInsensitive("Granted"))
 			{
-				var ex = new ValidationErrorException(response.Headers.Location, new JObject { { "error", "Unexpected status_code: " + contentLicenseDtoV10.ContentLicense.StatusCode } });
+				var ex = new ApiErrorException(response.Headers.Location, new JObject { { "error", "Unexpected status_code: " + contentLicenseDtoV10.ContentLicense.StatusCode } });
 				Serilog.Log.Logger.Error(ex, "Unrecognized status code {@DebugInfo}");
 				throw ex;
-			}
+            }
 
 			return contentLicenseDtoV10.ContentLicense;
 		}
