@@ -21,10 +21,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TestCommon;
 
-namespace ApiTests_L1
-{
-}
-
 namespace ApiTests_L1.Inherited
 {
 #if !L1_ENABLED

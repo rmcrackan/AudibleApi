@@ -96,26 +96,6 @@ namespace AudibleApiClientExample
 			Console.WriteLine(str2);
 		}
 
-		public async Task DownloadBookAsync()
-		{
-			using var progressBar = new Dinah.Core.ConsoleLib.ProgressBar();
-			var progress = new Progress<DownloadProgress>();
-			progress.ProgressChanged += (_, e) => progressBar.Report(Math.Round((double)(100 * e.BytesReceived) / e.TotalBytesToReceive.Value) / 100);
-
-			Console.Write("Download book");
-			var finalFile = await _api.DownloadAaxWorkaroundAsync(AD_HOC_ASIN, "downloadExample.xyz", progress);
-
-			Console.WriteLine(" Done!");
-			Console.WriteLine("final file: " + Path.GetFullPath(finalFile));
-
-			// benefit of this small delay:
-			// - if you try to delete a file too soon after it's created, the OS isn't done with the creation and you can get an unexpected error
-			// - give progressBar's internal timer time to finish. if timer is disposed before the final message is processed, "100%" will never get a chance to be displayed
-			await Task.Delay(100);
-
-			File.Delete(finalFile);
-		}
-
 		public async Task DeserializeSingleBookAsync()
 		{
 			var bookResult = await _api.GetLibraryBookAsync(AD_HOC_ASIN, LibraryOptions.ResponseGroupOptions.ALL_OPTIONS);
