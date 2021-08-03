@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AudibleApiDTOs;
 using Dinah.Core;
+using Dinah.Core.Logging;
 using Dinah.Core.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -58,15 +59,40 @@ namespace AudibleApi
 			request.AddContent(body);
 			await signRequestAsync(request);
 
-			var response = await _client.SendAsync(request);
-			var responseJobj = await response.Content.ReadAsJObjectAsync();
+			//The caller logs exceptions thrown by this method on the Error level, so there's
+			//no need to log errors here. However, the contents of error messages could be
+			//useful in debugging the Api, so they are logged here in verbose only (because
+			//they may contain customerId).
+
+			HttpResponseMessage response;
+
+			try
+			{
+				response = await _client.SendAsync(request);
+			}
+			catch (ApiErrorException ex)
+			{
+				Serilog.Log.Logger.Verbose(ex, $"Error requesting license for: {asin}  {{@DebugInfo}}", ex.JsonMessage.ToString(Formatting.None));
+				throw;
+			}
+
+			if (response.StatusCode != HttpStatusCode.OK)
+            {
+				var ex = new ApiErrorException(response.Headers.Location, new JObject { { "http_response_code", response.StatusCode.ToString() }, { "response", await response.Content.ReadAsStringAsync() } }, "License response not OK");
+				Serilog.Log.Logger.Verbose(ex, "License response not OK {@DebugInfo}.", ex.JsonMessage.ToString(Formatting.None));
+				throw ex;
+			}
+
+			JObject responseJobj = await response.Content.ReadAsJObjectAsync();
 
 			// if we get "message" on this level means something went wrong.
 			// "message" should be nested under "content_license"
 			if (responseJobj.TryGetValue("message", out var val))
 			{
 				var responseMessage = val.Value<string>();
-				throw new ApiErrorException(response.Headers.Location, new JObject { { "error", responseMessage } });
+				var ex = new ApiErrorException(response.Headers.Location, new JObject { { "error", responseMessage } });
+				Serilog.Log.Logger.Verbose(ex, "License response returned error {@DebugInfo}", ex.JsonMessage.ToString(Formatting.None));
+				throw ex;
 			}
 
 			ContentLicenseDtoV10 contentLicenseDtoV10;
@@ -76,28 +102,28 @@ namespace AudibleApi
 			}
 			catch (Exception ex)
 			{
-				Serilog.Log.Logger.Error(ex, $"Error retrieving content metadata for asin: {asin}");
+				Serilog.Log.Logger.Error(ex, $"Error retrieving license for asin: {asin}");
 				throw;
 			}
 
 			if (contentLicenseDtoV10?.ContentLicense?.StatusCode is null)
 			{
 				var ex = new ApiErrorException(response.Headers.Location, responseJobj,  "License response does not contain a valid status code.");
-				Serilog.Log.Logger.Error(ex, "No status code {@DebugInfo}");
+				Serilog.Log.Logger.Verbose(ex, "No status code {@DebugInfo}", ex.JsonMessage.ToString(Formatting.None));
 				throw ex;
 			}
 
 			if (contentLicenseDtoV10.ContentLicense.StatusCode.EqualsInsensitive("Denied"))
             {
 				var ex = new ValidationErrorException(response.Headers.Location, responseJobj?["content_license"]?["license_denial_reasons"]?.Value<JObject>());
-				Serilog.Log.Logger.Error(ex, "Content License denied {@DebugInfo}");
+				Serilog.Log.Logger.Verbose(ex, "Content License denied {@DebugInfo}", ex.JsonMessage.ToString(Formatting.None));
 				throw ex;
 			}
 
 			if (!contentLicenseDtoV10.ContentLicense.StatusCode.EqualsInsensitive("Granted"))
 			{
 				var ex = new ApiErrorException(response.Headers.Location, new JObject { { "error", "Unexpected status_code: " + contentLicenseDtoV10.ContentLicense.StatusCode } });
-				Serilog.Log.Logger.Error(ex, "Unrecognized status code {@DebugInfo}");
+				Serilog.Log.Logger.Verbose(ex, "Unrecognized status code {@DebugInfo}", ex.JsonMessage.ToString(Formatting.None));
 				throw ex;
             }
 
