@@ -37,7 +37,7 @@ namespace AudibleApiDTOs
 		public int LengthInMinutes => RuntimeLengthMin ?? 0;
 		public string Description => PublisherSummary;
 		public bool IsEpisodes
-			=> Relationships?.Any(r => r.RelationshipToProduct == RelationshipToProduct.Child && r.RelationshipType == RelationshipType.Episode)
+			=> Relationships?.Any(r => (r.RelationshipToProduct == RelationshipToProduct.Child || r.RelationshipToProduct == RelationshipToProduct.Parent) && r.RelationshipType == RelationshipType.Episode)
 			?? false;
 		/// <summary>
 		/// True if this title is an 'Audible Plus' check-out. False if it's owned by the library. More details in comments
