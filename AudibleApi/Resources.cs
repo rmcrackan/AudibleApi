@@ -5,7 +5,7 @@ namespace AudibleApi
 {
 	public static class Resources
 	{
-		public const string UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 12_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148";
+		public const string UserAgent = "Audible/671 CFNetwork/1240.0.4 Darwin/20.6.0";
 
 		private static string _audibleApiUrl(this Locale locale) => $"https://api.audible.{locale.TopDomain}";
 		public static Uri AudibleApiUri(this Locale locale) => new Uri(locale._audibleApiUrl());
