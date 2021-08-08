@@ -86,20 +86,6 @@ namespace AudibleApi
 
             var responseJobj = await response.Content.ReadAsJObjectAsync();
 
-            // if we get "message" on this level means something went wrong.
-            // "message" should be nested under "content_license"
-            if (responseJobj.TryGetValue("message", out var val))
-            {
-                var responseMessage = val.Value<string>();
-                var ex = new InvalidResponseException(
-                    response.Headers.Location,
-                    new JObject { { "message", responseMessage } }, //Assume this message does not contain PII.
-                    $"License response returned error for asin: [{asin}]");
-
-                ex.LogException(Serilog.Log.Logger.Error);
-                throw ex;
-            }
-
             ContentLicenseDtoV10 contentLicenseDtoV10;
             try
             {
@@ -108,13 +94,26 @@ namespace AudibleApi
             catch (Exception ex)
             {
                 var apiExp = new InvalidResponseException(
-                       response.Headers.Location,
-                       responseJobj, //Even if the object doesn't parse, it may contain PII.
-                       $"License response could not be parsed for asin: [{asin}]",
-                       ex);
+                    response.Headers.Location,
+                    responseJobj, //Even if the object doesn't parse, it may contain PII.
+                    $"License response could not be parsed for asin: [{asin}]",
+                    ex);
 
                 apiExp.LogException(Serilog.Log.Logger.Verbose);
                 throw apiExp;
+            }
+
+            // if we get "message" on this level means something went wrong.
+            // "message" should be nested under "ContentLicense"
+            if (contentLicenseDtoV10?.Message is not null)
+            {
+                var ex = new InvalidResponseException(
+                    response.Headers.Location,
+                    new JObject { { "message", contentLicenseDtoV10.Message } }, //Assume this message does not contain PII.
+                    $"License response returned error for asin: [{asin}]");
+
+                ex.LogException(Serilog.Log.Logger.Error);
+                throw ex;
             }
 
             if (contentLicenseDtoV10?.ContentLicense?.StatusCode is null)

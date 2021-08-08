@@ -19,6 +19,9 @@ namespace AudibleApiDTOs
 
         [JsonProperty("response_groups")]
         public string[] ResponseGroups { get; set; }
+
+        [JsonProperty("message")]
+        public string Message { get; set; }
     }
 
     public partial class ContentLicense
