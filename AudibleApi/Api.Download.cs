@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AudibleApiDTOs;
 using Dinah.Core;
-using Dinah.Core.Logging;
 using Dinah.Core.Net.Http;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AudibleApi
@@ -28,21 +24,16 @@ namespace AudibleApi
 		#region Download License
 
 		/// <summary>
-		/// Requests a license to download <see cref="DownloadQuality.Extreme"/> Audible content.
-		/// </summary>
-		/// <param name="asin">Audible Asin of book</param>
-		/// <returns>Return a valid <see cref="ContentLicense"/> if successful; null if denied.</returns>
-		public async Task<ContentLicense> GetDownloadLicenseAsync(string asin)
-		{
-			return await GetDownloadLicenseAsync(asin, DownloadQuality.Extreme);
-		}
-		/// <summary>
 		/// Requests a license to download Audible content.
 		/// </summary>
 		/// <param name="asin">Audible Asin of book</param>
 		/// <param name="quality">Desired audio Quality</param>
-		/// <returns>Return a valid <see cref="ContentLicense"/> if successful; null if denied.</returns>
-		public async Task<ContentLicense> GetDownloadLicenseAsync(string asin, DownloadQuality quality)
+		/// <returns>a valid <see cref="ContentLicense"/> containing content_reference, chapter_info, and pdf_url.</returns>
+		/// <exception cref="ApiErrorException">Thrown when the Api request failed.</exception>
+		/// <exception cref="InvalidResponseException">Thrown when the Api did not return a proper <see cref="ContentLicense"/>.</exception>
+		/// <exception cref="InvalidValueException">Thrown when <see cref="ContentLicense.StatusCode"/> is not "Granted" or "Denied".</exception>
+		/// <exception cref="ValidationErrorException">Thrown when <see cref="ContentLicense.StatusCode"/> is "Denied".</exception>
+		public async Task<ContentLicense> GetDownloadLicenseAsync(string asin, DownloadQuality quality = DownloadQuality.Extreme)
 		{
 			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
 
@@ -59,13 +50,7 @@ namespace AudibleApi
 			request.AddContent(body);
 			await signRequestAsync(request);
 
-			//The caller logs exceptions thrown by this method on the Error level, so there's
-			//no need to log errors here. However, the contents of error messages could be
-			//useful in debugging the Api, so they are logged here in verbose only (because
-			//they may contain customerId).
-
 			HttpResponseMessage response;
-
 			try
 			{
 				response = await _client.SendAsync(request);
@@ -76,6 +61,17 @@ namespace AudibleApi
 				ex.LogException(Serilog.Log.Logger.Error);
 				throw;
 			}
+			catch (Exception ex)
+			{
+				var apiExp = new ApiErrorException(
+					request.RequestUri,
+					body,
+					$"Error requesting license for asin: [{asin}]",
+					ex);
+
+				apiExp.LogException(Serilog.Log.Logger.Error);
+				throw apiExp;
+			}
 
 			if (response.StatusCode != HttpStatusCode.OK)
             {
@@ -83,7 +79,7 @@ namespace AudibleApi
 					response.Headers.Location,
 					//Assume this response does not contain PII.
 					new JObject { { "http_response_code", response.StatusCode.ToString() }, { "response", await response.Content.ReadAsStringAsync() } },
-					$"License response not \"OK\" for asin [{asin}]");
+					$"License response not \"OK\" for asin: [{asin}]");
 
 				ex.LogException(Serilog.Log.Logger.Error);
 				throw ex;
@@ -96,10 +92,10 @@ namespace AudibleApi
 			if (responseJobj.TryGetValue("message", out var val))
 			{
 				var responseMessage = val.Value<string>();
-				var ex = new ApiErrorException(
+				var ex = new InvalidResponseException(
 					response.Headers.Location,
 					new JObject { { "message", responseMessage } }, //Assume this message does not contain PII.
-					$"License response returned error for asin [{asin}]");
+					$"License response returned error for asin: [{asin}]");
 
 				ex.LogException(Serilog.Log.Logger.Error);
 				throw ex;
@@ -112,10 +108,10 @@ namespace AudibleApi
 			}
 			catch (Exception ex)
 			{
-				var apiExp = new ApiErrorException(
+				var apiExp = new InvalidResponseException(
 					   response.Headers.Location,
 					   responseJobj, //Even if the object doesn't parse, it may contain PII.
-					   $"Error retrieving license for asin: [{asin}]",
+					   $"License response could not be parsed for asin: [{asin}]",
 					   ex);
 
 				apiExp.LogException(Serilog.Log.Logger.Verbose);
@@ -124,7 +120,7 @@ namespace AudibleApi
 
 			if (contentLicenseDtoV10?.ContentLicense?.StatusCode is null)
 			{
-				var ex = new ApiErrorException(
+				var ex = new InvalidValueException(
 					response.Headers.Location,
 					responseJobj, //This error shouldn't happen, so log the entire response which contains PII.
 					$"License response does not contain a valid status code for asin: [{asin}]");
@@ -147,7 +143,7 @@ namespace AudibleApi
 
 			if (!contentLicenseDtoV10.ContentLicense.StatusCode.EqualsInsensitive("Granted"))
 			{
-				var ex = new ApiErrorException(
+				var ex = new InvalidValueException(
 					response.Headers.Location,
 					responseJobj, //This error shouldn't happen, so log the entire response which contains PII.
 					$"Unrecognized status code \"{contentLicenseDtoV10.ContentLicense.StatusCode}\" for asin: [{asin}]");
