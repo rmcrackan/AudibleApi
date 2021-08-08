@@ -103,8 +103,6 @@ namespace AudibleApi
                 throw apiExp;
             }
 
-            // if we get "message" on this level means something went wrong.
-            // "message" should be nested under "ContentLicense"
             if (contentLicenseDtoV10?.Message is not null)
             {
                 var ex = new InvalidResponseException(

@@ -14,12 +14,18 @@ namespace AudibleApiDTOs
 
     public partial class ContentLicenseDtoV10
     {
+        /// <summary>
+        /// If null, check for <see cref="Message"/>
+        /// </summary>
         [JsonProperty("content_license", Required = Required.Always)]
         public ContentLicense ContentLicense { get; set; }
 
         [JsonProperty("response_groups")]
         public string[] ResponseGroups { get; set; }
 
+        /// <summary>
+        /// If not null, then <see cref="ContentLicense"/> was not returned by the Api.
+        /// </summary>
         [JsonProperty("message")]
         public string Message { get; set; }
     }
@@ -44,6 +50,10 @@ namespace AudibleApiDTOs
         [JsonProperty("license_id")]
         public Guid LicenseId { get; set; }
 
+        /// <summary>
+        /// A base-64 string containing the <see cref="VoucherDtoV10"/> encrypted with the device type, device serial number, amazon accounty ID, and asin.
+        /// See https://patchwork.ffmpeg.org/project/ffmpeg/patch/17559601585196510@sas2-2fa759678732.qloud-c.yandex.net/
+        /// </summary>
         [JsonProperty("license_response")]
         public string LicenseResponse { get; set; }
         
