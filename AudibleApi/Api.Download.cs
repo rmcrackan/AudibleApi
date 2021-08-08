@@ -72,26 +72,36 @@ namespace AudibleApi
 			}
 			catch (ApiErrorException ex)
 			{
-				Serilog.Log.Logger.Verbose(ex, $"Error requesting license for: {asin}  {{@DebugInfo}}", ex.JsonMessage.ToString(Formatting.None));
+				//Assume this exception will not contain PII.
+				ex.LogException(Serilog.Log.Logger.Error);
 				throw;
 			}
 
 			if (response.StatusCode != HttpStatusCode.OK)
             {
-				var ex = new ApiErrorException(response.Headers.Location, new JObject { { "http_response_code", response.StatusCode.ToString() }, { "response", await response.Content.ReadAsStringAsync() } }, "License response not OK");
-				Serilog.Log.Logger.Verbose(ex, "License response not OK {@DebugInfo}.", ex.JsonMessage.ToString(Formatting.None));
+				var ex = new ApiErrorException(
+					response.Headers.Location,
+					//Assume this response does not contain PII.
+					new JObject { { "http_response_code", response.StatusCode.ToString() }, { "response", await response.Content.ReadAsStringAsync() } },
+					$"License response not \"OK\" for asin [{asin}]");
+
+				ex.LogException(Serilog.Log.Logger.Error);
 				throw ex;
 			}
 
-			JObject responseJobj = await response.Content.ReadAsJObjectAsync();
+			var responseJobj = await response.Content.ReadAsJObjectAsync();
 
 			// if we get "message" on this level means something went wrong.
 			// "message" should be nested under "content_license"
 			if (responseJobj.TryGetValue("message", out var val))
 			{
 				var responseMessage = val.Value<string>();
-				var ex = new ApiErrorException(response.Headers.Location, new JObject { { "error", responseMessage } });
-				Serilog.Log.Logger.Verbose(ex, "License response returned error {@DebugInfo}", ex.JsonMessage.ToString(Formatting.None));
+				var ex = new ApiErrorException(
+					response.Headers.Location,
+					new JObject { { "message", responseMessage } }, //Assume this message does not contain PII.
+					$"License response returned error for asin [{asin}]");
+
+				ex.LogException(Serilog.Log.Logger.Error);
 				throw ex;
 			}
 
@@ -102,35 +112,54 @@ namespace AudibleApi
 			}
 			catch (Exception ex)
 			{
-				Serilog.Log.Logger.Error(ex, $"Error retrieving license for asin: {asin}");
-				throw;
+				var apiExp = new ApiErrorException(
+					   response.Headers.Location,
+					   responseJobj, //Even if the object doesn't parse, it may contain PII.
+					   $"Error retrieving license for asin: [{asin}]",
+					   ex);
+
+				apiExp.LogException(Serilog.Log.Logger.Verbose);
+				throw apiExp;
 			}
 
 			if (contentLicenseDtoV10?.ContentLicense?.StatusCode is null)
 			{
-				var ex = new ApiErrorException(response.Headers.Location, responseJobj,  "License response does not contain a valid status code.");
-				Serilog.Log.Logger.Verbose(ex, "No status code {@DebugInfo}", ex.JsonMessage.ToString(Formatting.None));
+				var ex = new ApiErrorException(
+					response.Headers.Location,
+					responseJobj, //This error shouldn't happen, so log the entire response which contains PII.
+					$"License response does not contain a valid status code for asin: [{asin}]");
+
+				ex.LogException(Serilog.Log.Logger.Verbose);
 				throw ex;
 			}
 
 			if (contentLicenseDtoV10.ContentLicense.StatusCode.EqualsInsensitive("Denied"))
             {
-				var ex = new ValidationErrorException(response.Headers.Location, responseJobj?["content_license"]?["license_denial_reasons"]?.Value<JObject>());
-				Serilog.Log.Logger.Verbose(ex, "Content License denied {@DebugInfo}", ex.JsonMessage.ToString(Formatting.None));
+				var ex = new ValidationErrorException(
+					response.Headers.Location,
+					//Denial reasons may contain PII.
+					new JObject { { "license_denial_reasons", JArray.FromObject(contentLicenseDtoV10.ContentLicense.LicenseDenialReasons) } },
+					$"Content License denied for asin: [{asin}]");
+
+				ex.LogException(Serilog.Log.Logger.Verbose);
 				throw ex;
 			}
 
 			if (!contentLicenseDtoV10.ContentLicense.StatusCode.EqualsInsensitive("Granted"))
 			{
-				var ex = new ApiErrorException(response.Headers.Location, new JObject { { "error", "Unexpected status_code: " + contentLicenseDtoV10.ContentLicense.StatusCode } });
-				Serilog.Log.Logger.Verbose(ex, "Unrecognized status code {@DebugInfo}", ex.JsonMessage.ToString(Formatting.None));
+				var ex = new ApiErrorException(
+					response.Headers.Location,
+					responseJobj, //This error shouldn't happen, so log the entire response which contains PII.
+					$"Unrecognized status code \"{contentLicenseDtoV10.ContentLicense.StatusCode}\" for asin: [{asin}]");
+
+				ex.LogException(Serilog.Log.Logger.Verbose);
 				throw ex;
             }
 
 			return contentLicenseDtoV10.ContentLicense;
 		}
 
-        #endregion
+		#endregion
 
 		public async Task<string> GetPdfDownloadLinkAsync(string asin)
 		{
