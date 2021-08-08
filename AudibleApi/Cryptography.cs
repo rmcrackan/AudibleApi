@@ -110,7 +110,7 @@ namespace AudibleApi
             var RSAparams = new RSAParameters();
 
             //Guess the key size based on modulus size. Assume key size is multiple of 128 bits.
-            int keySizeGuess = (int)Math.Round(keySequence.Children[1].Value.Length / 16d, 0) * 128;
+            int keySizeGuess = (int)Math.Round(keySequence.Children[1].Value.Length / 4d, 0) * 32;
 
             RSAparams.Modulus = ValidateInt(keySequence.Children[1].Value, keySizeGuess, 8);
             RSAparams.Exponent = keySequence.Children[2].Value;
