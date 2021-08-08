@@ -4,9 +4,9 @@ using System.Formats.Asn1;
 
 namespace AudibleApi
 {
-     /// <summary>
-     /// Represents an Asn.1 encoded value
-     /// </summary>
+    /// <summary>
+    /// Represents an Asn.1 encoded value
+    /// </summary>
     internal class Asn1Value
     {
         public Asn1Tag Type { get; private set; }
@@ -14,22 +14,21 @@ namespace AudibleApi
         public List<Asn1Value> Children { get; private set; }
 
         public override string ToString() => $"{nameof(Asn1Value)} ({Type})";
-        public static Asn1Value Parse(byte[] bytes) => ParseInternal(bytes, out _);
+        public static Asn1Value Parse(Span<byte> asn1Bytes) => ParseInternal(asn1Bytes, out _);
 
         /// <summary>
         /// Recursively parse an Asn.1 object.
         /// </summary>
-        private static Asn1Value ParseInternal(byte[] bytes, out int bytesConsumed)
+        private static Asn1Value ParseInternal(Span<byte> asn1Bytes, out int bytesConsumed)
         {
-            var type = AsnDecoder.ReadEncodedValue(bytes, AsnEncodingRules.BER, out int contentOffset, out int contentLength, out bytesConsumed);
+            var type = AsnDecoder.ReadEncodedValue(asn1Bytes, AsnEncodingRules.BER, out int contentOffset, out int contentLength, out bytesConsumed);
 
             var asn1Value = new Asn1Value
             {
                 Type = type
             };
 
-            byte[] content = new byte[contentLength];
-            Buffer.BlockCopy(bytes, contentOffset, content, 0, contentLength);
+            var content = asn1Bytes.Slice(contentOffset, contentLength);
 
             if (type == Asn1Tag.Sequence ||
                 type == Asn1Tag.SetOf)
@@ -45,12 +44,12 @@ namespace AudibleApi
                     asn1Value.Children.Add(subVal);
 
                     //Move all subsequent Asn.1 values to the front of the content buffer.
-                    Buffer.BlockCopy(content, subLength, content, 0, contentLength - consumedLength);
+                    content = content.Slice(subLength, contentLength - consumedLength);
                 }
             }
             else
             {
-                asn1Value.Value = content;
+                asn1Value.Value = content.ToArray();
             }
 
             return asn1Value;
