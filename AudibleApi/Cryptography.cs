@@ -10,7 +10,7 @@ namespace AudibleApi
 {
     public static class Cryptography
     {
-		public static string Javascript { get; } = File.ReadAllText("Cryptography.js");
+        public static string Javascript { get; } = File.ReadAllText("Cryptography.js");
 
         public static string EncryptMetadata(string metadata)
         {
@@ -86,88 +86,59 @@ namespace AudibleApi
         {
             var dataBytes = Encoding.UTF8.GetBytes(dataString);
 
-			using var sha256 = new SHA256Managed();
-			using var rsaCSP = CreateRsaProviderFromPrivateKey(private_key);
-			var digestion = sha256.ComputeHash(dataBytes);
-			// as string: digestion.Select(x => $"{x:x2}").Aggregate("", (a, b) => a + b);
-			var oid = CryptoConfig.MapNameToOID("SHA256");
-			return rsaCSP.SignHash(digestion, oid);
-		}
+            using var sha256 = new SHA256Managed();
+            using var rsaCSP = CreateRsaProviderFromPrivateKey(private_key);
+            var digestion = sha256.ComputeHash(dataBytes);
+            // as string: digestion.Select(x => $"{x:x2}").Aggregate("", (a, b) => a + b);
+            var oid = CryptoConfig.MapNameToOID("SHA256");
+            return rsaCSP.SignHash(digestion, oid);
+        }
 
-		// https://stackoverflow.com/a/32150537
-		private static RSACryptoServiceProvider CreateRsaProviderFromPrivateKey(string privateKey)
-		{
-			privateKey = privateKey
-				.Replace("-----BEGIN RSA PRIVATE KEY-----", "")
-				.Replace("-----END RSA PRIVATE KEY-----", "")
-				.Replace("\\n", "")
-				.Trim();
-
-			var privateKeyBits = Convert.FromBase64String(privateKey);
-
-			var RSA = new RSACryptoServiceProvider();
-			var RSAparams = new RSAParameters();
-
-			using var binr = new BinaryReader(new MemoryStream(privateKeyBits));
-
-			var twobytes = binr.ReadUInt16();
-			if (twobytes == 0x8130)
-				binr.ReadByte();
-			else if (twobytes == 0x8230)
-				binr.ReadInt16();
-			else
-				throw new Exception("Unexpected value read binr.ReadUInt16()");
-
-			twobytes = binr.ReadUInt16();
-			if (twobytes != 0x0102)
-				throw new Exception("Unexpected version");
-
-			var bt = binr.ReadByte();
-			if (bt != 0x00)
-				throw new Exception("Unexpected value read binr.ReadByte()");
-
-			RSAparams.Modulus = binr.ReadBytes(GetIntegerSize(binr));
-			RSAparams.Exponent = binr.ReadBytes(GetIntegerSize(binr));
-			RSAparams.D = binr.ReadBytes(GetIntegerSize(binr));
-			RSAparams.P = binr.ReadBytes(GetIntegerSize(binr));
-			RSAparams.Q = binr.ReadBytes(GetIntegerSize(binr));
-			RSAparams.DP = binr.ReadBytes(GetIntegerSize(binr));
-			RSAparams.DQ = binr.ReadBytes(GetIntegerSize(binr));
-			RSAparams.InverseQ = binr.ReadBytes(GetIntegerSize(binr));
-
-			RSA.ImportParameters(RSAparams);
-			return RSA;
-		}
-
-        private static int GetIntegerSize(BinaryReader binr)
+        // https://stackoverflow.com/a/32150537
+        private static RSACryptoServiceProvider CreateRsaProviderFromPrivateKey(string privateKey)
         {
-            var bt = binr.ReadByte();
-            if (bt != 0x02)
-                return 0;
+            privateKey = privateKey
+                .Replace("-----BEGIN RSA PRIVATE KEY-----", "")
+                .Replace("-----END RSA PRIVATE KEY-----", "")
+                .Replace("\\n", "")
+                .Trim();
 
-            bt = binr.ReadByte();
+            var asn1EncodedPrivateKey = Convert.FromBase64String(privateKey);
+            var keySequence = Asn1Value.Parse(asn1EncodedPrivateKey);
 
-            int count;
-            if (bt == 0x81)
-                count = binr.ReadByte();
-            else if (bt == 0x82)
-            {
-                var highbyte = binr.ReadByte();
-                var lowbyte = binr.ReadByte();
-                byte[] modint = { lowbyte, highbyte, 0x00, 0x00 };
-                count = BitConverter.ToInt32(modint, 0);
-            }
-            else
-            {
-                count = bt;
-            }
+            var RSA = new RSACryptoServiceProvider();
+            var RSAparams = new RSAParameters();
 
-            while (binr.ReadByte() == 0x00)
+            //Guess the key size based on modulus size. Assume key size is multiple of 128 bits.
+            int keySizeGuess = (int)Math.Round(keySequence.Children[1].Value.Length / 4d, 0) * 32;
+
+            RSAparams.Modulus = ValidateInt(keySequence.Children[1].Value, keySizeGuess, 8);
+            RSAparams.Exponent = keySequence.Children[2].Value;
+            RSAparams.D = ValidateInt(keySequence.Children[3].Value, keySizeGuess, 8);
+            RSAparams.P = ValidateInt(keySequence.Children[4].Value, keySizeGuess, 16);
+            RSAparams.Q = ValidateInt(keySequence.Children[5].Value, keySizeGuess, 16);
+            RSAparams.DP = ValidateInt(keySequence.Children[6].Value, keySizeGuess, 16);
+            RSAparams.DQ = ValidateInt(keySequence.Children[7].Value, keySizeGuess, 16);
+            RSAparams.InverseQ = ValidateInt(keySequence.Children[8].Value, keySizeGuess, 16);
+
+            RSA.ImportParameters(RSAparams);
+            return RSA;
+        }
+
+        /// <summary>
+        /// Trim any leading zeroes to ensure <see cref="RSAParameters"/> are valid.
+        /// https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wcce/5cf2e6b9-3195-4f85-bc18-05b50e6d4e11?redirectedfrom=MSDN
+        /// </summary>
+        private static byte[] ValidateInt(byte[] integer, int keySize, int quotient)
+        {
+            if (integer.Length != Math.Ceiling(keySize / (double)quotient) &&
+                    integer[0] == 0)
             {
-                count -= 1;
+                var bts = new byte[integer.Length - 1];
+                Buffer.BlockCopy(integer, 1, bts, 0, bts.Length);
+                return bts;
             }
-            binr.BaseStream.Seek(-1, SeekOrigin.Current);
-            return count;
+            return integer;
         }
     }
 }

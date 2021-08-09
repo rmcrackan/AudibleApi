@@ -17,5 +17,7 @@ namespace AudibleApi
             RequestUri = requestUri;
             JsonMessage = jsonMessage;
         }
+        public void LogException(Action<Exception, string, string> logMethod)
+            => logMethod(this, $"{Message} {{@DebugInfo}}", JsonMessage.ToString(Newtonsoft.Json.Formatting.None));
     }
 }
