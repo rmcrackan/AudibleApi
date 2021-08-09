@@ -282,7 +282,7 @@ namespace AudibleApi
 		#endregion
 
 		#region GetAllLibraryItemsAsync
-		public async Task<List<AudibleApiDTOs.Item>> GetAllLibraryItemsAsync()
+		public async Task<List<AudibleApiDTOs.Item>> GetAllLibraryItemsAsync(LibraryOptions.ResponseGroupOptions responseGroups)
 		{
 			var allItems = new List<AudibleApiDTOs.Item>();
 
@@ -297,7 +297,7 @@ namespace AudibleApi
 					NumberOfResultPerPage = 250,
 					PageNumber = i,
 					PurchasedAfter = new DateTime(2000, 1, 1),
-					ResponseGroups = LibraryOptions.ResponseGroupOptions.ALL_OPTIONS
+					ResponseGroups = responseGroups
 				});
 
 				var pageStr = page.ToString();
