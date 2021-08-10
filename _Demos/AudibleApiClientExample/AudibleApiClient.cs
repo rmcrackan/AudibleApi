@@ -271,7 +271,6 @@ namespace AudibleApiClientExample
 		{
 			// if no current lib.json file, run DownloadLibraryToFileAsync() above
 
-
 			var contents = File.ReadAllText(LIBRARY_JSON);
 			var o = JObject.Parse(contents);
 
@@ -296,10 +295,7 @@ namespace AudibleApiClientExample
 			// these are 'plus' and NOT owned by me
 			var AYCL = o.SelectTokens("$.items[?(@.benefit_id == 'AYCL')].title").ToList();
 			var ayce = o.SelectTokens("$.items[?(@.is_ayce == true)].title").ToList();
-			var AYCL_ayce = o.SelectTokens("$.items[?(@.benefit_id == 'AYCL' && @.is_ayce == true)].title").ToList();
-
-
-			var _ = true;
+			var AYCL_ayce = o.SelectTokens("$.items[?(@.benefit_id == 'AYCL' && @.is_ayce == true)].title").ToList();			
 		}
 		#endregion
 	}
