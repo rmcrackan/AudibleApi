@@ -190,8 +190,8 @@ namespace AudibleApi
 	}
 
 	public partial class Api
-    {
-        const string LIBRARY_PATH = "/1.0/library";
+	{
+		const string LIBRARY_PATH = "/1.0/library";
 
 		#region GetLibraryAsync
 		public Task<JObject> GetLibraryAsync()
@@ -282,7 +282,8 @@ namespace AudibleApi
 		#endregion
 
 		#region GetAllLibraryItemsAsync
-		public async Task<List<AudibleApiDTOs.Item>> GetAllLibraryItemsAsync()
+		public async Task<List<AudibleApiDTOs.Item>> GetAllLibraryItemsAsync() => await GetAllLibraryItemsAsync(LibraryOptions.ResponseGroupOptions.ALL_OPTIONS);
+		public async Task<List<AudibleApiDTOs.Item>> GetAllLibraryItemsAsync(LibraryOptions.ResponseGroupOptions responseGroups)
 		{
 			var allItems = new List<AudibleApiDTOs.Item>();
 
@@ -297,7 +298,7 @@ namespace AudibleApi
 					NumberOfResultPerPage = 250,
 					PageNumber = i,
 					PurchasedAfter = new DateTime(2000, 1, 1),
-					ResponseGroups = LibraryOptions.ResponseGroupOptions.ALL_OPTIONS
+					ResponseGroups = responseGroups
 				});
 
 				var pageStr = page.ToString();
