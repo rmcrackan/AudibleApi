@@ -39,7 +39,7 @@ namespace AudibleApi
 				Serilog.Log.Logger.Debug("GetApiAsync. {@DebugInfo}", new
 				{
 					localeName = locale?.Name ?? "[empty]",
-					jsonPath,
+					//jsonPath,//this exposes unmasked account name
 					debugEx_Message = debugEx.Message,
 					debugEx_StackTrace = debugEx.StackTrace
 				});
