@@ -42,7 +42,6 @@ namespace TestAudibleApiCommon
 			[nameof(LibraryFull)] = getNewLibraryFull,
 			[nameof(LibraryWithOptions)] = getNewLibraryWithOptions,
 			[nameof(LibraryBookWithResponseGroups)] = getNewLibraryBookWithResponseGroups,
-			[nameof(UserProfileValue)] = getNewUserProfileValue,
 			[nameof(CredentialsPageMetadataPlaintext)] = getNewCredentialsPageMetadataPlaintext,
 			[nameof(CredentialsPageMetadataEncrypted)] = getNewCredentialsPageMetadataEncrypted,
 			[nameof(Encryption_Get)] = getNewEncryption_Get,
@@ -137,11 +136,6 @@ namespace TestAudibleApiCommon
 			.GetResult();
 
 		public static string UserProfileValue => getValue(nameof(UserProfileValue));
-		private static string getNewUserProfileValue()
-			=> new ApiTests_L1.Inherited.UserProfileAsync()
-			.GetResponseAsync()
-			.GetAwaiter()
-			.GetResult();
 
 		public static string CredentialsPageMetadataPlaintext => getValue(nameof(CredentialsPageMetadataPlaintext));
 		private static string getNewCredentialsPageMetadataPlaintext()
