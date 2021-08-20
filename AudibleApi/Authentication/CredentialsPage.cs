@@ -125,7 +125,7 @@ namespace AudibleApi.Authentication
 				},
 				{ "referrer", "" },
 				{ "userAgent", Resources.UserAgent },
-				{ "location", locale.OAuthUrl() },
+				{ "location", locale.AmazonLoginUri() },
 				{ "webDriver", null },
 				{  "history",
 					new JObject {
