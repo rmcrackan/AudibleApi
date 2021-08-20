@@ -126,13 +126,11 @@ namespace AudibleApi.Authorization
 			});
 			bodyJson.cookies.website_cookies = new JArray(kvpSelect);
 
-			var serial = getRandomDeviceSerial();
-
 			bodyJson.registration_data = new JObject();
 			bodyJson.registration_data.domain = "Device";
 			bodyJson.registration_data.app_version = appVersion;
-			bodyJson.registration_data.device_serial = serial;
-			bodyJson.registration_data.device_type = "A2CZJZGLK2JJVM";
+			bodyJson.registration_data.device_serial = locale.DeviceSerialNumber;
+			bodyJson.registration_data.device_type = Resources.DeviceType;
 			bodyJson.registration_data.device_name = "%FIRST_NAME%%FIRST_NAME_POSSESSIVE_STRING%%DUPE_STRATEGY_1ST%Audible for iPhone";
 			bodyJson.registration_data.os_version = iosVersion;
 			bodyJson.registration_data.device_model = "iPhone";
@@ -142,26 +140,6 @@ namespace AudibleApi.Authorization
 			bodyJson.requested_extensions = new JArray("device_info", "customer_info");
 
 			return bodyJson;
-		}
-
-		static char[] chars { get; } = new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-		static Random random { get; } = new Random();
-		/// <summary>
-		/// Generates a random text (str + int) with a length of 40 chars.
-		/// Use of random serial prevents unregister device by other users with same 'device_serial'
-		/// </summary>
-		/// <returns></returns>
-		private static string getRandomDeviceSerial()
-		{
-			var serialBuilder = new System.Text.StringBuilder();
-			for (var i = 0; i < 40; i++)
-			{
-				var r = random.Next(0, chars.Length);
-				var c = chars[r];
-				serialBuilder.Append(c);
-			}
-			var serial = serialBuilder.ToString();
-			return serial;
 		}
 
 		public async Task<bool> DeregisterAsync(AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies)

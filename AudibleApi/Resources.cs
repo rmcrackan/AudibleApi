@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using Dinah.Core;
 
 namespace AudibleApi
@@ -6,6 +7,7 @@ namespace AudibleApi
 	public static class Resources
 	{
 		public const string UserAgent = "Audible/671 CFNetwork/1240.0.4 Darwin/20.6.0";
+		public const string DeviceType = "A2CZJZGLK2JJVM";
 
 		private static string _audibleApiUrl(this Locale locale) => $"https://api.audible.{locale.TopDomain}";
 		public static Uri AudibleApiUri(this Locale locale) => new Uri(locale._audibleApiUrl());
@@ -23,9 +25,17 @@ namespace AudibleApi
 		private static string buildOauth(this Locale locale)
 		{
 			// this helps dramatically with debugging
+
+			bool with_username = locale.Name.StartsWith("pre-amazon");
+
 			var return_to = $"{locale.AmazonLoginUri().GetOrigin()}/ap/maplanding";
-			var assoc_handle = $"amzn_audible_ios_{locale.CountryCode}";
+			var assoc_handle = with_username? $"amzn_audible_ios_lap_{locale.CountryCode}" : $"amzn_audible_ios_{locale.CountryCode}";
 			var marketPlaceId = locale.MarketPlaceId;
+			var page_id = with_username ? "amzn_audible_ios_privatepool" : "amzn_audible_ios";
+
+			//https://github.com/mkb79/Audible/blob/master/src/audible/login.py#L133
+			locale.DeviceSerialNumber ??= build_device_serial();
+			var client_id = build_client_id(locale.DeviceSerialNumber);
 
 			var q = System.Web.HttpUtility.ParseQueryString("");
 
@@ -39,10 +49,10 @@ namespace AudibleApi
 			q["openid.oa2.response_type"] = "token";
 			q["openid.return_to"] = return_to;
 			q["openid.assoc_handle"] = assoc_handle;
-			q["pageId"] = "amzn_audible_ios";
+			q["pageId"] = page_id;
 			q["accountStatusPolicy"] = "P1";
 			q["openid.mode"] = "checkid_setup";
-			q["openid.oa2.client_id"] = "device:6a52316c62706d53427a5735505a76477a45375959566674327959465a6374424a53497069546d45234132435a4a5a474c4b324a4a564d";
+			q["openid.oa2.client_id"] = $"device:{client_id}";
 			q["language"] = locale.Language;
 			q["marketPlaceId"] = marketPlaceId;
 			q["openid.oa2.scope"] = "device_auth_access";
@@ -54,6 +64,14 @@ namespace AudibleApi
 			#endregion
 
 			return str;
+		}
+
+		//https://github.com/mkb79/Audible/blob/master/src/audible/login.py
+		private static string build_device_serial() => Guid.NewGuid().ToString("N").ToUpper();
+		private static string build_client_id(string deviceSerialNumber)
+		{
+			var client_id_bytes = Encoding.UTF8.GetBytes($"{deviceSerialNumber}#{DeviceType}");
+			return BitConverter.ToString(client_id_bytes).Replace("-", "");
 		}
 
 		public static string RegisterDomain(this Locale locale) => $".amazon.{locale.TopDomain}";

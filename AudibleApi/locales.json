@@ -80,11 +80,27 @@
     "language": "es"
   },
   {
-    "name": "pre-amazon",
+    "name": "pre-amazon - germany",
+    "loginDomain": "audible",
+    "countryCode": "de",
+    "topDomain": "de",
+    "marketPlaceId": "AN7V1F1VY261K",
+    "language": "de-DE"
+  },
+  {
+    "name": "pre-amazon - us",
     "loginDomain": "audible",
     "countryCode": "us",
     "topDomain": "com",
     "marketPlaceId": "AF2M0KC94RCEA",
     "language": "en-US"
+  },
+  {
+    "name": "pre-amazon - uk",
+    "loginDomain": "audible",
+    "countryCode": "uk",
+    "topDomain": "co.uk",
+    "marketPlaceId": "A2I9A3Q2GNFNGQ",
+    "language": "en-GB"
   }
 ]
