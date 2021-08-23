@@ -92,11 +92,6 @@ namespace PartialsTests
 		[TestMethod]
 		public void PictureId_populated() => new Item { ProductImages = new ProductImages { The500 = uri } }.PictureId.Should().Be("t");
 
-		[TestMethod]
-		public void SupplementUrl_null_PdfUrl() => new Item { PdfUrl = null }.SupplementUrl.Should().BeNull();
-		[TestMethod]
-		public void SupplementUrl_populated() => new Item { PdfUrl = uri }.SupplementUrl.Should().Be(uriPath);
-
 		DateTime dt { get; } = new DateTime(2000, 1, 1, 12, 0, 0, 0, DateTimeKind.Utc);
 		[TestMethod]
 		public void DateAdded() => new Item { PurchaseDate = new DateTimeOffset(dt) }.DateAdded.Should().Be(dt);

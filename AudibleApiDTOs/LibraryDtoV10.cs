@@ -77,7 +77,6 @@ namespace AudibleApiDTOs
 		#endregion
 		public bool IsAudiblePlus => BenefitId != "AYCL" || !IsAyce.HasValue || !IsAyce.Value;
 		public string PictureId => ProductImages?.PictureId;
-		public string SupplementUrl => PdfUrl?.AbsoluteUri;
 		public DateTime DateAdded => PurchaseDate.UtcDateTime;
 
 		public float Product_OverallStars => Convert.ToSingle(Rating?.OverallDistribution?.DisplayStars ?? 0);
