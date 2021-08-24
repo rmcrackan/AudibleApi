@@ -35,23 +35,22 @@ namespace AudibleApiClientExample
 		static async Task run()
 		{
 			//
-			// TO USE EXISTING AccountsSettings.json
-			// run this app once to copy appsettings.json to build dir
-			// open appsettings.json in build dir
-			// find location of existing AccountsSettings.json (prob in \LibationFiles)
-			// put this location into appsettings.json in build dir. remember to escape back-slashes
-			// save appsettings.json
+			// to use demo app with live libation settings:
+			// - add reference to Libation's InternalUtilities
+			// - uncomment the 2 noted sections in AudibleApiClient.cs
+			// - run this app once to copy appsettings.json to build dir
+			// - open appsettings.json in build dir
+			// - find location of existing AccountsSettings.json (prob in \LibationFiles)
+			// - put this location into appsettings.json in build dir. remember to escape back-slashes
+			// - save appsettings.json
 			//
 
 			var client = await AudibleApiClient.CreateClientAsync();
 
-			//await client.PrintLibraryAsync();
-			//await client.DownloadBookAsync();
-			//await client.DocumentLibraryResponseGroupOptionsAsync();
-			//await client.DeserializeSingleBookAsync();
+			await client.PrintLibraryAsync();
+			//await client.DeserializeSingleBookInfoAsync();
 			//await client.AccountInfoAsync();
-			//await client.CompareProductsAsync();
-			AudibleApiClient.AnaylzeLibrary();
+			//AudibleApiClient.AnaylzeLibrary();
 		}
 	}
 }

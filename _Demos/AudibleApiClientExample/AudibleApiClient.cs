@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AudibleApi;
 using Dinah.Core;
 using Dinah.Core.Net.Http;
-using InternalUtilities;
+//using InternalUtilities; // uncomment for use demo app to use live libation settings. must have the rest of libation codebase set up
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -19,6 +19,7 @@ namespace AudibleApiClientExample
 		private AudibleApiClient() { }
 		public async static Task<AudibleApiClient> CreateClientAsync()
 		{
+			/* // uncomment for use demo app to use live libation settings. must have the rest of libation codebase set up
 			var account = AudibleApiStorage
 				.GetAccountsSettingsPersister()
 				.AccountsSettings
@@ -28,6 +29,19 @@ namespace AudibleApiClientExample
 				account.Locale,
 				AudibleApiStorage.AccountsSettingsFile,
 				account.GetIdentityTokensJsonPath(),
+				new LoginCallback());
+			 */
+
+			// see locales.json for choices
+			var localeName = "canada";
+			var identityFilePath = "myIdentity.json";
+			// if your json file is complex, you can specify the jsonPath within that file where identity is/should be stored.
+			// else: null
+			string jsonPath = null;
+			var api = await EzApiCreator.GetApiAsync(
+				Localization.Get(localeName),
+				identityFilePath,
+				jsonPath,
 				new LoginCallback());
 			return new AudibleApiClient { _api = api };
 		}
@@ -96,7 +110,7 @@ namespace AudibleApiClientExample
 			Console.WriteLine(str2);
 		}
 
-		public async Task DeserializeSingleBookAsync()
+		public async Task DeserializeSingleBookInfoAsync()
 		{
 			var bookResult = await _api.GetLibraryBookAsync(AD_HOC_ASIN, LibraryOptions.ResponseGroupOptions.ALL_OPTIONS);
 			var bookResultString = bookResult.ToString();
@@ -106,144 +120,6 @@ namespace AudibleApiClientExample
 		#endregion
 
 		#region reports, research, diagnostics
-		/// <summary>Generate report. Summarizes which fields are exposed by each library ResponseGroupOption enum</summary>
-		public async Task DocumentLibraryResponseGroupOptionsAsync()
-		{
-			using var sharedReportStringWriter = new StreamWriter("report.txt");
-
-			//// test each enum in isolation
-			//var enums = ((LibraryOptions.ResponseGroupOptions[])Enum.GetValues(typeof(LibraryOptions.ResponseGroupOptions))).ToList();
-			//enums.Remove(LibraryOptions.ResponseGroupOptions.ALL_OPTIONS);
-			//foreach (var option in enums)
-			//	await responseGroupReport(sharedReportStringWriter, option);
-
-			// ad hoc
-			await responseGroupReport(sharedReportStringWriter, LibraryOptions.ResponseGroupOptions.ALL_OPTIONS, true);
-			//await responseGroupReport(sharedReportStringWriter, LibraryOptions.ResponseGroupOptions.ProvidedReview | LibraryOptions.ResponseGroupOptions.Rating);
-		}
-		private async Task responseGroupReport(
-			StreamWriter sw,
-			LibraryOptions.ResponseGroupOptions option,
-			bool saveFullJsonToFile = false,
-			bool omitCommonFields = false)
-		{
-			var desc = option.GetDescription() ?? "[none]";
-
-			var page = await _api.GetLibraryAsync(new LibraryOptions
-			{
-				NumberOfResultPerPage = 1000,
-				PurchasedAfter = new DateTime(2000, 1, 1),
-				ResponseGroups = option
-			});
-
-			if (saveFullJsonToFile)
-				File.WriteAllText(
-					"report_" + desc.Replace("|", "-").Replace(" ", "").Truncate(50) + ".txt",
-					desc + "\r\n\r\n" + page.ToString(Formatting.Indented));
-
-			var properties = new Dictionary<string, int>();
-
-			var items = page["items"].Cast<JObject>();
-			foreach (var item in items)
-			{
-				foreach (var p in item.Properties())
-				{
-					var propName = p.Name;
-					var v = p.Value;
-
-					switch (v.Type)
-					{
-						case JTokenType.Null:
-							continue;
-						case JTokenType.String:
-							var s = v.Value<string>();
-							if (string.IsNullOrWhiteSpace(s))
-								continue;
-							break;
-						case JTokenType.Object:
-							if (!v.Value<JObject>().Properties().Any())
-								continue;
-							break;
-						case JTokenType.Array:
-							if (!v.Value<JArray>().Any())
-								continue;
-							break;
-						case JTokenType.Date: _ = v.Value<DateTime>(); break;
-						case JTokenType.Boolean: _ = v.Value<bool>(); break;
-						case JTokenType.Integer: _ = v.Value<int>(); break;
-						case JTokenType.Float: _ = v.Value<float>(); break;
-						default:
-							throw new Exception("not handled JTokenType");
-					}
-
-					if (!properties.ContainsKey(p.Name))
-						properties[p.Name] = 0;
-					properties[p.Name]++;
-				}
-			}
-
-			if (omitCommonFields)
-			{
-				// don't show fields common to all response_groups
-				properties.Remove("asin");
-				properties.Remove("purchase_date");
-				properties.Remove("sku_lite");
-				properties.Remove("status");
-			}
-
-			sw.WriteLine(desc);
-			sw.WriteLine("==========");
-			foreach (var kvp in properties)
-				sw.WriteLine($"{kvp.Key}");
-			sw.WriteLine();
-		}
-
-		// what signafies that a book is part of 'audible plus'?
-		public async Task CompareProductsAsync()
-		{
-			var asins = new (string asin, string note)[] {
-				("B00FKAHZ62", "borrowing from plus"),
-				("B017V4IM1G", "i own. not in plus"),
-				("B082MQ5TDB", "i own. was a free original. is available in plus"),
-				("B002V19RO6", "i own. was not free. is available in plus")
-			};
-
-			var topLevelFields = new[] { "asin", "title", "subtitle" };
-
-			// write headers
-			Console.Write("note\t");
-			foreach (var f in topLevelFields)
-				Console.Write(f + "\t");
-			Console.Write("isMinerva");
-			Console.WriteLine();
-
-			foreach (var (asin, note) in asins)
-			{
-				Console.Write(note + "\t");
-
-				var url = "/1.0/library/" + asin;
-				url += url.Contains("?") ? "&" : "?";
-				var allGroups = "response_groups=badge_types,category_ladders,claim_code_url,contributors,is_downloaded,is_returnable,media,origin_asin,pdf_url,percent_complete,price,product_attrs,product_desc,product_extended_attrs,product_plan_details,product_plans,provided_review,rating,relationships,review_attrs,reviews,sample,series,sku";
-				url += allGroups;
-
-				var responseMsg = await _api.AdHocAuthenticatedGetAsync(url);
-				var jObj = await responseMsg.Content.ReadAsJObjectAsync();
-				var debugStr = jObj.ToString(Formatting.Indented);
-
-				foreach (var f in topLevelFields)
-				{
-					var s = jObj["item"][f].ToString(Formatting.Indented);
-					Console.Write(s + "\t");
-				}
-
-				// plans
-				var minerva = jObj["item"]["plans"].ToArray().SingleOrDefault(x => x["plan_name"].Value<string>() == "US Minerva");
-				Console.Write(minerva?["start_date"].ToString(Formatting.Indented));
-
-				Console.WriteLine();
-			}
-		}
-
 		const string LIBRARY_JSON = "lib.json";
 		public async Task DownloadLibraryToFileAsync()
 		{
