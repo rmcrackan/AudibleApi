@@ -16,7 +16,6 @@ namespace AudibleApi
 		public string TopDomain { get; }
 		public string MarketPlaceId { get; }
 		public string Language { get; }
-		public string DeviceSerialNumber { get; set; }
 
 		public Locale(string name, string loginDomain, string countryCode, string topDomain, string marketPlaceId, string language)
 		{
