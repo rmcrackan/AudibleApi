@@ -6,13 +6,25 @@ Implementation of an Audible API in C#. Aside from the goal of having this be pu
 1) fully integratable into other software
 2) fully testable and tested
 
+### If you found this useful, tell a friend. If you found this REALLY useful, you can click here to [PalPal.me](https://paypal.me/mcrackan?locale.x=en_us)
+...or just tell more friends. As long as I'm maintaining this software, it will remain **free** and **open source**.
+
 Thanks to these other Audible APIs which I used for reference and whose authors were very responsive and helpful with questions:
 
 https://github.com/omarroth/audible.cr -- Crystal interface for Audible's internal API  
 https://github.com/mkb79/Audible -- Python interface for Audible's internal API
 
-### If you found this useful, tell a friend. If you found this REALLY useful, you can click here to [PalPal.me](https://paypal.me/mcrackan?locale.x=en_us)
-...or just tell more friends. As long as I'm maintaining this software, it will remain **free** and **open source**.
+The main functionality of this API is typically kept very up to date. It is the backbone of my popular-ish audible library manager [Libation](https://github.com/rmcrackan/Libation). Although some tests and demo code are probably outdated by now, I'm happy to answer questions though in the [issues](https://github.com/rmcrackan/AudibleApi/issues) page.
+
+## Getting started
+
+Anything you do will start with a call to `AudibleApi.EzApiCreator.GetApiAsync`. This async method will return an instance of the api object which you will use for everything else. When login info is needed, it will be processed by the `ILoginCallback` class you specify.
+
+AudibleApiClientExample provides some quick and dirty examples. It's what I use for quick tests so there are scraps of examples throughout.
+
+`AudibleApiClientExample.LoginCallback` provides a proof of concept for a command line callback class.
+
+`AudibleApiClientExample.AudibleApiClient` shows how to create the api object which is then used in `_Main.run`
 
 ## response_groups
 
