@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using Dinah.Core;
 using Dinah.Core.Net;
 using Dinah.Core.Net.Http;
+using Newtonsoft.Json.Linq;
 
 namespace AudibleApi.Authentication
 {
@@ -44,6 +45,7 @@ namespace AudibleApi.Authentication
             LoginClient.DefaultRequestHeaders.Add("Host", baseUri.Host);
             LoginClient.DefaultRequestHeaders.Add("Origin", baseUri.GetOrigin());
             LoginClient.DefaultRequestHeaders.Add("User-Agent", Resources.UserAgent);
+            LoginClient.CookieJar.Add(buildInitCookies());
         }
 
         /// <summary>PUBLIC ENTRY POINT</summary>
@@ -98,6 +100,45 @@ namespace AudibleApi.Authentication
 
             var login1_body = await response.Content.ReadAsStringAsync();
             return login1_body;
+        }
+
+        private CookieCollection buildInitCookies()
+        {
+            //Build initial cookies to prevent captcha in most cases
+            //https://github.com/mkb79/Audible/blob/master/src/audible/login.py
+
+            var frc = new byte[313];
+            new Random().NextBytes(frc);
+
+            var mapMd = new JObject
+            {
+                { "device_user_dictionary", new JArray() },
+                { "device_registration_data", 
+                    new JObject {
+                        {"software_version", "33501644" }
+                    }
+                },
+                { "app_identifier",
+                    new JObject {
+                        {"app_version", "3.35.1" },
+                        {"bundle_id", "com.audible.iphone" }
+                    }
+                }
+            };
+
+            var frcStr = Convert.ToBase64String(frc).TrimEnd('=');
+            var mapMdStr = Convert.ToBase64String(Encoding.UTF8.GetBytes(mapMd.ToString(Newtonsoft.Json.Formatting.None))).TrimEnd('=');
+            var amznAppId = "MAPiOSLib/6.0/ToHideRetailLink";
+            var cookieDomain = $".{Locale.LoginDomain}.{Locale.TopDomain}";
+
+            var initCookies = new CookieCollection
+            {
+                new Cookie("frc", frcStr, "/", cookieDomain),
+                new Cookie("map-md", mapMdStr,"/", cookieDomain),
+                new Cookie("amzn-app-id", amznAppId,"/", cookieDomain),
+            };
+
+            return initCookies;
         }
     }
 }
