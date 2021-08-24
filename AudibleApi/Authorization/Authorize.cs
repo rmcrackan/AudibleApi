@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using Dinah.Core;
-using Dinah.Core.Net;
 using Dinah.Core.Net.Http;
 using Newtonsoft.Json.Linq;
 
@@ -129,7 +127,7 @@ namespace AudibleApi.Authorization
 			bodyJson.registration_data = new JObject();
 			bodyJson.registration_data.domain = "Device";
 			bodyJson.registration_data.app_version = appVersion;
-			bodyJson.registration_data.device_serial = locale.DeviceSerialNumber;
+			bodyJson.registration_data.device_serial = Resources.DeviceSerialNumber;
 			bodyJson.registration_data.device_type = Resources.DeviceType;
 			bodyJson.registration_data.device_name = "%FIRST_NAME%%FIRST_NAME_POSSESSIVE_STRING%%DUPE_STRATEGY_1ST%Audible for iPhone";
 			bodyJson.registration_data.os_version = iosVersion;
