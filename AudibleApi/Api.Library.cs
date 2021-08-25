@@ -253,7 +253,7 @@ namespace AudibleApi
 		#endregion
 
 		#region GetLibraryBookChapters
-		public async Task<AudibleApiDTOs.ContentMetadata> GetLibraryBookMetadataAsync(string asin)
+		public async Task<AudibleApi.Common.ContentMetadata> GetLibraryBookMetadataAsync(string asin)
 		{
 			if (asin is null)
 				throw new ArgumentNullException(nameof(asin));
@@ -267,10 +267,10 @@ namespace AudibleApi
 			var bookJObj = await response.Content.ReadAsJObjectAsync();
 			var metadataJson = bookJObj.ToString();
 
-			AudibleApiDTOs.MetadataDtoV10 contentMetadata;
+			AudibleApi.Common.MetadataDtoV10 contentMetadata;
 			try
 			{
-				contentMetadata = AudibleApiDTOs.MetadataDtoV10.FromJson(metadataJson);
+				contentMetadata = AudibleApi.Common.MetadataDtoV10.FromJson(metadataJson);
 			}
 			catch (Exception ex)
 			{
@@ -282,10 +282,10 @@ namespace AudibleApi
 		#endregion
 
 		#region GetAllLibraryItemsAsync
-		public async Task<List<AudibleApiDTOs.Item>> GetAllLibraryItemsAsync() => await GetAllLibraryItemsAsync(LibraryOptions.ResponseGroupOptions.ALL_OPTIONS);
-		public async Task<List<AudibleApiDTOs.Item>> GetAllLibraryItemsAsync(LibraryOptions.ResponseGroupOptions responseGroups)
+		public async Task<List<AudibleApi.Common.Item>> GetAllLibraryItemsAsync() => await GetAllLibraryItemsAsync(LibraryOptions.ResponseGroupOptions.ALL_OPTIONS);
+		public async Task<List<AudibleApi.Common.Item>> GetAllLibraryItemsAsync(LibraryOptions.ResponseGroupOptions responseGroups)
 		{
-			var allItems = new List<AudibleApiDTOs.Item>();
+			var allItems = new List<AudibleApi.Common.Item>();
 
 			for (var i = 1; ; i++)
 			{
@@ -303,11 +303,11 @@ namespace AudibleApi
 
 				var pageStr = page.ToString();
 
-				AudibleApiDTOs.LibraryDtoV10 libResult;
+				AudibleApi.Common.LibraryDtoV10 libResult;
 				try
 				{
 					// important! use this convert/deser method
-					libResult = AudibleApiDTOs.LibraryDtoV10.FromJson(pageStr);
+					libResult = AudibleApi.Common.LibraryDtoV10.FromJson(pageStr);
 				}
 				catch (Exception ex)
 				{

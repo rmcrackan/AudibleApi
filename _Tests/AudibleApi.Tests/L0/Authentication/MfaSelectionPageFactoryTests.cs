@@ -15,7 +15,6 @@ using Moq;
 using Moq.Protected;
 using Newtonsoft.Json.Linq;
 using TestAudibleApiCommon;
-using static TestAudibleApiCommon.ComputedTestValues;
 
 namespace Authentic.ResultFactoryTests.MfaSelectionPageFactoryTests
 {

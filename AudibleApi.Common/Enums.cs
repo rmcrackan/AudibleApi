@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AudibleApiDTOs
+namespace AudibleApi.Common
 {
 	#region Item
 	/// <summary>

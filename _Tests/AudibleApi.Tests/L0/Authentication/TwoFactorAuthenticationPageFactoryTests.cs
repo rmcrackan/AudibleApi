@@ -15,7 +15,6 @@ using Moq;
 using Moq.Protected;
 using Newtonsoft.Json.Linq;
 using TestAudibleApiCommon;
-using static TestAudibleApiCommon.ComputedTestValues;
 
 namespace Authentic.ResultFactoryTests.TwoFactorAuthenticationPageFactoryTests
 {
@@ -45,29 +44,6 @@ namespace Authentic.ResultFactoryTests.TwoFactorAuthenticationPageFactoryTests
         {
             var response = new HttpResponseMessage { Content = new StringContent("<input name='otpCode' />") };
             (await ResultFactory.TwoFactorAuthenticationPage.IsMatchAsync(response)).Should().BeTrue();
-        }
-    }
-
-    [TestClass]
-    public class CreateResultAsync
-    {
-        [TestMethod]
-        public async Task valid_returns_TwoFactorAuthenticationPage()
-        {
-            var body
-                = "<input name='foo' value='abc' />"
-                + "<input name='bar' value='xyz' />"
-                + "<input name='otpCode' value='2fa' />";
-
-            var response = new HttpResponseMessage { Content = new StringContent(body) };
-
-            var _2faPage = await ResultFactory.TwoFactorAuthenticationPage.CreateResultAsync(AuthenticateShared.GetAuthenticate(AuthenticateResponse), response, new Dictionary<string, string>()) as TwoFactorAuthenticationPage;
-
-            var inputs = _2faPage.GetInputsReadOnly();
-            inputs.Count.Should().Be(3);
-            inputs["foo"].Should().Be("abc");
-            inputs["bar"].Should().Be("xyz");
-            inputs["otpCode"].Should().Be("2fa");
         }
     }
 }

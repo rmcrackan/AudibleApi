@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Text;
 
-namespace AudibleApiDTOs
+namespace AudibleApi.Common
 {
     public partial class MetadataDtoV10
     {
@@ -91,10 +91,10 @@ namespace AudibleApiDTOs
 
     public partial class MetadataDtoV10
     {
-        public static MetadataDtoV10 FromJson(string json) => JsonConvert.DeserializeObject<MetadataDtoV10>(json, AudibleApiDTOs.Converter.Settings);
+        public static MetadataDtoV10 FromJson(string json) => JsonConvert.DeserializeObject<MetadataDtoV10>(json, AudibleApi.Common.Converter.Settings);
     }
     public static partial class Serialize
     {
-        public static string ToJson(this MetadataDtoV10 self) => JsonConvert.SerializeObject(self, AudibleApiDTOs.Converter.Settings);
+        public static string ToJson(this MetadataDtoV10 self) => JsonConvert.SerializeObject(self, AudibleApi.Common.Converter.Settings);
     }
 }

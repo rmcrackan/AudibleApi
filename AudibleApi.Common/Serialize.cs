@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace AudibleApiDTOs
+namespace AudibleApi.Common
 {
 	public static partial class Serialize
 	{

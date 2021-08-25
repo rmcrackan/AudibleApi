@@ -6,7 +6,7 @@
 //   name=LibraryDtoV10
 //   paste in full output of library api with all response_groups
 // right pane:
-//   namespace: AudibleApiDTOs
+//   namespace: AudibleApi.Common
 //   array
 //   complete
 //   make all properties optional. this adds unneeded stuff (see next step) but also needed stuff
@@ -22,7 +22,7 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace AudibleApiDTOs
+namespace AudibleApi.Common
 {
 	/// <summary>
 	/// Audible API. GET /1.0/library , GET /1.0/library/{asin}
@@ -87,7 +87,7 @@ namespace AudibleApiDTOs
 		public int MyUserRating_Performance => Convert.ToInt32(ProvidedReview?.Ratings?.PerformanceRating ?? 0L);
 		public int MyUserRating_Story => Convert.ToInt32(ProvidedReview?.Ratings?.StoryRating ?? 0L);
 
-		public bool IsAbridged => FormatType == AudibleApiDTOs.FormatType.Abridged;
+		public bool IsAbridged => FormatType == AudibleApi.Common.FormatType.Abridged;
 		public DateTime? DatePublished => IssueDate?.UtcDateTime; // item.IssueDate == item.ReleaseDate
 		public string Publisher => PublisherName;
 

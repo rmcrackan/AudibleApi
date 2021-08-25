@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Dinah.Core.Collections.Generic;
 
-namespace AudibleApiDTOs
+namespace AudibleApi.Common
 {
 	public static class IEnumerable_Item_Extensions
 	{

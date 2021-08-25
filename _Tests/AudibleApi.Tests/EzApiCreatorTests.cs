@@ -11,7 +11,6 @@ using AudibleApi.Authentication;
 using AudibleApi.Authorization;
 using Dinah.Core;
 using FluentAssertions;
-using L1.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Moq.Protected;
@@ -27,8 +26,4 @@ namespace EzApiCreatorTests_L0
 		public async Task access_from_L0_throws()
 			=> await Assert.ThrowsExceptionAsync<MethodAccessException>(() => EzApiCreator.GetApiAsync(Locale.Empty, null));
 	}
-}
-
-namespace EzApiCreatorTests_L1
-{
 }

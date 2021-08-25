@@ -2,11 +2,11 @@
 //
 // To parse this JSON data, add NuGet 'Newtonsoft.Json' then do:
 //
-//    using AudibleApiDTOs;
+//    using AudibleApi.Common;
 //
 //    var voucherDtoV10 = VoucherDtoV10.FromJson(jsonString);
 
-namespace AudibleApiDTOs
+namespace AudibleApi.Common
 {
     using System;
     using Newtonsoft.Json;
@@ -52,6 +52,6 @@ namespace AudibleApiDTOs
 
     public partial class VoucherDtoV10
     {
-        public static VoucherDtoV10 FromJson(string json) => JsonConvert.DeserializeObject<VoucherDtoV10>(json, AudibleApiDTOs.Converter.Settings);
+        public static VoucherDtoV10 FromJson(string json) => JsonConvert.DeserializeObject<VoucherDtoV10>(json, AudibleApi.Common.Converter.Settings);
     }   
 }

@@ -2,11 +2,11 @@
 //
 // To parse this JSON data, add NuGet 'Newtonsoft.Json' then do:
 //
-//    using AudibleApiDTOs;
+//    using AudibleApi.Common;
 //
 //    var libraryDtoV10 = LibraryDtoV10.FromJson(jsonString);
 
-namespace AudibleApiDTOs
+namespace AudibleApi.Common
 {
 	using System;
 	using System.Globalization;
@@ -648,12 +648,12 @@ namespace AudibleApiDTOs
 
 	public partial class LibraryDtoV10
 	{
-		public static LibraryDtoV10 FromJson(string json) => JsonConvert.DeserializeObject<LibraryDtoV10>(json, AudibleApiDTOs.Converter.Settings);
+		public static LibraryDtoV10 FromJson(string json) => JsonConvert.DeserializeObject<LibraryDtoV10>(json, AudibleApi.Common.Converter.Settings);
 	}
 
 	public static partial class Serialize
 	{
-		public static string ToJson(this LibraryDtoV10 self) => JsonConvert.SerializeObject(self, AudibleApiDTOs.Converter.Settings);
+		public static string ToJson(this LibraryDtoV10 self) => JsonConvert.SerializeObject(self, AudibleApi.Common.Converter.Settings);
 	}
 
 	internal static class Converter

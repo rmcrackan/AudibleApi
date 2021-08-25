@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Dinah.Core\_Tests\TestCommon\TestCommon.csproj" />
-    <ProjectReference Include="..\..\..\..\Libation\InternalUtilities\InternalUtilities.csproj" />
+    <ProjectReference Include="..\..\..\Dinah.Core\_Tests\TestCommon\TestCommon.csproj" />
+    <ProjectReference Include="..\..\AudibleApi\AudibleApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>

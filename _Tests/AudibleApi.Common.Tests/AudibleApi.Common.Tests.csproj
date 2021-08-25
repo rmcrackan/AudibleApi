@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\AudibleApiDTOs\AudibleApiDTOs.csproj" />
+    <ProjectReference Include="..\..\AudibleApi.Common\AudibleApi.Common.csproj" />
   </ItemGroup>
 
 </Project>

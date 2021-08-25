@@ -15,7 +15,6 @@ using Moq;
 using Moq.Protected;
 using Newtonsoft.Json.Linq;
 using TestAudibleApiCommon;
-using static TestAudibleApiCommon.ComputedTestValues;
 
 namespace Authentic.CredentialsPageTests
 {
@@ -64,15 +63,4 @@ namespace Authentic.CredentialsPageTests
             dic["metadata1"].Length.Should().BeGreaterThan(100);
         }
     }
-
-	[TestClass]
-	public class GenerateMetadata
-	{
-		[TestMethod]
-		public void validate_output()
-		{
-			var metadata = CredentialsPage.GenerateMetadata(Locales.Us, 123456789L);
-			metadata.Should().Be(CredentialsPageMetadataPlaintext);
-		}
-	}
 }

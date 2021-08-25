@@ -1,4 +1,4 @@
-﻿using AudibleApiDTOs;
+﻿using AudibleApi.Common;
 using Dinah.Core;
 using Dinah.Core.Net.Http;
 using Newtonsoft.Json.Linq;

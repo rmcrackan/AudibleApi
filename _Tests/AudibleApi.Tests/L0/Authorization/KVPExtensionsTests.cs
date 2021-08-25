@@ -17,7 +17,6 @@ using Newtonsoft.Json.Linq;
 using TestAudibleApiCommon;
 using TestCommon;
 using static AuthorizationShared.Shared;
-using static TestAudibleApiCommon.ComputedTestValues;
 
 namespace Authoriz.KVPExtensionsTests
 {

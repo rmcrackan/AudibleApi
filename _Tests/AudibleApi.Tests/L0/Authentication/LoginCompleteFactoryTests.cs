@@ -14,7 +14,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Moq.Protected;
 using TestAudibleApiCommon;
-using static TestAudibleApiCommon.ComputedTestValues;
 
 namespace Authentic.ResultFactoryTests.LoginCompleteFactoryTests
 {

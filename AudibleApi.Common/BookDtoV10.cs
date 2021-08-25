@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace AudibleApiDTOs
+namespace AudibleApi.Common
 {
 	public partial class BookDtoV10
 	{
@@ -14,6 +14,6 @@ namespace AudibleApiDTOs
 
 	public partial class BookDtoV10
 	{
-		public static BookDtoV10 FromJson(string json) => JsonConvert.DeserializeObject<BookDtoV10>(json, AudibleApiDTOs.Converter.Settings);
+		public static BookDtoV10 FromJson(string json) => JsonConvert.DeserializeObject<BookDtoV10>(json, AudibleApi.Common.Converter.Settings);
 	}
 }
