@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Dinah.Core\Dinah.Core\Dinah.Core.csproj" />
+    <PackageReference Include="Dinah.Core" Version="1.0.5" />
   </ItemGroup>
 
 </Project>
