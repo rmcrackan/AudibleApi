@@ -15,7 +15,6 @@ using Moq;
 using Moq.Protected;
 using Newtonsoft.Json;
 using TestAudibleApiCommon;
-using TestCommon;
 
 namespace ApiMessageHandlerTests
 {

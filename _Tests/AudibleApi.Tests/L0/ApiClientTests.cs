@@ -14,7 +14,6 @@ using Moq.Protected;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TestAudibleApiCommon;
-using TestCommon;
 using static AuthorizationShared.Shared;
 
 namespace ApiHttpClientTests

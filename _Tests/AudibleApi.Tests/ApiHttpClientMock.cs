@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using AudibleApi;
 using AudibleApi.Authorization;
 using Moq;
-using TestCommon;
 using static AuthorizationShared.Shared;
 using static AuthorizationShared.Shared.AccessTokenTemporality;
 

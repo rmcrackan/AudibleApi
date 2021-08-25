@@ -17,7 +17,6 @@ using Moq;
 using Moq.Protected;
 using Newtonsoft.Json.Linq;
 using TestAudibleApiCommon;
-using TestCommon;
 
 namespace Authentic.CaptchaPageTests
 {

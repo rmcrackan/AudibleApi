@@ -8,7 +8,6 @@ using Dinah.Core;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
-using TestCommon;
 
 namespace RestMessageValidatorTests
 {
