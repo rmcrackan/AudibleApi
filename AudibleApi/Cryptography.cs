@@ -8,10 +8,8 @@ using Dinah.Core;
 
 namespace AudibleApi
 {
-    public static class Cryptography
+    public static partial class Cryptography
     {
-        public static string Javascript { get; } = File.ReadAllText("Cryptography.js");
-
         public static string EncryptMetadata(string metadata)
         {
             if (metadata is null)

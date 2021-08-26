@@ -1,5 +1,26 @@
 [
   {
+    "//01": "***********************************************************************************",
+    "//02": "                                                                                   ",
+    "//03": "                                      READ ME                                      ",
+    "//04": "                                                                                   ",
+    "//05": "***********************************************************************************",
+    "//06": "                                                                                   ",
+    "//07": "     The below json-driven solution is great except it does not work when          ",
+    "//08": "     deploying as a nuget package. As long as this project is deployed as          ",
+    "//09": "     nuget, the values must appear in code. See Localization.cs                    ",
+    "//10": "                                                                                   ",
+    "//11": "     It's not a bad idea to also keep this file updated in case we reverse         ",
+    "//12": "     course.                                                                       ",
+    "//13": "                                                                                   ",
+    "//14": "     And screw you json spec for having no concept of comments. This was a pain    ",
+    "//15": "     to include this way.                                                          ",
+    "//16": "                                                                                   ",
+    "//17": "***********************************************************************************"
+  },
+
+
+  {
     "name": "us",
     "loginDomain": "amazon",
     "countryCode": "us",

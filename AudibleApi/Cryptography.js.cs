@@ -1,24 +1,19 @@
-﻿//
-// nuget package can't contain an external file. contents of Cryptography.js must be copy/pasted into Cryptography.js.cs with escaped quotes
-//
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
+namespace AudibleApi
+{
+	public static partial class Cryptography
+	{
+        //
+        // nuget package can't contain an external file. contents of Cryptography.js must be copy/pasted into Cryptography.js.cs with escaped quotes
+        //
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// https://ricky.lalwani.me/blog/logging-in-to-amazon-part-2
+        //public static string Javascript { get; } = System.IO.File.ReadAllText("Cryptography.js");
+        public const string Javascript = @"
 
 function update(x) {
     var map = [];
@@ -51,7 +46,7 @@ function update(x) {
 }
 
 function format(dec) {
-    var hexDigits = "0123456789ABCDEF";
+    var hexDigits = ""0123456789ABCDEF"";
     return [
         hexDigits.charAt(dec >>> 28 & 15),
         hexDigits.charAt(dec >>> 24 & 15),
@@ -61,12 +56,12 @@ function format(dec) {
         hexDigits.charAt(dec >>> 8 & 15),
         hexDigits.charAt(dec >>> 4 & 15),
         hexDigits.charAt(dec & 15)
-    ].join("");
+    ].join("""");
 }
 
 function parse(value) {
     if (value.length == 0) {
-        return "";
+        return """";
     }
     var result = [4169969034, 4087877101, 1706678977, 3681020276];
     var n = Math.ceil(value.length / 4);
@@ -94,11 +89,11 @@ function parse(value) {
     for (; i < n; i++) {
         tmp_arr[i] = String.fromCharCode(a[i] & 255, a[i] >>> 8 & 255, a[i] >>> 16 & 255, a[i] >>> 24 & 255);
     }
-    return tmp_arr.join("");
+    return tmp_arr.join("""");
 }
 
 function evaluate(input) {
-    var ret = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+    var ret = ""ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="";
     var UNICODE_SPACES = [];
     var av;
     var val2;
@@ -129,5 +124,10 @@ function evaluate(input) {
         UNICODE_SPACES.push(ret.charAt(idx));
         UNICODE_SPACES.push(ret.charAt(i));
     }
-    return UNICODE_SPACES.join("");
+    return UNICODE_SPACES.join("""");
+}
+
+
+";
+	}
 }
