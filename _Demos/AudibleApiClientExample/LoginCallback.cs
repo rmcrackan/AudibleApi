@@ -43,14 +43,11 @@ namespace AudibleApiClientExample
 
 		public (string email, string password) GetLogin()
 		{
-			if (File.Exists(_Main.loginFilePath))
+			var secrets = Program.GetSecrets();
+			if (secrets is not null)
 			{
-				var pwParts = File.ReadAllLines(_Main.loginFilePath);
-				var email = pwParts[0];
-				var password = pwParts[1];
-
-				if (!string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(password))
-					return (email, password);
+				if (!string.IsNullOrWhiteSpace(secrets.email) && !string.IsNullOrWhiteSpace(secrets.password))
+					return (secrets.email, secrets.password);
 			}
 
 			Console.WriteLine("Email:");

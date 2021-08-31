@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AudibleApi;
+using AudibleApi.Common;
 using Dinah.Core;
 using Dinah.Core.Net.Http;
-//using InternalUtilities; // uncomment for use demo app to use live libation settings. must have the rest of libation codebase set up
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -14,50 +14,24 @@ namespace AudibleApiClientExample
 {
 	public class AudibleApiClient
 	{
-		private Api _api;
+		public Api Api { get; }
+		public AudibleApiClient(Api api) => Api = api;
 
-		private AudibleApiClient() { }
-		public async static Task<AudibleApiClient> CreateClientAsync()
-		{
-			/* // uncomment for use demo app to use live libation settings. must have the rest of libation codebase set up
-			var account = AudibleApiStorage
-				.GetAccountsSettingsPersister()
-				.AccountsSettings
-				.GetAll()
-				.FirstOrDefault();
-			var api = await EzApiCreator.GetApiAsync(
-				account.Locale,
-				AudibleApiStorage.AccountsSettingsFile,
-				account.GetIdentityTokensJsonPath(),
-				new LoginCallback());
-			 */
-
-			// see locales.json for choices
-			var localeName = "canada";
-			var identityFilePath = "myIdentity.json";
-			// if your json file is complex, you can specify the jsonPath within that file where identity is/should be stored.
-			// else: null
-			string jsonPath = null;
-			var api = await EzApiCreator.GetApiAsync(
-				Localization.Get(localeName),
-				identityFilePath,
-				jsonPath,
-				new LoginCallback());
-			return new AudibleApiClient { _api = api };
-		}
-
-		#region api call examples
-		// Mimi's Adventure (3m)
+		#region sample books
+		/// <summary>Mimi's Adventure. 3 minutes. Book I own</summary>
 		public const string TINY_BOOK_ASIN = "B079DZ8YMP";
 
-		// Harry Potter 1 (8h 33m)
+		/// <summary>Harry Potter #1. 8h 33m). Book I own</summary>
 		public const string MEDIUM_BOOK_ASIN = "B017V4IM1G";
 
-		// Sherlock Holmes (62h 52m)
+		/// <summary>Sherlock Holmes. 62h 52m. Book I own</summary>
 		public const string HUGE_BOOK_ASIN = "B06WLMWF2S";
 
-		public const string AD_HOC_ASIN = "B00FKAHZ62";
+		/// <summary>Book I do not own from skeezy publisher</summary>
+		public const string DO_NOT_OWN_ASIN = "2291090836";
+		#endregion
 
+		#region api call examples
 		public async Task PrintLibraryAsync()
 		{
 			// test ad hoc api calls
@@ -75,7 +49,6 @@ namespace AudibleApiClientExample
 			//	//TINY_BOOK_ASIN
 			//	MEDIUM_BOOK_ASIN
 			//	//HUGE_BOOK_ASIN
-			//	//AD_HOC_ASIN
 			//	;
 
 			url += url.Contains("?") ? "&" : "?";
@@ -84,7 +57,7 @@ namespace AudibleApiClientExample
 			//allGroups = "response_groups=series,category_ladders,contributors";
 
 			url += allGroups;
-			var responseMsg = await _api.AdHocAuthenticatedGetAsync(url);
+			var responseMsg = await Api.AdHocAuthenticatedGetAsync(url);
 			var jObj = await responseMsg.Content.ReadAsJObjectAsync();
 			var str = jObj.ToString(Formatting.Indented);
 			Console.WriteLine(str);
@@ -100,22 +73,45 @@ namespace AudibleApiClientExample
 
 			if (!string.IsNullOrWhiteSpace(groups))
 				url += (url.Contains("?") ? "&" : "?") + "response_groups=" + groups.Replace(" ", "").Replace("[", "").Replace("]", "");
-			var responseMsg = await _api.AdHocAuthenticatedGetAsync(url);
+			var responseMsg = await Api.AdHocAuthenticatedGetAsync(url);
 			var jObj = await responseMsg.Content.ReadAsJObjectAsync();
 			var str = jObj.ToString(Formatting.Indented);
 			Console.WriteLine(str);
 
 
-			var str2 = (await _api.UserProfileAsync()).ToString(Formatting.Indented);
+			var str2 = (await Api.UserProfileAsync()).ToString(Formatting.Indented);
 			Console.WriteLine(str2);
 		}
+		#endregion
 
-		public async Task DeserializeSingleBookInfoAsync()
+		#region handing podcasts
+		public async Task PodcastTestsAsync()
 		{
-			var bookResult = await _api.GetLibraryBookAsync(AD_HOC_ASIN, LibraryOptions.ResponseGroupOptions.ALL_OPTIONS);
-			var bookResultString = bookResult.ToString();
-			var bookResultJson = AudibleApi.Common.BookDtoV10.FromJson(bookResultString);
-			var bookResultItem = bookResultJson.Item;
+			// when 'following' this podcast series, this is the parent which shows up in my library
+			var podcastParent = "B08DCRTX5K";
+			var parentLibBook = await Api.GetLibraryBookAsync(podcastParent, LibraryOptions.ResponseGroupOptions.ALL_OPTIONS);
+			var isEpisodes = parentLibBook.IsEpisodes; // true
+
+			// as a library "item"
+			var parentLibBookInfo = await Api.GetLibraryBookAsync(podcastParent, LibraryOptions.ResponseGroupOptions.ALL_OPTIONS);
+			// as a catalog "product". much less info
+			var parentBookInfo = await Api.GetCatalogProductAsync(podcastParent, CatalogOptions.ResponseGroupOptions.ALL_OPTIONS);
+
+			// the episodes are not considered part of my library. GetLibraryBookAsync() will throw. however, GetBookInfoAsync() and all download mechanics succeed
+			var children = parentLibBook.Relationships
+				.Where(r => r.RelationshipToProduct == RelationshipToProduct.Child && r.RelationshipType == RelationshipType.Episode)
+				.ToList();
+			var childRelationshipEntry = children.First();
+			var childId = childRelationshipEntry.Asin;
+			//// throws: not present in customer library
+			//try { await client.Api.GetLibraryBookAsync(childId, LibraryOptions.ResponseGroupOptions.ALL_OPTIONS); }
+			//catch (Exception ex) { }
+
+			// get 1
+			var childProductInfo = await Api.GetCatalogProductAsync(childId, CatalogOptions.ResponseGroupOptions.ALL_OPTIONS);
+			// or get multiples at once
+			var childrenIds = children.Select(c => c.Asin).ToList();
+			var results = await Api.GetCatalogProductsAsync(childrenIds, CatalogOptions.ResponseGroupOptions.ALL_OPTIONS);
 		}
 		#endregion
 
@@ -136,7 +132,7 @@ namespace AudibleApiClientExample
 				+ "product_plans,provided_review,rating,relationships,review_attrs,reviews,sample,series,sku";
 
 			url += allGroups;
-			var responseMsg = await _api.AdHocAuthenticatedGetAsync(url);
+			var responseMsg = await Api.AdHocAuthenticatedGetAsync(url);
 			var jObj = await responseMsg.Content.ReadAsJObjectAsync();
 			var str = jObj.ToString(Formatting.Indented);
 			File.WriteAllText(LIBRARY_JSON, str);

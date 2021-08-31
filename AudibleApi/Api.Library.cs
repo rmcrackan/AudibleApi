@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using AudibleApi.Common;
 using Dinah.Core;
 using Dinah.Core.Net.Http;
 using Newtonsoft.Json.Linq;
@@ -229,10 +230,10 @@ namespace AudibleApi
 		#endregion
 
 		#region GetLibraryBookAsync
-		public Task<JObject> GetLibraryBookAsync(string asin, LibraryOptions.ResponseGroupOptions responseGroups)
+		public Task<Item> GetLibraryBookAsync(string asin, LibraryOptions.ResponseGroupOptions responseGroups)
 			=> GetLibraryBookAsync(asin, responseGroups.ToQueryString());
 
-		public async Task<JObject> GetLibraryBookAsync(string asin, string responseGroups)
+		public async Task<Item> GetLibraryBookAsync(string asin, string responseGroups)
 		{
 			if (asin is null)
 				throw new ArgumentNullException(nameof(asin));
@@ -248,12 +249,26 @@ namespace AudibleApi
 				url += "?" + responseGroups;
 			var response = await AdHocAuthenticatedGetAsync(url);
 			var obj = await response.Content.ReadAsJObjectAsync();
-			return obj;
+			var objStr = obj.ToString();
+
+			BookDtoV10 dto;
+			try
+			{
+				// important! use this convert/deser method
+				dto = BookDtoV10.FromJson(objStr);
+			}
+			catch (Exception ex)
+			{
+				Serilog.Log.Logger.Error(ex, "Error converting catalog product. Full json:\r\n" + objStr);
+				throw;
+			}
+
+			return dto.Item;
 		}
 		#endregion
 
 		#region GetLibraryBookChapters
-		public async Task<AudibleApi.Common.ContentMetadata> GetLibraryBookMetadataAsync(string asin)
+		public async Task<ContentMetadata> GetLibraryBookMetadataAsync(string asin)
 		{
 			if (asin is null)
 				throw new ArgumentNullException(nameof(asin));
@@ -267,10 +282,10 @@ namespace AudibleApi
 			var bookJObj = await response.Content.ReadAsJObjectAsync();
 			var metadataJson = bookJObj.ToString();
 
-			AudibleApi.Common.MetadataDtoV10 contentMetadata;
+			MetadataDtoV10 contentMetadata;
 			try
 			{
-				contentMetadata = AudibleApi.Common.MetadataDtoV10.FromJson(metadataJson);
+				contentMetadata = MetadataDtoV10.FromJson(metadataJson);
 			}
 			catch (Exception ex)
 			{
@@ -282,10 +297,10 @@ namespace AudibleApi
 		#endregion
 
 		#region GetAllLibraryItemsAsync
-		public async Task<List<AudibleApi.Common.Item>> GetAllLibraryItemsAsync() => await GetAllLibraryItemsAsync(LibraryOptions.ResponseGroupOptions.ALL_OPTIONS);
-		public async Task<List<AudibleApi.Common.Item>> GetAllLibraryItemsAsync(LibraryOptions.ResponseGroupOptions responseGroups)
+		public async Task<List<Item>> GetAllLibraryItemsAsync() => await GetAllLibraryItemsAsync(LibraryOptions.ResponseGroupOptions.ALL_OPTIONS);
+		public async Task<List<Item>> GetAllLibraryItemsAsync(LibraryOptions.ResponseGroupOptions responseGroups)
 		{
-			var allItems = new List<AudibleApi.Common.Item>();
+			var allItems = new List<Item>();
 
 			for (var i = 1; ; i++)
 			{
@@ -303,11 +318,11 @@ namespace AudibleApi
 
 				var pageStr = page.ToString();
 
-				AudibleApi.Common.LibraryDtoV10 libResult;
+				LibraryDtoV10 libResult;
 				try
 				{
 					// important! use this convert/deser method
-					libResult = AudibleApi.Common.LibraryDtoV10.FromJson(pageStr);
+					libResult = LibraryDtoV10.FromJson(pageStr);
 				}
 				catch (Exception ex)
 				{
