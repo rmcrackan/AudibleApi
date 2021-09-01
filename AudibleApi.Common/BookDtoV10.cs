@@ -17,7 +17,7 @@ namespace AudibleApi.Common
 
 	public partial class BookDtoV10
 	{
-		public string ToJson() => JsonConvert.SerializeObject(this, Converter.Settings);
+		public string ToJson() => JsonConvert.SerializeObject(this, Formatting.Indented, Converter.Settings);
 		public static BookDtoV10 FromJson(string json) => JsonConvert.DeserializeObject<BookDtoV10>(json, AudibleApi.Common.Converter.Settings);
 	}
 }
