@@ -10,16 +10,17 @@ namespace AudibleApi.Common
 	/// </summary>
 	public static class ContentType
 	{
+		public const string Product = "Product";
 		public const string Episode = "Episode";
 		public const string Lecture = "Lecture";
 		public const string NewspaperMagazine = "Newspaper / Magazine";
 		public const string Meditation = "Meditation";
 		public const string Misc = "Misc";
 		public const string Performance = "Performance";
-		public const string Product = "Product";
 		public const string RadioTvProgram = "Radio/TV Program";
 		public const string Show = "Show";
 		public const string Speech = "Speech";
+		public const string Podcast = "Podcast";
 	}
 
 	/// <summary>
@@ -29,10 +30,13 @@ namespace AudibleApi.Common
 	/// </summary>
 	public static class ContentDeliveryType
 	{
-		public const string MultiPartBook = "MultiPartBook";
-		public const string Periodical = "Periodical";
 		public const string SinglePartBook = "SinglePartBook";
+		public const string MultiPartBook = "MultiPartBook";
 		public const string SinglePartIssue = "SinglePartIssue";
+		public const string MultiPartIssue = "MultiPartIssue";
+		public const string Periodical = "Periodical";
+		public const string PodcastParent = "PodcastParent";
+		public const string PodcastEpisode = "PodcastEpisode";
 	}
 
 	/// <summary>
