@@ -25,6 +25,6 @@ namespace AudibleApi.Common
 		public static T FromJson<T>(string json) => JsonConvert.DeserializeObject<T>(json, Settings);
 
 		/// <summary>object => json using AudibleApi.Common serializers</summary>
-		public static string ToJson(this object self) => JsonConvert.SerializeObject(self, Formatting.Indented, Settings);
+		public static string ToJson(object self) => JsonConvert.SerializeObject(self, Formatting.Indented, Settings);
 	}
 }
