@@ -17,9 +17,6 @@ namespace AudibleApi.Common
 	{
 		[JsonProperty("items")]
 		public Item[] Items { get; set; }
-
-		[JsonProperty("response_groups")]
-		public string[] ResponseGroups { get; set; }
 	}
 
     public partial class Item
@@ -644,29 +641,6 @@ namespace AudibleApi.Common
 
 		[JsonProperty("url")]
 		public string Url { get; set; }
-	}
-
-	public partial class LibraryDtoV10
-	{
-		public static LibraryDtoV10 FromJson(string json) => JsonConvert.DeserializeObject<LibraryDtoV10>(json, AudibleApi.Common.Converter.Settings);
-	}
-
-	public static partial class Serialize
-	{
-		public static string ToJson(this LibraryDtoV10 self) => JsonConvert.SerializeObject(self, AudibleApi.Common.Converter.Settings);
-	}
-
-	internal static class Converter
-	{
-		public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
-		{
-			MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
-			DateParseHandling = DateParseHandling.None,
-			Converters =
-			{
-				new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
-			},
-		};
 	}
 
 	internal class ParseStringConverter : JsonConverter

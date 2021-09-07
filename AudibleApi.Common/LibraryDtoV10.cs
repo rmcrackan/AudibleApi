@@ -27,7 +27,7 @@ namespace AudibleApi.Common
 	/// <summary>
 	/// Audible API. GET /1.0/library , GET /1.0/library/{asin}
 	/// </summary>
-	public partial class LibraryDtoV10
+	public partial class LibraryDtoV10 : V10Base<LibraryDtoV10>
 	{
 		public override string ToString() => $"{Items?.Length ?? 0} {nameof(Items)}, {ResponseGroups?.Length ?? 0} {nameof(ResponseGroups)}";
 	}

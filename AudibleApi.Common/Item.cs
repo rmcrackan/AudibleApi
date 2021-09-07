@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Linq;
-using Newtonsoft.Json;
 
 namespace AudibleApi.Common
 {
-	public partial class Item
+	public partial class Item : DtoBase<Item>
 	{
-		public string ToJson() => JsonConvert.SerializeObject(this, Formatting.Indented, Converter.Settings);
-		public static Item FromJson(string json) => JsonConvert.DeserializeObject<Item>(json, Converter.Settings);
-
 		public override string ToString() => $"[{ProductId}] {Title}";
-	}
 
-	public partial class Item
-	{
 		public string ProductId => Asin;
 		public int LengthInMinutes => RuntimeLengthMin ?? 0;
 		public string Description => PublisherSummary;
