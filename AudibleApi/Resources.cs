@@ -10,6 +10,7 @@ namespace AudibleApi
 	{
 		public const string USER_AGENT = "Audible/671 CFNetwork/1240.0.4 Darwin/20.6.0";
 		public const string DEVICE_TYPE = "A2CZJZGLK2JJVM";
+		public static string DeviceSerialNumber { get; private set; }
 
 		public static string LoginDomain(this Locale locale) => locale.WithUsername ? "audible" : "amazon";
 
@@ -27,8 +28,8 @@ namespace AudibleApi
 		private static string _amazonLoginUrl(this Locale locale) => $"https://www.{locale.LoginDomain()}.{locale.TopDomain}";
 		public static Uri AmazonLoginUri(this Locale locale) => new Uri(locale._amazonLoginUrl());
 
-		public static string OAuthUrl(this Locale locale, string deviceSerialNumber) => locale._amazonLoginUrl() + "/ap/signin?" + locale.buildOauth(deviceSerialNumber);
-		private static string buildOauth(this Locale locale, string deviceSerialNumber)
+		public static string OAuthUrl(this Locale locale) => locale._amazonLoginUrl() + "/ap/signin?" + locale.buildOauth();
+		private static string buildOauth(this Locale locale)
 		{
 			// this helps dramatically with debugging
 			var return_to = $"{locale.AmazonLoginUri().GetOrigin()}/ap/maplanding";
@@ -36,7 +37,8 @@ namespace AudibleApi
 			var page_id = locale.WithUsername ? "amzn_audible_ios_privatepool" : "amzn_audible_ios";
 
 			// https://github.com/mkb79/Audible/blob/master/src/audible/login.py#L133
-			var client_id = build_client_id(deviceSerialNumber ?? build_device_serial());
+			DeviceSerialNumber ??= build_device_serial();
+			var client_id = build_client_id(DeviceSerialNumber);
 
 			var oauth_params = new Dictionary<string, string>
 			{

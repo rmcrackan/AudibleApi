@@ -100,7 +100,7 @@ namespace AudibleApi.Authorization
 
 		protected async Task RegisterAsync()
 		{
-			var authRegister = await _authorize.RegisterAsync(_identity.ExistingAccessToken, _identity.DeviceSerialNumber, _identity.Cookies.ToKeyValuePair());
+			var authRegister = await _authorize.RegisterAsync(_identity.ExistingAccessToken, _identity.Cookies.ToKeyValuePair());
 			RegistrationParser.ParseRegistrationIntoIdentity(authRegister, _identity, SystemDateTime);
 		}
 

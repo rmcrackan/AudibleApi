@@ -87,7 +87,7 @@ namespace AudibleApi.Authentication
 
             // post 1st visit: set OAUTH_URL header
             // this will be our referer for all login calls AFTER initial oauth get
-            LoginClient.DefaultRequestHeaders.Add("Referer", Locale.OAuthUrl(null));
+            LoginClient.DefaultRequestHeaders.Add("Referer", Locale.OAuthUrl());
 
             var page = new CredentialsPage(this, login1_body);
             return await page.SubmitAsync(email, password);
@@ -95,7 +95,7 @@ namespace AudibleApi.Authentication
 
         private async Task<string> getInitialLoginPage()
         {
-            var response = await LoginClient.GetAsync(Locale.OAuthUrl(null));
+            var response = await LoginClient.GetAsync(Locale.OAuthUrl());
             response.EnsureSuccessStatusCode();
 
             var login1_body = await response.Content.ReadAsStringAsync();

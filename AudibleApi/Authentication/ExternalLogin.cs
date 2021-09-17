@@ -15,7 +15,7 @@ namespace AudibleApi.Authentication
 		/// Gives the url to login with external browser and prompt for result.
 		/// Builds the url to login to Amazon as an Audible device.
 		/// </summary>
-		public string GetLoginUrl(string deviceSerialNumber = null) => _locale.OAuthUrl(deviceSerialNumber);
+		public string GetLoginUrl() => _locale.OAuthUrl();
 
 		/// <summary>Retrieve tokens from response URL. Return an in-memory Identity object</summary>
 		public Identity Login(string responseUrl) => new Identity(_locale, AccessToken.Parse(responseUrl), new Dictionary<string, string>());
