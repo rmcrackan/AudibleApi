@@ -11,7 +11,7 @@ namespace AudibleApi.Authorization
     /// </summary>
     public partial class Identity : IIdentity
 	{
-		public static Identity Empty => new Identity(Locale.Empty);
+		public static Identity Empty { get; } = new Identity(Locale.Empty);
 
 		public event EventHandler Updated;
 

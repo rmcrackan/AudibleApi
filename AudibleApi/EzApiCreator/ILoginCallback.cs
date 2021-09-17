@@ -2,6 +2,7 @@
 
 namespace AudibleApi
 {
+	/// <summary>If not already logged in, log in with API</summary>
 	public interface ILoginCallback
 	{
 		(string email, string password) GetLogin();

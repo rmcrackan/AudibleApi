@@ -53,20 +53,17 @@ namespace AudibleApi.Authorization
 			_locale = locale ?? throw new ArgumentNullException(nameof(locale));
 		}
 
-		public async Task<JObject> RegisterAsync(AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies)
+		public async Task<JObject> RegisterAsync(AccessToken accessToken, string deviceSerialNumber, IEnumerable<KeyValuePair<string, string>> cookies)
 		{
-			if (accessToken is null)
-				throw new ArgumentNullException(nameof(accessToken));
-
-			if (cookies is null)
-				throw new ArgumentNullException(nameof(cookies));
+			ArgumentValidator.EnsureNotNull(accessToken, nameof(accessToken));
+			ArgumentValidator.EnsureNotNull(cookies, nameof(cookies));
 
 			if (!cookies.Any())
 				throw new ArgumentException("Cookies may not be empty", nameof(cookies));
 
 			try
 			{
-				var request = buildRegisterRequest(_locale, accessToken, cookies);
+				var request = buildRegisterRequest(_locale, accessToken, deviceSerialNumber, cookies);
 				var response = await _client.SendAsync(request);
 
 				response.EnsureSuccessStatusCode();
@@ -80,9 +77,9 @@ namespace AudibleApi.Authorization
 			}
 		}
 
-		private static HttpRequestMessage buildRegisterRequest(Locale locale, AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies)
+		private static HttpRequestMessage buildRegisterRequest(Locale locale, AccessToken accessToken, string deviceSerialNumber, IEnumerable<KeyValuePair<string, string>> cookies)
 		{
-			var jsonBody = buildRegisterBody(locale, accessToken, cookies);
+			var jsonBody = buildRegisterBody(locale, accessToken, deviceSerialNumber, cookies);
 			var cookiesAggregated = cookies
 				.Select(kvp => $"{kvp.Key}={kvp.Value}")
 				.Aggregate((a, b) => $"{a}; {b}");
@@ -106,7 +103,7 @@ namespace AudibleApi.Authorization
 		}
 
 		// do not use Dictionary<string, string> for cookies b/c of duplicates
-		private static JObject buildRegisterBody(Locale locale, AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies)
+		private static JObject buildRegisterBody(Locale locale, AccessToken accessToken, string deviceSerialNumber, IEnumerable<KeyValuePair<string, string>> cookies)
 		{
 			// for dynamic, add nuget ref Microsoft.CSharp
 			// https://www.newtonsoft.com/json/help/html/CreateJsonDynamic.htm
@@ -127,8 +124,8 @@ namespace AudibleApi.Authorization
 			bodyJson.registration_data = new JObject();
 			bodyJson.registration_data.domain = "Device";
 			bodyJson.registration_data.app_version = appVersion;
-			bodyJson.registration_data.device_serial = Resources.DeviceSerialNumber;
-			bodyJson.registration_data.device_type = Resources.DeviceType;
+			bodyJson.registration_data.device_serial = deviceSerialNumber;
+			bodyJson.registration_data.device_type = Resources.DEVICE_TYPE;
 			bodyJson.registration_data.device_name = "%FIRST_NAME%%FIRST_NAME_POSSESSIVE_STRING%%DUPE_STRATEGY_1ST%Audible for iPhone";
 			bodyJson.registration_data.os_version = iosVersion;
 			bodyJson.registration_data.device_model = "iPhone";

@@ -22,7 +22,6 @@
 
   {
     "name": "us",
-    "loginDomain": "amazon",
     "countryCode": "us",
     "topDomain": "com",
     "marketPlaceId": "AF2M0KC94RCEA",
@@ -30,7 +29,6 @@
   },
   {
     "name": "uk",
-    "loginDomain": "amazon",
     "countryCode": "uk",
     "topDomain": "co.uk",
     "marketPlaceId": "A2I9A3Q2GNFNGQ",
@@ -38,7 +36,6 @@
   },
   {
     "name": "australia",
-    "loginDomain": "amazon",
     "countryCode": "au",
     "topDomain": "com.au",
     "marketPlaceId": "AN7EY7DTAW63G",
@@ -46,7 +43,6 @@
   },
   {
     "name": "canada",
-    "loginDomain": "amazon",
     "countryCode": "ca",
     "topDomain": "ca",
     "marketPlaceId": "A2CQZ5RBY40XE",
@@ -54,7 +50,6 @@
   },
   {
     "name": "france",
-    "loginDomain": "amazon",
     "countryCode": "fr",
     "topDomain": "fr",
     "marketPlaceId": "A2728XDNODOQ8T",
@@ -62,7 +57,6 @@
   },
   {
     "name": "germany",
-    "loginDomain": "amazon",
     "countryCode": "de",
     "topDomain": "de",
     "marketPlaceId": "AN7V1F1VY261K",
@@ -70,7 +64,6 @@
   },
   {
     "name": "india",
-    "loginDomain": "amazon",
     "countryCode": "in",
     "topDomain": "in",
     "marketPlaceId": "AJO3FBRUE6J4S",
@@ -78,7 +71,6 @@
   },
   {
     "name": "italy",
-    "loginDomain": "amazon",
     "countryCode": "it",
     "topDomain": "it",
     "marketPlaceId": "A2N7FU2W2BU2ZC",
@@ -86,7 +78,6 @@
   },
   {
     "name": "japan",
-    "loginDomain": "amazon",
     "countryCode": "jp",
     "topDomain": "co.jp",
     "marketPlaceId": "A1QAP3MOU4173J",
@@ -94,7 +85,6 @@
   },
   {
     "name": "spain",
-    "loginDomain": "amazon",
     "countryCode": "es",
     "topDomain": "es",
     "marketPlaceId": "ALMIKO4SZCSAR",
@@ -102,26 +92,26 @@
   },
   {
     "name": "pre-amazon - germany",
-    "loginDomain": "audible",
     "countryCode": "de",
     "topDomain": "de",
     "marketPlaceId": "AN7V1F1VY261K",
-    "language": "de-DE"
+    "language": "de-DE",
+    "withUsername": true
   },
   {
     "name": "pre-amazon - us",
-    "loginDomain": "audible",
     "countryCode": "us",
     "topDomain": "com",
     "marketPlaceId": "AF2M0KC94RCEA",
-    "language": "en-US"
+    "language": "en-US",
+    "withUsername": true
   },
   {
     "name": "pre-amazon - uk",
-    "loginDomain": "audible",
     "countryCode": "uk",
     "topDomain": "co.uk",
     "marketPlaceId": "A2I9A3Q2GNFNGQ",
-    "language": "en-GB"
+    "language": "en-GB",
+    "withUsername": true
   }
 ]

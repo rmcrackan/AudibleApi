@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Dinah.Core;
 
 namespace AudibleApi.Authorization
@@ -16,26 +17,46 @@ namespace AudibleApi.Authorization
 
         public AccessToken(string value, DateTime expires)
 		{
-			validate(value);
-
-			TokenValue = value;
-			Expires = expires;
-		}
-
-		private static void validate(string value)
-		{
-			if (value is null)
-				throw new ArgumentNullException(nameof(value));
-			if (string.IsNullOrWhiteSpace(value))
-				throw new ArgumentException(nameof(value));
-
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(value, nameof(value));
 			if (!value.StartsWith(REQUIRED_BEGINNING))
 				throw new ArgumentException("Improperly formatted access token", nameof(value));
+
+			TokenValue = value;
+
+			// Login returns current time. Expiration is actually 1 hour later. By setting this as current time, we force initial registration
+			Expires = expires;
 		}
 
 		public void Invalidate() => Expires = DateTime.MinValue;
 
-        protected override IEnumerable<object> GetEqualityComponents()
+		public static AccessToken Parse(Uri uri)
+			=> uri.IsAbsoluteUri
+			? ParseQuery(uri?.Query)
+			: Parse(uri?.OriginalString);
+
+		public static AccessToken Parse(string url) => ParseQuery(url?.Split('?').Last());
+
+		public static AccessToken ParseQuery(string urlQueryPortion)
+        {
+			if (string.IsNullOrWhiteSpace(urlQueryPortion))
+				return null;
+
+            // keys and values are already url-decoded
+            var parameters = System.Web.HttpUtility.ParseQueryString(urlQueryPortion);
+
+            var tokenKey = "openid.oa2.access_token";
+            if (!parameters.AllKeys.Contains(tokenKey))
+                return null;
+
+            var timeKey = "openid.pape.auth_time";
+            if (!parameters.AllKeys.Contains(timeKey))
+                return null;
+
+            var expires = parameters[timeKey];
+			return new AccessToken(parameters[tokenKey], DateTime.Parse(expires));
+        }
+
+		protected override IEnumerable<object> GetEqualityComponents()
         {
             yield return TokenValue;
             yield return Expires;

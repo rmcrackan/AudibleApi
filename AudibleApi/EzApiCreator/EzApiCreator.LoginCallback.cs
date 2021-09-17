@@ -7,48 +7,26 @@ using AudibleApi.Authorization;
 
 namespace AudibleApi
 {
-	/// <summary>
-	/// The Api class is backed by a complex set of interconnected tiny classes, each with a specific purpose. To avoid all of the complexity, use EzApiCreator. It will accept the minimum requirements and provide access to the api and will maintain auth info and keep it up to date in the file specified.
-	/// </summary>
-	public static class EzApiCreator
+	public static partial class EzApiCreator
 	{
-		/// <summary>
-		/// Create a new Audible Api object
-		/// </summary>
+		/// <summary>Create a new Audible Api object. If not already logged in, log in with API</summary>
 		/// <param name="locale">Audible region/locale to connect to</param>
 		/// <param name="identityFilePath">Load from and save to the file at this path</param>
 		/// <param name="loginCallback">Object with callback methods allowing for initial login</param>
 		/// <param name="jsonPath">Optional JSONPath for location of identity tokens inside identity file</param>
 		/// <returns>Object which enables calls to the Audible API</returns>
-		public static async Task<Api> GetApiAsync(Locale locale, string identityFilePath, string jsonPath = null, ILoginCallback loginCallback = null)
+		public static async Task<Api> GetApiAsync(Locale locale, string identityFilePath, ILoginCallback loginCallback, string jsonPath = null)
 		{
 			StackBlocker.ApiTestBlocker();
 
-			IdentityPersister identityPersister;
 			try
 			{
-				// will fail if no file entry
-				identityPersister = new IdentityPersister(identityFilePath, jsonPath);
-
-				// will fail if there's an invalid file entry. Eg: new account will have no cookies and will fail that validation step. this also means it has not yet logged in
-				var api = await createApiAsync(identityPersister.Identity);
-				return api;
+				return await GetApiAsync(locale, identityFilePath, jsonPath);
 			}
 			catch (Exception debugEx) // TODO: exceptions should not be used for control flow. fix this
 			{
-				Serilog.Log.Logger.Debug("GetApiAsync. {@DebugInfo}", new
-				{
-					localeName = locale?.Name ?? "[empty]",
-					//jsonPath,//this exposes unmasked account name
-					debugEx_Message = debugEx.Message,
-					debugEx_StackTrace = debugEx.StackTrace
-				});
-
 				var inMemoryIdentity = await loginAsync(locale, loginCallback);
-				identityPersister = new IdentityPersister(inMemoryIdentity, identityFilePath, jsonPath);
-
-				var api = await createApiAsync(identityPersister.Identity);
-				return api;
+				return await createApiAsync(inMemoryIdentity, identityFilePath, jsonPath);
 			}
 		}
 
@@ -123,13 +101,6 @@ namespace AudibleApi
 			using var localStream = new MemoryStream();
 			await contentStream.CopyToAsync(localStream);
 			return localStream.ToArray();
-		}
-
-		private static async Task<Api> createApiAsync(this IIdentity identity)
-		{
-			var identityMaintainer = await IdentityMaintainer.CreateAsync(identity);
-			var api = new Api(identityMaintainer);
-			return api;
 		}
 	}
 }

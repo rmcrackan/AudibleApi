@@ -44,7 +44,7 @@ namespace AudibleApi.Authentication
             LoginClient.DefaultRequestHeaders.Add("Accept-Language", Locale.Language);
             LoginClient.DefaultRequestHeaders.Add("Host", baseUri.Host);
             LoginClient.DefaultRequestHeaders.Add("Origin", baseUri.GetOrigin());
-            LoginClient.DefaultRequestHeaders.Add("User-Agent", Resources.UserAgent);
+            LoginClient.DefaultRequestHeaders.Add("User-Agent", Resources.USER_AGENT);
             LoginClient.CookieJar.Add(buildInitCookies());
         }
 
@@ -87,7 +87,7 @@ namespace AudibleApi.Authentication
 
             // post 1st visit: set OAUTH_URL header
             // this will be our referer for all login calls AFTER initial oauth get
-            LoginClient.DefaultRequestHeaders.Add("Referer", Locale.OAuthUrl());
+            LoginClient.DefaultRequestHeaders.Add("Referer", Locale.OAuthUrl(null));
 
             var page = new CredentialsPage(this, login1_body);
             return await page.SubmitAsync(email, password);
@@ -95,7 +95,7 @@ namespace AudibleApi.Authentication
 
         private async Task<string> getInitialLoginPage()
         {
-            var response = await LoginClient.GetAsync(Locale.OAuthUrl());
+            var response = await LoginClient.GetAsync(Locale.OAuthUrl(null));
             response.EnsureSuccessStatusCode();
 
             var login1_body = await response.Content.ReadAsStringAsync();
@@ -129,7 +129,7 @@ namespace AudibleApi.Authentication
             var frcStr = Convert.ToBase64String(frc).TrimEnd('=');
             var mapMdStr = Convert.ToBase64String(Encoding.UTF8.GetBytes(mapMd.ToString(Newtonsoft.Json.Formatting.None))).TrimEnd('=');
             var amznAppId = "MAPiOSLib/6.0/ToHideRetailLink";
-            var cookieDomain = $".{Locale.LoginDomain}.{Locale.TopDomain}";
+            var cookieDomain = $".{Locale.LoginDomain()}.{Locale.TopDomain}";
 
             var initCookies = new CookieCollection
             {

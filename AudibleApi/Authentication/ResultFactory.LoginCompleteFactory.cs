@@ -63,10 +63,8 @@ namespace AudibleApi.Authentication
                     return null;
 
                 var location = response.Headers.Location;
-                var query
-                    = location.IsAbsoluteUri ? location.Query
-                    : location.OriginalString.Contains('?') ? location.OriginalString.Split('?').Last()
-                    : throw new NotAuthenticatedException(
+                if (!location.IsAbsoluteUri && !location.OriginalString.Contains('?'))
+                    throw new NotAuthenticatedException(
                         response.RequestMessage?.RequestUri,
                         new JObject
                         {
@@ -77,19 +75,7 @@ namespace AudibleApi.Authentication
                         },
                         $"{nameof(LoginCompleteFactory)}.{nameof(getAccessToken)}: error parsing response location query");
 
-                var parameters = System.Web.HttpUtility.ParseQueryString(query);
-
-                var tokenKey = "openid.oa2.access_token";
-                if (!parameters.AllKeys.Contains(tokenKey))
-                    return null;
-
-                var timeKey = "openid.pape.auth_time";
-                if (!parameters.AllKeys.Contains(timeKey))
-                    return null;
-
-                var expires = parameters[timeKey];
-                var token = new AccessToken(parameters[tokenKey], DateTime.Parse(expires));
-                return token;
+                return AccessToken.Parse(location);
             }
         }
     }
