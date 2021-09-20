@@ -40,7 +40,13 @@ namespace AudibleApi
 
 			var choiceIn = new ChoiceIn(loginUrl);
 			var choiceOut = loginChoiceEager.Start(choiceIn);
-			
+
+			if (choiceOut is null)
+			{
+				// TODO: exceptions should not be used for control flow. fix this
+				throw new Exception("Login attempt cancelled by user");
+			}
+
 			return choiceOut.LoginMethod switch
 			{
 				LoginMethod.Api => await loginEmailPasswordAsync(locale, loginChoiceEager.LoginCallback, choiceOut.Username, choiceOut.Password),

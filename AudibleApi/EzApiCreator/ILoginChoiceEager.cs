@@ -27,7 +27,7 @@ namespace AudibleApi
 		public static ChoiceOut External(string responseUrl) => new(responseUrl);
 	}
 
-	/// <summary>If not already logged in, user selects whether to log in with API or an external browser</summary>
+	/// <summary>If not already logged in, user can log in with API or an external browser. External browser url is provided. Response can be external browser login or continuing with native api callbacks.</summary>
 	public interface ILoginChoiceEager
 	{
 		ChoiceOut Start(ChoiceIn choiceIn);
