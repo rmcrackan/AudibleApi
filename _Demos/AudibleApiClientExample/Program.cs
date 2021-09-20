@@ -83,9 +83,9 @@ namespace AudibleApiClientExample
 			}
 
 			var api = await EzApiCreator.GetApiAsync(
+				new LoginCallback(),
 				Localization.Get(locale),
 				identityFilePath,
-				new LoginCallback(),
 				jsonPath);
 
 			return new AudibleApiClient(api);

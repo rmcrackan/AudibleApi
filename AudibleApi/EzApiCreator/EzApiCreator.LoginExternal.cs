@@ -13,7 +13,7 @@ namespace AudibleApi
 		/// <param name="loginExternal">Object with callback method for allowing external login</param>
 		/// <param name="jsonPath">Optional JSONPath for location of identity tokens inside identity file</param>
 		/// <returns>Object which enables calls to the Audible API</returns>
-		public static async Task<Api> GetApiAsync(Locale locale, string identityFilePath, ILoginExternal loginExternal, string jsonPath = null)
+		public static async Task<Api> GetApiAsync(ILoginExternal loginExternal, Locale locale, string identityFilePath, string jsonPath = null)
 		{
 			StackBlocker.ApiTestBlocker();
 
@@ -30,6 +30,7 @@ namespace AudibleApi
 
 		private static Identity externalLogin(Locale locale, ILoginExternal loginExternal)
 		{
+			Dinah.Core.ArgumentValidator.EnsureNotNull(locale, nameof(locale));
 			Dinah.Core.ArgumentValidator.EnsureNotNull(loginExternal, nameof(loginExternal));
 
 			var externalLogin = new ExternalLogin(locale);

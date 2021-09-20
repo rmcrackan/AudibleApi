@@ -15,7 +15,7 @@ namespace AudibleApi
 		/// <param name="loginCallback">Object with callback methods allowing for initial login</param>
 		/// <param name="jsonPath">Optional JSONPath for location of identity tokens inside identity file</param>
 		/// <returns>Object which enables calls to the Audible API</returns>
-		public static async Task<Api> GetApiAsync(Locale locale, string identityFilePath, ILoginCallback loginCallback, string jsonPath = null)
+		public static async Task<Api> GetApiAsync(ILoginCallback loginCallback, Locale locale, string identityFilePath, string jsonPath = null)
 		{
 			StackBlocker.ApiTestBlocker();
 
@@ -37,9 +37,16 @@ namespace AudibleApi
 		// - The final LoginComplete result returns "Identity" -- in-memory authorization items
 		private static async Task<Identity> loginAsync(Locale locale, ILoginCallback responder)
 		{
+			Dinah.Core.ArgumentValidator.EnsureNotNull(locale, nameof(locale));
 			Dinah.Core.ArgumentValidator.EnsureNotNull(responder, nameof(responder));
+
 			var (email, password) = getUserLogin(responder);
 
+			return await loginEmailPasswordAsync(locale, responder, email, password);
+		}
+
+		private static async Task<Identity> loginEmailPasswordAsync(Locale locale, ILoginCallback responder, string email, string password)
+		{
 			var loginResult = await Authenticate.SubmitCredentialsAsync(locale, email, password);
 
 			while (true)

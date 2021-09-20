@@ -11,7 +11,7 @@ namespace AudibleApi
 		/// <param name="loginChoice">Object with callback method for allowing user to choose external or API login</param>
 		/// <param name="jsonPath">Optional JSONPath for location of identity tokens inside identity file</param>
 		/// <returns>Object which enables calls to the Audible API</returns>
-		public static async Task<Api> GetApiAsync(Locale locale, string identityFilePath, ILoginChoice loginChoice, string jsonPath = null)
+		public static async Task<Api> GetApiAsync(ILoginChoice loginChoice, Locale locale, string identityFilePath, string jsonPath = null)
 		{
 			StackBlocker.ApiTestBlocker();
 
@@ -26,8 +26,8 @@ namespace AudibleApi
 				var choice = loginChoice.GetLoginMethod();
 				return choice switch
 				{
-					LoginMethod.Api => await GetApiAsync(locale, identityFilePath, loginChoice.loginCallback, jsonPath),
-					LoginMethod.External => await GetApiAsync(locale, identityFilePath, loginChoice.loginExternal, jsonPath),
+					LoginMethod.Api => await GetApiAsync(loginChoice.LoginCallback, locale, identityFilePath, jsonPath),
+					LoginMethod.External => await GetApiAsync(loginChoice.LoginExternal, locale, identityFilePath, jsonPath),
 					_ => throw new Exception($"Unknown {nameof(LoginMethod)} value")
 				};
 			}
