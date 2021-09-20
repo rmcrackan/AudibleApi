@@ -32,8 +32,8 @@ namespace AudibleApi.Authorization
 	/// </summary>
 	public class Authorize : IAuthorize
 	{
-		private const string iosVersion = "12.3.1";
-		private const string appVersion = "3.7";
+		private const string iosVersion = "13.5.1";
+		private const string appVersion = "3.26.1";
 		private const string appName = "Audible";
 
 		private ISystemDateTime _systemDateTime { get; }
@@ -56,7 +56,6 @@ namespace AudibleApi.Authorization
 		public async Task<JObject> RegisterAsync(AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies)
 		{
 			ArgumentValidator.EnsureNotNull(accessToken, nameof(accessToken));
-			ArgumentValidator.EnsureNotNull(cookies, nameof(cookies));
 
 			try
 			{
@@ -77,9 +76,6 @@ namespace AudibleApi.Authorization
 		private static HttpRequestMessage buildRegisterRequest(Locale locale, AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies)
 		{
 			var jsonBody = buildRegisterBody(locale, accessToken, cookies);
-			var cookiesAggregated = cookies
-				.Select(kvp => $"{kvp.Key}={kvp.Value}")
-				.Aggregate((a, b) => $"{a}; {b}");
 
 			// post directly. no redirects
 			// https://stackoverflow.com/a/10679340
@@ -94,7 +90,14 @@ namespace AudibleApi.Authorization
 			request.Headers.Add("Accept", "application/json");
 			request.Headers.TryAddWithoutValidation("User-Agent", $"AmazonWebView/{appName}/{appVersion}/iOS/{iosVersion}/iPhone");
 			request.Headers.Add("Accept-Language", "en_US");
-			request.Headers.Add("Cookie", cookiesAggregated);
+
+			if (cookies is not null && cookies.Any())
+			{
+				var cookiesAggregated = cookies
+					.Select(kvp => $"{kvp.Key}={kvp.Value}")
+					.Aggregate((a, b) => $"{a}; {b}");
+				request.Headers.Add("Cookie", cookiesAggregated);
+			}
 
 			return request;
 		}
@@ -102,21 +105,30 @@ namespace AudibleApi.Authorization
 		// do not use Dictionary<string, string> for cookies b/c of duplicates
 		private static JObject buildRegisterBody(Locale locale, AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies)
 		{
+			// for alt. syntax, see CredentialsPage.GenerateMetadata()
+
 			// for dynamic, add nuget ref Microsoft.CSharp
 			// https://www.newtonsoft.com/json/help/html/CreateJsonDynamic.htm
 			dynamic bodyJson = new JObject();
-			bodyJson.requested_token_type = new JArray("bearer", "mac_dms", "website_cookies");
+			bodyJson.requested_token_type = new JArray("bearer", "mac_dms", "website_cookies", "store_authentication_cookie");
+
 			bodyJson.cookies = new JObject();
 			bodyJson.cookies.domain = locale.RegisterDomain();
-
-			var kvpSelect = cookies.Select(kvp =>
+			JArray jCookies;
+			if (cookies is null || !cookies.Any())
+				jCookies = new JArray();
+			else
 			{
-				dynamic obj = new JObject();
-				obj.Name = kvp.Key;
-				obj.Value = kvp.Value;
-				return obj;
-			});
-			bodyJson.cookies.website_cookies = new JArray(kvpSelect);
+				var kvpSelect = cookies.Select(kvp =>
+				{
+					dynamic obj = new JObject();
+					obj.Name = kvp.Key;
+					obj.Value = kvp.Value;
+					return obj;
+				});
+				jCookies = new JArray(kvpSelect);
+			}
+			bodyJson.cookies.website_cookies = jCookies;
 
 			bodyJson.registration_data = new JObject();
 			bodyJson.registration_data.domain = "Device";
@@ -127,8 +139,10 @@ namespace AudibleApi.Authorization
 			bodyJson.registration_data.os_version = iosVersion;
 			bodyJson.registration_data.device_model = "iPhone";
 			bodyJson.registration_data.app_name = appName;
+
 			bodyJson.auth_data = new JObject();
 			bodyJson.auth_data.access_token = accessToken.TokenValue;
+
 			bodyJson.requested_extensions = new JArray("device_info", "customer_info");
 
 			return bodyJson;
@@ -136,11 +150,7 @@ namespace AudibleApi.Authorization
 
 		public async Task<bool> DeregisterAsync(AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies)
 		{
-			if (accessToken is null)
-				throw new ArgumentNullException(nameof(accessToken));
-
-			if (cookies is null)
-				throw new ArgumentNullException(nameof(cookies));
+			ArgumentValidator.EnsureNotNull(accessToken, nameof(accessToken));
 
 			try
 			{
@@ -157,10 +167,6 @@ namespace AudibleApi.Authorization
 
 		private static HttpRequestMessage buildDeregisterRequest(Locale locale, AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies)
 		{
-			var cookiesAggregated = cookies
-				.Select(kvp => $"{kvp.Key}={kvp.Value}")
-				.Aggregate((a, b) => $"{a}; {b}");
-
 			var request = new HttpRequestMessage(HttpMethod.Post, "/auth/deregister");
 
 			request.AddContent(JObject.Parse("{ 'deregister_all_existing_accounts' : true }"));
@@ -171,8 +177,15 @@ namespace AudibleApi.Authorization
 			request.Headers.Add("Accept", "application/json");
 			request.Headers.TryAddWithoutValidation("User-Agent", $"AmazonWebView/{appName}/{appVersion}/iOS/{iosVersion}/iPhone");
 			request.Headers.Add("Accept-Language", "en_US");
-			request.Headers.Add("Cookie", cookiesAggregated);
 			request.Headers.Add("Authorization", $"Bearer {accessToken.TokenValue}");
+
+			if (cookies is not null && cookies.Any())
+			{
+				var cookiesAggregated = cookies
+					.Select(kvp => $"{kvp.Key}={kvp.Value}")
+					.Aggregate((a, b) => $"{a}; {b}");
+				request.Headers.Add("Cookie", cookiesAggregated);
+			}
 
 			return request;
 		}

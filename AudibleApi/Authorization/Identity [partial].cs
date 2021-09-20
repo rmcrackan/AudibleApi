@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
+using Dinah.Core;
 using Newtonsoft.Json;
 
 namespace AudibleApi.Authorization
@@ -45,53 +45,49 @@ namespace AudibleApi.Authorization
 		[JsonProperty]
 		public string AmazonAccountId { get; private set; }
 
+		[JsonProperty]
+		public string DeviceName { get; private set; }
+
+		[JsonProperty]
+		public string StoreAuthenticationCookie { get; private set; }
+
 		protected Identity() { }
 
 		public Identity(Locale locale)
 			: this(locale, AccessToken.Empty, new Dictionary<string, string>()) { }
 		public Identity(Locale locale, AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies)
 		{
-			if (locale is null)
-				throw new ArgumentNullException(nameof(locale));
-			if (accessToken is null)
-				throw new ArgumentNullException(nameof(accessToken));
-			if (cookies is null)
-				throw new ArgumentNullException(nameof(cookies));
+			ArgumentValidator.EnsureNotNull(locale, nameof(locale));
+			ArgumentValidator.EnsureNotNull(cookies, nameof(cookies));
+
+			ExistingAccessToken = ArgumentValidator.EnsureNotNull(accessToken, nameof(accessToken));
 
 			LocaleName = locale.Name;
-			ExistingAccessToken = accessToken;
 			_cookies = cookies.Select(kvp => new KVP<string, string> { Key = kvp.Key, Value = kvp.Value }).ToList();
 		}
 
 		public void Update(AccessToken accessToken)
 		{
-			if (accessToken is null)
-				throw new ArgumentNullException(nameof(accessToken));
-
-			ExistingAccessToken = accessToken;
-
+			ExistingAccessToken = ArgumentValidator.EnsureNotNull(accessToken, nameof(accessToken));
 			Updated?.Invoke(this, new EventArgs());
 		}
 
-		public void Update(PrivateKey privateKey, AdpToken adpToken, AccessToken accessToken, RefreshToken refreshToken, string deviceSN = null, string deviceType = null, string amazonAccountId = null)
+		public void Update(PrivateKey privateKey, AdpToken adpToken, AccessToken accessToken, RefreshToken refreshToken, IEnumerable<KeyValuePair<string, string>> cookies, string deviceSerialNumber = null, string deviceType = null, string amazonAccountId = null, string deviceName = null, string storeAuthenticationCookie = null)
 		{
-			if (privateKey is null)
-				throw new ArgumentNullException(nameof(privateKey));
-			if (adpToken is null)
-				throw new ArgumentNullException(nameof(adpToken));
-			if (accessToken is null)
-				throw new ArgumentNullException(nameof(accessToken));
-			if (refreshToken is null)
-				throw new ArgumentNullException(nameof(refreshToken));
+			PrivateKey = ArgumentValidator.EnsureNotNull(privateKey, nameof(privateKey));
+			AdpToken = ArgumentValidator.EnsureNotNull(adpToken, nameof(adpToken));
+			ExistingAccessToken = ArgumentValidator.EnsureNotNull(accessToken, nameof(accessToken));
+			RefreshToken = ArgumentValidator.EnsureNotNull(refreshToken, nameof(refreshToken));
 
-			PrivateKey = new PrivateKey(privateKey);
-			AdpToken = new AdpToken(adpToken);
-			ExistingAccessToken = accessToken;
-			RefreshToken = new RefreshToken(refreshToken);
+			// only overwrite if non-empty collection
+			if (cookies is not null && cookies.Any())
+				_cookies = cookies.Select(kvp => new KVP<string, string> { Key = kvp.Key, Value = kvp.Value }).ToList();
 
-			DeviceSerialNumber = deviceSN ?? string.Empty;
+			DeviceSerialNumber = deviceSerialNumber ?? string.Empty;
 			DeviceType = deviceType ?? string.Empty;
 			AmazonAccountId = amazonAccountId ?? string.Empty;
+			DeviceName = deviceName ?? string.Empty;
+			StoreAuthenticationCookie = storeAuthenticationCookie ?? string.Empty;
 
 			Updated?.Invoke(this, new EventArgs());
 

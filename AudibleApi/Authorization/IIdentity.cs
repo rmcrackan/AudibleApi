@@ -30,9 +30,13 @@ namespace AudibleApi.Authorization
 
         string AmazonAccountId { get; }
 
+        string DeviceName { get; }
+
+        string StoreAuthenticationCookie { get; }
+
         void Update(AccessToken accessToken);
 
-		void Update(PrivateKey privateKey, AdpToken adpToken, AccessToken accessToken, RefreshToken refreshToken, string deviceSN = null, string deviceType = null, string amazonAccountId = null);
+		void Update(PrivateKey privateKey, AdpToken adpToken, AccessToken accessToken, RefreshToken refreshToken, IEnumerable<KeyValuePair<string, string>> cookies, string deviceSerialNumber = null, string deviceType = null, string amazonAccountId = null, string deviceName = null, string storeAuthenticationCookie = null);
 
 		void Invalidate();
 	}
