@@ -118,20 +118,14 @@ namespace AudibleApi.Common
 		public string SeriesName => Title;
 		public string SeriesId => Asin;
 
-		// tested for
-		// 0.3,4.7,8.6 => 0.3f
-		// 0.6, 3.5 => 0.6f
-		// 5-8 => 5f
-		// 5. => 5f
-		// abc1.12.def3.4 => 1.12f
-		// X.5 => 5f // no leading 0
+		// unit tests in: PartialsTests.Series_Fields
 		private static Regex regex { get; } = new Regex(@"^\D*(?<index>\d+\.?\d*)", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
+		
+		/// <summary>Sequence is the original string. Index is the best guess at ordinal position.</summary>
 		public float Index
-			=> string.IsNullOrWhiteSpace(Sequence)
+			=> string.IsNullOrWhiteSpace(Sequence) || !regex.IsMatch(Sequence)
 			? 0
 			: float.Parse(regex.Match(Sequence).Groups["index"].ToString());
-
 		public override string ToString() => $"[{SeriesId}] {SeriesName}";
 	}
 }

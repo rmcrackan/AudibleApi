@@ -20,12 +20,13 @@ using TestAudibleApiCommon;
 
 namespace Authentic.ResultFactoryTests
 {
+    public class FakeLoginResult : LoginResult { public FakeLoginResult() : base(AuthenticateShared.GetAuthenticate(), "body") { } }
     public class ConcreteResultFactory : ResultFactory
     {
         public ConcreteResultFactory() : base(nameof(ConcreteResultFactory)) { }
 
 		protected override LoginResult _createResultAsync(Authenticate authenticate, HttpResponseMessage response, string body, Dictionary<string, string> oldInputs)
-            => throw new NotImplementedException();
+            => new FakeLoginResult();
 
         protected override bool _isMatchAsync(HttpResponseMessage response, string body)
             => response.Content.ReadAsStringAsync().GetAwaiter().GetResult() == "IsMatch";
@@ -75,10 +76,10 @@ namespace Authentic.ResultFactoryTests
         }
 
         [TestMethod]
-        public async Task valid_returns_null()
+        public async Task valid_returns_createResultAsync()
         {
             var result = await new ConcreteResultFactory().CreateResultAsync(AuthenticateShared.GetAuthenticate(), new HttpResponseMessage { Content = new StringContent("IsMatch") }, new Dictionary<string, string>());
-            result.Should().BeNull();
+            Assert.IsTrue(result is FakeLoginResult);
         }
     }
 }

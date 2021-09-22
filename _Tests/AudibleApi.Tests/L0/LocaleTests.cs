@@ -23,7 +23,6 @@ namespace LocaleTests
 	{
 		[TestMethod]
 		[DataRow(null, "cc", "td", "mp", "ll")]
-		[DataRow("nn", "cc", "td", "mp", "ll")]
 		[DataRow("nn", null, "td", "mp", "ll")]
 		[DataRow("nn", "cc", null, "mp", "ll")]
 		[DataRow("nn", "cc", "td", null, "ll")]
@@ -34,8 +33,6 @@ namespace LocaleTests
 		[TestMethod]
 		[DataRow("", "cc", "td", "mp", "ll")]
 		[DataRow("   ", "cc", "td", "mp", "ll")]
-		[DataRow("nn", "cc", "td", "mp", "ll")]
-		[DataRow("nn", "cc", "td", "mp", "ll")]
 		[DataRow("nn", "", "td", "mp", "ll")]
 		[DataRow("nn", "   ", "td", "mp", "ll")]
 		[DataRow("nn", "cc", "", "mp", "ll")]

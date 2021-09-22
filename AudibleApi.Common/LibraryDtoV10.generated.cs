@@ -633,6 +633,7 @@ namespace AudibleApi.Common
 		[JsonProperty("asin")]
 		public string Asin { get; set; }
 
+		/// <summary>Sequence is the original string. Index is the best guess at ordinal position.</summary>
 		[JsonProperty("sequence")]
 		public string Sequence { get; set; }
 
