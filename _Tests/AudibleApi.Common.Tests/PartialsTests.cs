@@ -470,50 +470,6 @@ namespace PartialsTests
 	}
 
 	[TestClass]
-	public class Series_Fields
-	{
-		[TestMethod]
-		public void SeriesName_null() => new Series { Title = null }.SeriesName.Should().BeNull();
-		[TestMethod]
-		public void SeriesName_populated() => new Series { Title = "t" }.SeriesName.Should().Be("t");
-
-		[TestMethod]
-		public void SeriesId_null() => new Series { Asin = null }.SeriesId.Should().BeNull();
-		[TestMethod]
-		public void SeriesId_populated() => new Series { Asin = "a" }.SeriesId.Should().Be("a");
-
-		[TestMethod]
-		public void Index_Sequence_null() => new Series { Sequence = null }.Index.Should().Be(0);
-		[TestMethod]
-		public void Index_Sequence_empty() => new Series { Sequence = "" }.Index.Should().Be(0);
-		[TestMethod]
-		public void Index_Sequence_whitespace() => new Series { Sequence = "   " }.Index.Should().Be(0);
-		[TestMethod]
-		public void Index_Sequence_0() => new Series { Sequence = "0" }.Index.Should().Be(0);
-		[TestMethod]
-		public void Index_Sequence_2() => new Series { Sequence = "2" }.Index.Should().Be(2);
-
-		[TestMethod]
-		public void Index_Sequence_letters_only() => new Series { Sequence = "XYZ" }.Index.Should().Be(0);
-		[TestMethod]
-		public void Index_Sequence_comma_separated_yields_first() => new Series { Sequence = "0.3,4.7,8.6" }.Index.Should().Be(0.3f);
-		[TestMethod]
-		public void Index_Sequence_comma_space_separated_yields_first() => new Series { Sequence = "0.6, 3.5" }.Index.Should().Be(0.6f);
-		[TestMethod]
-		public void Index_Sequence_range_yields_first() => new Series { Sequence = "5-8" }.Index.Should().Be(5f);
-		[TestMethod]
-		public void Index_Sequence_trailing_decimal() => new Series { Sequence = "5." }.Index.Should().Be(5f);
-		[TestMethod]
-		public void Index_Sequence_correct_decimal() => new Series { Sequence = "0.5" }.Index.Should().Be(0.5f);
-		[TestMethod]
-		public void Index_Sequence_surrounded_by_strings() => new Series { Sequence = "zzz1.12.zzz3.4" }.Index.Should().Be( 1.12f);
-		[TestMethod]
-		public void Index_Sequence_no_leading_0_init() => new Series { Sequence = ".5" }.Index.Should().Be(5f);
-		[TestMethod]
-		public void Index_Sequence_no_leading_0() => new Series { Sequence = "X.5" }.Index.Should().Be(5f);
-	}
-
-	[TestClass]
 	public class Series_ToString
 	{
 		[TestMethod]

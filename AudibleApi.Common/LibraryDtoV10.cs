@@ -20,7 +20,6 @@
 
 using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace AudibleApi.Common
 {
@@ -118,14 +117,9 @@ namespace AudibleApi.Common
 		public string SeriesName => Title;
 		public string SeriesId => Asin;
 
-		// unit tests in: PartialsTests.Series_Fields
-		private static Regex regex { get; } = new Regex(@"^\D*(?<index>\d+\.?\d*)", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-		
 		/// <summary>Sequence is the original string. Index is the best guess at ordinal position.</summary>
-		public float Index
-			=> string.IsNullOrWhiteSpace(Sequence) || !regex.IsMatch(Sequence)
-			? 0
-			: float.Parse(regex.Match(Sequence).Groups["index"].ToString());
+		public float Index => Dinah.Core.StringLib.ExtractFirstNumber(Sequence);
+
 		public override string ToString() => $"[{SeriesId}] {SeriesName}";
 	}
 }
