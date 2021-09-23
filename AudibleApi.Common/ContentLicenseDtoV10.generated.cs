@@ -11,6 +11,13 @@ namespace AudibleApi.Common
     using System;
     using System.Linq;
     using Newtonsoft.Json;
+	using Newtonsoft.Json.Converters;
+
+	public enum DrmType
+	{
+        Adrm,
+        Mpeg
+	}
 
     public partial class ContentLicenseDtoV10
     {
@@ -36,7 +43,8 @@ namespace AudibleApi.Common
         public ContentMetadata ContentMetadata { get; set; }
 
         [JsonProperty("drm_type")]
-        public string DrmType { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public DrmType DrmType { get; set; }
 
         [JsonProperty("license_id")]
         public Guid LicenseId { get; set; }
