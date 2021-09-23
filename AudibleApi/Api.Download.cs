@@ -39,7 +39,7 @@ namespace AudibleApi
             var body = new JObject
             {
                 { "consumption_type", "Download" },
-                { "drm_type", "Adrm" },
+                { "supported_drm_types", new JArray{ "Adrm", "Mpeg" } },
                 { "quality", quality.ToString() },
                 { "response_groups", "last_position_heard,pdf_url,content_reference,chapter_info"}
             };
