@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AudibleApi.Common" Version="1.2.3.1" />
+    <PackageReference Include="AudibleApi.Common" Version="1.3.0.1" />
     <PackageReference Include="Jint" Version="2.11.58" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>

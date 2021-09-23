@@ -13,43 +13,6 @@ namespace AudibleApi.Common
 		public bool IsEpisodes
 			=> Relationships?.Any(r => (r.RelationshipToProduct == RelationshipToProduct.Child || r.RelationshipToProduct == RelationshipToProduct.Parent) && r.RelationshipType == RelationshipType.Episode)
 			?? false;
-		/// <summary>
-		/// True if this title is an 'Audible Plus' check-out. False if it's owned by the library. More details in comments
-		/// </summary>
-		#region determining Audible Plus check outs
-		// 2020-08-27:
-		// tl;dr
-		//   usage of codenames (US Minerva) and weird abbrev.s (AYCL, ayce) suggest these are temporary names. expect them to change.
-		//   benefit_id == 'AYCL' && @.is_ayce : don't seem to be used any other way, so just check for these
-		//
-		// long version:
-		//
-		// item plan with plan_name US Minerva are available in Audible Plus. This is true whether or not it's owned by the account. ie JsonPath:
-		//   $.items[?(@.plans[?(@.plan_name == 'US Minerva')])]
-		//   'item' {
-		//     'plans' [
-		//       {
-		//         'plan_name': 'US Minerva'
-		//
-		// if this item is a checkout (ie: not owned by the account), this will also be true:
-		//   $.items[?(@.benefit_id == 'AYCL' && @.is_ayce == true)]
-		//   'item' {
-		//     'benefit_id': 'AYCL',
-		//     'is_ayce': true,
-		//     'plans' [
-		//       {
-		//         'plan_name': 'US Minerva'
-		//
-		// if this item is owned by the account (ie: not a checkout), this will also be true: 
-		//   $.items[?(@.benefit_id == null && @.is_ayce == null)]
-		//   'item' {
-		//     'benefit_id': null,
-		//     'is_ayce': null,
-		//     'plans' [
-		//       {
-		//         'plan_name': 'US Minerva'
-		#endregion
-		public bool IsAudiblePlus => BenefitId != "AYCL" || !IsAyce.HasValue || !IsAyce.Value;
 		public string PictureId => ProductImages?.PictureId;
 		public DateTime DateAdded => PurchaseDate.UtcDateTime;
 
