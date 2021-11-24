@@ -1,15 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <Version>2.3.6.1</Version>
+    <TargetFramework>net6.0</TargetFramework>
+    <Version>2.4.0.1</Version>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>
       $(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb
     </AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AudibleApi.Common" Version="2.1.0.1" />
+    <PackageReference Include="AudibleApi.Common" Version="2.2.0.2" />
     <PackageReference Include="Jint" Version="2.11.58" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
