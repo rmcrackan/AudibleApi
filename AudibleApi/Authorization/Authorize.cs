@@ -41,7 +41,7 @@ namespace AudibleApi.Authorization
 
 		private IHttpClientSharer _sharer { get; }
 		private IHttpClientActions _client
-			=> _sharer.GetSharedHttpClient(_locale.AmazonApiUri());
+			=> _sharer.GetSharedHttpClient(_locale.AudibleApiUri());
 
 		public Authorize(Locale locale) : this(locale, new HttpClientSharer(), new SystemDateTime())
 			=> StackBlocker.ApiTestBlocker();
@@ -82,11 +82,11 @@ namespace AudibleApi.Authorization
 			var request = new HttpRequestMessage(HttpMethod.Post, "/auth/register");
 
 			request.AddContent(jsonBody);
-			request.Headers.Add("Host", locale.AmazonApiUri().Host);
+			request.Headers.Add("Host", locale.AudibleApiUri().Host);
 			// https://stackoverflow.com/a/10679340
 			request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 			request.Headers.Add("Accept-Charset", "utf-8");
-			request.Headers.Add("x-amzn-identity-auth-domain", locale.AmazonApiUri().Host);
+			request.Headers.Add("x-amzn-identity-auth-domain", locale.AudibleApiUri().Host);
 			request.Headers.Add("Accept", "application/json");
 			request.Headers.TryAddWithoutValidation("User-Agent", $"AmazonWebView/{appName}/{appVersion}/iOS/{iosVersion}/iPhone");
 			request.Headers.Add("Accept-Language", "en_US");
@@ -170,10 +170,10 @@ namespace AudibleApi.Authorization
 			var request = new HttpRequestMessage(HttpMethod.Post, "/auth/deregister");
 
 			request.AddContent(JObject.Parse("{ 'deregister_all_existing_accounts' : true }"));
-			request.Headers.Add("Host", locale.AmazonApiUri().Host);
+			request.Headers.Add("Host", locale.AudibleApiUri().Host);
 			request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 			request.Headers.Add("Accept-Charset", "utf-8");
-			request.Headers.Add("x-amzn-identity-auth-domain", locale.AmazonApiUri().Host);
+			request.Headers.Add("x-amzn-identity-auth-domain", locale.AudibleApiUri().Host);
 			request.Headers.Add("Accept", "application/json");
 			request.Headers.TryAddWithoutValidation("User-Agent", $"AmazonWebView/{appName}/{appVersion}/iOS/{iosVersion}/iPhone");
 			request.Headers.Add("Accept-Language", "en_US");
@@ -212,7 +212,7 @@ namespace AudibleApi.Authorization
 				["source_token_type"] = "refresh_token"
 			};
 			var request = new HttpRequestMessage(HttpMethod.Post, "/auth/token");
-			request.Headers.Add("x-amzn-identity-auth-domain", _locale.AmazonApiUri().Host);
+			request.Headers.Add("x-amzn-identity-auth-domain", _locale.AudibleApiUri().Host);
 			request.AddContent(body);
 
 			var response = await _client.SendAsync(request);

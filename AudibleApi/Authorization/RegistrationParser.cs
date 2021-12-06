@@ -23,7 +23,7 @@ namespace AudibleApi.Authorization
 			var expiresDateTime = systemDateTime.UtcNow.AddSeconds(secondsUntilExpires);
 
 			var cookies = tokens["website_cookies"]
-				.Select(cookie => new KeyValuePair<string, string>(
+				?.Select(cookie => new KeyValuePair<string, string>(
 					cookie["Name"].ToString(),
 					cookie["Value"].ToString().Replace("\"", "")))
 				.ToList();
