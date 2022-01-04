@@ -46,7 +46,7 @@ namespace AudibleApi.Authentication
 			var response = await makeRequestAsync(
 				authenticate,
 				HttpMethod.Post,
-				new Uri(authenticate.Locale.AmazonLoginUri(), url),
+				new Uri(authenticate.Locale.LoginUri(), url),
 				new FormUrlEncodedContent(inputs));
 
 			return await getResultsPageAsync(authenticate, inputs, response);
@@ -112,7 +112,7 @@ namespace AudibleApi.Authentication
 			{
 				try
 				{
-					Serilog.Log.Logger.Debug("Cookies before request. {@DebugInfo}", authenticate.LoginClient.CookieJar.Debug_GetCookies(authenticate.Locale.AmazonLoginUri()));
+					Serilog.Log.Logger.Debug("Cookies before request. {@DebugInfo}", authenticate.LoginClient.CookieJar.Debug_GetCookies(authenticate.Locale.LoginUri()));
 				}
 				catch (Exception ex)
 				{
@@ -148,7 +148,7 @@ namespace AudibleApi.Authentication
 			{
 				try
 				{
-					Serilog.Log.Logger.Debug("Cookies after request. {@DebugInfo}", authenticate.LoginClient.CookieJar.Debug_GetCookies(authenticate.Locale.AmazonLoginUri()));
+					Serilog.Log.Logger.Debug("Cookies after request. {@DebugInfo}", authenticate.LoginClient.CookieJar.Debug_GetCookies(authenticate.Locale.LoginUri()));
 				}
 				catch (Exception ex)
 				{

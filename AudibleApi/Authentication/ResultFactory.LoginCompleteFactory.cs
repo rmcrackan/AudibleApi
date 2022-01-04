@@ -24,7 +24,7 @@ namespace AudibleApi.Authentication
             protected override LoginResult _createResultAsync(Authenticate authenticate, HttpResponseMessage response, string body, Dictionary<string, string> oldInputs)
             {
 				var cookies = authenticate.LoginClient.CookieJar
-					.EnumerateCookies(authenticate.Locale.AmazonLoginUri())
+					.EnumerateCookies(authenticate.Locale.LoginUri())
 					?.Select(c => new KeyValuePair<string, string>(c.Name, c.Value))
 					.ToList();
 

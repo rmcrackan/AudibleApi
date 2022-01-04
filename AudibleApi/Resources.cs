@@ -25,14 +25,17 @@ namespace AudibleApi
 		private static string _amazonApiUrl(this Locale locale) => $"https://api.amazon.{locale.TopDomain}";
 		public static Uri AmazonApiUri(this Locale locale) => new Uri(locale._amazonApiUrl());
 
-		private static string _amazonLoginUrl(this Locale locale) => $"https://www.{locale.LoginDomain()}.{locale.TopDomain}";
-		public static Uri AmazonLoginUri(this Locale locale) => new Uri(locale._amazonLoginUrl());
+		private static string _loginUrl(this Locale locale) => $"https://www.{locale.LoginDomain()}.{locale.TopDomain}";
+		public static Uri LoginUri(this Locale locale) => new Uri(locale._loginUrl());
 
-		public static string OAuthUrl(this Locale locale) => locale._amazonLoginUrl() + "/ap/signin?" + locale.buildOauth();
+		private static string _registrationUrl(this Locale locale) => $"https://api.{locale.LoginDomain()}.{locale.TopDomain}";
+		public static Uri RegistrationUri(this Locale locale) => new Uri(locale._registrationUrl());
+
+		public static string OAuthUrl(this Locale locale) => locale._loginUrl() + "/ap/signin?" + locale.buildOauth();
 		private static string buildOauth(this Locale locale)
 		{
 			// this helps dramatically with debugging
-			var return_to = $"{locale.AmazonLoginUri().GetOrigin()}/ap/maplanding";
+			var return_to = $"{locale.LoginUri().GetOrigin()}/ap/maplanding";
 			var assoc_handle = locale.WithUsername ? $"amzn_audible_ios_lap_{locale.CountryCode}" : $"amzn_audible_ios_{locale.CountryCode}";
 			var page_id = locale.WithUsername ? "amzn_audible_ios_privatepool" : "amzn_audible_ios";
 

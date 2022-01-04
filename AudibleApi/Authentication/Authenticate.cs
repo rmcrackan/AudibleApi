@@ -34,7 +34,7 @@ namespace AudibleApi.Authentication
         }
 		private void initClientState()
 		{
-            var baseUri = Locale.AmazonLoginUri();
+            var baseUri = Locale.LoginUri();
 
             LoginClient.Timeout = new TimeSpan(0, 0, 30);
 			LoginClient.BaseAddress = baseUri;
@@ -66,9 +66,9 @@ namespace AudibleApi.Authentication
             var iterations = 0;
 
             // reload 'get' until session token is in cookies
-            while (!LoginClient.CookieJar.EnumerateCookies(Locale.AmazonLoginUri()).Any(c => c.Name.ToLower() == "session-token"))
+            while (!LoginClient.CookieJar.EnumerateCookies(Locale.LoginUri()).Any(c => c.Name.ToLower() == "session-token"))
             {
-                await LoginClient.GetAsync(Locale.AmazonLoginUri());
+                await LoginClient.GetAsync(Locale.LoginUri());
 
                 iterations++;
 
