@@ -57,7 +57,7 @@ namespace AudibleApi
             catch (ApiErrorException ex)
             {
                 //Assume this exception will not contain PII.
-                ex.LogException(Serilog.Log.Logger.Error);
+                Serilog.Log.Logger.Error(ex, "Error getting download license");
                 throw;
             }
             catch (Exception ex)
@@ -67,8 +67,7 @@ namespace AudibleApi
                     body,
                     $"Error requesting license for asin: [{asin}]",
                     ex);
-
-                apiExp.LogException(Serilog.Log.Logger.Error);
+                Serilog.Log.Logger.Error(apiExp, "Error requesting download license");
                 throw apiExp;
             }
 
@@ -79,8 +78,7 @@ namespace AudibleApi
                     //Assume this response does not contain PII.
                     new JObject { { "http_response_code", response.StatusCode.ToString() }, { "response", await response.Content.ReadAsStringAsync() } },
                     $"License response not \"OK\" for asin: [{asin}]");
-
-                ex.LogException(Serilog.Log.Logger.Error);
+                Serilog.Log.Logger.Error(ex, "Download response does not contain a valid status code");
                 throw ex;
             }
 
@@ -98,8 +96,7 @@ namespace AudibleApi
                     responseJobj, //Even if the object doesn't parse, it may contain PII.
                     $"License response could not be parsed for asin: [{asin}]",
                     ex);
-
-                apiExp.LogException(Serilog.Log.Logger.Verbose);
+                Serilog.Log.Logger.Verbose(apiExp, "License response could not be parsed");
                 throw apiExp;
             }
 
@@ -109,8 +106,7 @@ namespace AudibleApi
                     response.Headers.Location,
                     new JObject { { "message", contentLicenseDtoV10.Message } }, //Assume this message does not contain PII.
                     $"License response returned error for asin: [{asin}]");
-
-                ex.LogException(Serilog.Log.Logger.Error);
+                Serilog.Log.Logger.Error(ex, "License response returned error");
                 throw ex;
             }
 
@@ -120,8 +116,7 @@ namespace AudibleApi
                     response.Headers.Location,
                     responseJobj, //This error shouldn't happen, so log the entire response which contains PII.
                     $"License response does not contain a valid status code for asin: [{asin}]");
-
-                ex.LogException(Serilog.Log.Logger.Verbose);
+                Serilog.Log.Logger.Verbose(ex, "License response does not contain a valid status code");
                 throw ex;
             }
 
@@ -132,8 +127,7 @@ namespace AudibleApi
                     //Denial reasons may contain PII.
                     new JObject { { "license_denial_reasons", JArray.FromObject(contentLicenseDtoV10.ContentLicense.LicenseDenialReasons) } },
                     $"Content License denied for asin: [{asin}]");
-
-                ex.LogException(Serilog.Log.Logger.Verbose);
+                Serilog.Log.Logger.Verbose(ex, "Content License denied");
                 throw ex;
             }
 
@@ -143,8 +137,7 @@ namespace AudibleApi
                     response.Headers.Location,
                     responseJobj, //This error shouldn't happen, so log the entire response which contains PII.
                     $"Unrecognized status code \"{contentLicenseDtoV10.ContentLicense.StatusCode}\" for asin: [{asin}]");
-
-                ex.LogException(Serilog.Log.Logger.Verbose);
+                Serilog.Log.Logger.Verbose(ex, "Unrecognized status code");
                 throw ex;
             }
 

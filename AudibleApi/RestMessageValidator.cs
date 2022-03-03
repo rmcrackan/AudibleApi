@@ -13,8 +13,8 @@ namespace AudibleApi
 
             // Audible API returned content strings SHOULD always be json but there could be exceptions I'm not aware of.
             // Errors are always returned as json.
-            // This method is not intended to be json validation. only finding out just enough to see if it's amazon's json error message. then throwing strong ceptions where needed
-            if (!message.Trim().StartsWith("{"))
+            // This method is not intended to be json validation. only finding out just enough to see if it's amazon's json error message. then throwing strong exceptions where needed
+            if (!message.Trim().StartsWith("{") && !message.Trim().StartsWith("["))
                 return;
 
             var jObject = JObject.Parse(message);

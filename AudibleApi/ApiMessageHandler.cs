@@ -67,7 +67,7 @@ namespace AudibleApi
 
 			// possible deadlock if called from a UI thread?
 			var content = response
-                .Content.ReadAsStringAsync()
+                .Content.ReadAsStringAsync(cancellationToken)
                 .Result;
 
             RestMessageValidator.ThrowStrongExceptionsIfInvalid(content, response.RequestMessage.RequestUri);

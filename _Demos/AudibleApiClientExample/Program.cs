@@ -44,7 +44,7 @@ namespace AudibleApiClientExample
 			{
 				Console.WriteLine("ERROR:");
 				Console.WriteLine(aex.Message);
-				Console.WriteLine(aex.JsonMessage.ToString());
+				Console.WriteLine(aex.JsonMessage);
 				Console.WriteLine(aex.RequestUri.ToString());
 			}
 			catch (Exception ex)

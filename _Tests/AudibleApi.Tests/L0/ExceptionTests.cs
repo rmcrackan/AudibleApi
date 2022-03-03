@@ -23,11 +23,12 @@ namespace ExceptionTests
         public void instantiate()
         {
             var uri = new Uri("http://test.com");
-            var jObj = JObject.Parse("{\"a\":1}");
+            var jObjString = "{\"a\":1}";
+            var jObj = JObject.Parse(jObjString);
             var exception = new FakeAbstractException(uri, jObj);
 
             Assert.AreEqual(exception.RequestUri, uri);
-            Assert.AreEqual(exception.JsonMessage, jObj);
+            Assert.AreEqual(exception.JsonMessage, jObjString);
             Assert.AreEqual(exception.Message, $"Exception of type '{typeof(FakeAbstractException).FullName}' was thrown.");
             Assert.AreEqual(exception.InnerException, null);
         }
@@ -39,12 +40,13 @@ namespace ExceptionTests
         public void instantiate()
         {
             var uri = new Uri("http://test.com");
-            var jObj = JObject.Parse("{\"a\":1}");
+            var jObjString = "{\"a\":1}";
+            var jObj = JObject.Parse(jObjString);
             var message = "my message";
             var exception = new FakeAbstractException(uri, jObj, message);
 
             Assert.AreEqual(exception.RequestUri, uri);
-            Assert.AreEqual(exception.JsonMessage, jObj);
+            Assert.AreEqual(exception.JsonMessage, jObjString);
             Assert.AreEqual(exception.Message, message);
             Assert.AreEqual(exception.InnerException, null);
         }
@@ -56,13 +58,14 @@ namespace ExceptionTests
         public void instantiate()
         {
             var uri = new Uri("http://test.com");
-            var jObj = JObject.Parse("{\"a\":1}");
+            var jObjString = "{\"a\":1}";
+            var jObj = JObject.Parse(jObjString);
             var message = "my message";
             var innerException = new Exception("foo");
             var exception = new FakeAbstractException(uri, jObj, message, innerException);
 
             Assert.AreEqual(exception.RequestUri, uri);
-            Assert.AreEqual(exception.JsonMessage, jObj);
+            Assert.AreEqual(exception.JsonMessage, jObjString);
             Assert.AreEqual(exception.Message, message);
             Assert.AreEqual(exception.InnerException, innerException);
         }
