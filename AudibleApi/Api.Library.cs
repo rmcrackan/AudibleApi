@@ -300,21 +300,48 @@ namespace AudibleApi
 		public async Task<List<Item>> GetAllLibraryItemsAsync() => await GetAllLibraryItemsAsync(LibraryOptions.ResponseGroupOptions.ALL_OPTIONS);
 		public async Task<List<Item>> GetAllLibraryItemsAsync(LibraryOptions.ResponseGroupOptions responseGroups)
 		{
+			var libraryOptions = new LibraryOptions
+			{
+				PurchasedAfter = new DateTime(2000, 1, 1),
+				ResponseGroups = responseGroups
+			};
+
+			try
+			{
+				// max 1000 however with higher numbers it stops returning 'provided_review' and 'reviews' groups.
+				// Sometimes this threshold is as high as 900, sometimes as low as 400.
+				// I've never had problems at 300. Another user had nearly constant problems at 300.
+				libraryOptions.NumberOfResultPerPage = 250;
+				return await getAllLibraryItemsAsync(libraryOptions);
+			}
+			catch (Exception ex) when (ex is TaskCanceledException || ex is TimeoutException)
+			{
+				// if it times out with 250, try 50. This takes about 5 seconds longer for a library of 1,100
+				//
+				// For each batch size, I ran 3 tests. Results in milliseconds
+				//   1000    19389 , 17760 , 19256
+				//    500    19099 , 19905 , 18553
+				//    250    20288 , 19163 , 19605
+				//    100    22156 , 22058 , 22438
+				//     50    25017 , 24292 , 24491
+				//     25    28627 , 30006 , 31201
+				//     10    45006 , 46717 , 44924
+				libraryOptions.NumberOfResultPerPage = 50;
+				return await getAllLibraryItemsAsync(libraryOptions);
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
+		public async Task<List<Item>> getAllLibraryItemsAsync(LibraryOptions libraryOptions)
+		{
 			var allItems = new List<Item>();
 
 			for (var i = 1; ; i++)
 			{
-				var page = await GetLibraryAsync(new LibraryOptions
-				{
-					// max 1000 however with higher numbers it stops returning 'provided_review' and 'reviews' groups.
-					// Sometimes this threshold is as high as 900, sometimes as low as 400.
-					// I've never had problems at 300. Another user had nearly constant problems at 300.
-					// I can't find the pattern.
-					NumberOfResultPerPage = 250,
-					PageNumber = i,
-					PurchasedAfter = new DateTime(2000, 1, 1),
-					ResponseGroups = responseGroups
-				});
+				libraryOptions.PageNumber = i;
+				var page = await GetLibraryAsync(libraryOptions);
 
 				var pageStr = page.ToString();
 
