@@ -53,7 +53,9 @@ namespace LibraryOptionsTests
 		public void out_of_range_throws()
 		{
 			var libraryOptions = new LibraryOptions();
+			Assert.ThrowsException<ArgumentException>(() => libraryOptions.PageNumber = -1);
 			Assert.ThrowsException<ArgumentException>(() => libraryOptions.PageNumber = 0);
+			Assert.ThrowsException<ArgumentException>(() => libraryOptions.PageNumber = 41);
 		}
 
 		[TestMethod]
@@ -67,8 +69,8 @@ namespace LibraryOptionsTests
 			libraryOptions.PageNumber = 1;
 			libraryOptions.PageNumber.Should().Be(1);
 
-			libraryOptions.PageNumber = 1000;
-			libraryOptions.PageNumber.Should().Be(1000);
+			libraryOptions.PageNumber = 40;
+			libraryOptions.PageNumber.Should().Be(40);
 		}
 	}
 

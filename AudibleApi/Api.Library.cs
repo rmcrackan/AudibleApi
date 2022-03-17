@@ -66,41 +66,30 @@ namespace AudibleApi
 	}
 	public class LibraryOptions
 	{
+		public const int NUMBER_OF_RESULTS_PER_PAGE_MIN = 1;
+		public const int NUMBER_OF_RESULTS_PER_PAGE_MAX = 1000;
+
+		public const int PAGE_NUMBER_MIN = 1;
+		public const int PAGE_NUMBER_MAX = 40;
+
 		private int? _numResults;
 		public int? NumberOfResultPerPage
 		{
 			get => _numResults;
-			set
-			{
-				if (!value.HasValue)
-				{
-					_numResults = null;
-					return;
-				}
-
-				if (value > 1000 || value < 1)
-					throw new ArgumentException($"{nameof(NumberOfResultPerPage)} must be between 1-1000");
-				_numResults = value;
-			}
+            set => _numResults
+				= value is null
+				? null
+				: ArgumentValidator.EnsureBetweenInclusive(value.Value, nameof(value), NUMBER_OF_RESULTS_PER_PAGE_MIN, NUMBER_OF_RESULTS_PER_PAGE_MAX);
 		}
 
 		private int? _page;
 		public int? PageNumber
 		{
 			get => _page;
-			set
-			{
-				if (!value.HasValue)
-				{
-					_page = null;
-					return;
-				}
-
-				if (value < 1)
-					throw new ArgumentException($"{nameof(PageNumber)} must be 1 or greater");
-
-				_page = value;
-			}
+			set => _page
+				= value is null
+				? null
+				: ArgumentValidator.EnsureBetweenInclusive(value.Value, nameof(value), PAGE_NUMBER_MIN, PAGE_NUMBER_MAX);
 		}
 
 		public DateTime? PurchasedAfter { get; set; }
@@ -338,7 +327,7 @@ namespace AudibleApi
 		{
 			var allItems = new List<Item>();
 
-			for (var i = 1; ; i++)
+			for (var i = LibraryOptions.PAGE_NUMBER_MIN; i <= LibraryOptions.PAGE_NUMBER_MAX; i++)
 			{
 				libraryOptions.PageNumber = i;
 				var page = await GetLibraryAsync(libraryOptions);
