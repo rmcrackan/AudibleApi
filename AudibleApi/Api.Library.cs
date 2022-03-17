@@ -69,9 +69,6 @@ namespace AudibleApi
 		public const int NUMBER_OF_RESULTS_PER_PAGE_MIN = 1;
 		public const int NUMBER_OF_RESULTS_PER_PAGE_MAX = 1000;
 
-		public const int PAGE_NUMBER_MIN = 1;
-		public const int PAGE_NUMBER_MAX = 40;
-
 		private int? _numResults;
 		public int? NumberOfResultPerPage
 		{
@@ -89,7 +86,7 @@ namespace AudibleApi
 			set => _page
 				= value is null
 				? null
-				: ArgumentValidator.EnsureBetweenInclusive(value.Value, nameof(value), PAGE_NUMBER_MIN, PAGE_NUMBER_MAX);
+				: ArgumentValidator.EnsureGreaterThan(value.Value, nameof(value), 0);
 		}
 
 		public DateTime? PurchasedAfter { get; set; }
@@ -327,9 +324,16 @@ namespace AudibleApi
 		{
 			var allItems = new List<Item>();
 
-			for (var i = LibraryOptions.PAGE_NUMBER_MIN; i <= LibraryOptions.PAGE_NUMBER_MAX; i++)
+			for (var pageNumber = 1; ; pageNumber++)
 			{
-				libraryOptions.PageNumber = i;
+				// if attempting to paginate more than 10,000 titles : {"error_code":null,"message":"Implied library size is unsupported"}"
+				if (pageNumber * libraryOptions.NumberOfResultPerPage > 10000)
+				{
+					Serilog.Log.Logger.Information($"Maximum reached. Cannot retrieve more than 10,000 titles");
+					break;
+				}
+
+				libraryOptions.PageNumber = pageNumber;
 				var page = await GetLibraryAsync(libraryOptions);
 
 				var pageStr = page.ToString();
@@ -349,7 +353,7 @@ namespace AudibleApi
 				if (!libResult.Items.Any())
 					break;
 
-				Serilog.Log.Logger.Information($"Page {i}: {libResult.Items.Length} results");
+				Serilog.Log.Logger.Information($"Page {pageNumber}: {libResult.Items.Length} results");
 				allItems.AddRange(libResult.Items);
 			}
 
