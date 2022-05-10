@@ -55,7 +55,7 @@ namespace LibraryOptionsTests
 			var libraryOptions = new LibraryOptions();
 			Assert.ThrowsException<ArgumentException>(() => libraryOptions.PageNumber = -1);
 			Assert.ThrowsException<ArgumentException>(() => libraryOptions.PageNumber = 0);
-			Assert.ThrowsException<ArgumentException>(() => libraryOptions.PageNumber = 41);
+			//no known concrete max//Assert.ThrowsException<ArgumentException>(() => libraryOptions.PageNumber = 41);
 		}
 
 		[TestMethod]
@@ -236,9 +236,52 @@ namespace LibraryOptions_ResponseGroupOptions_Tests
 			var expected = "response_groups=badge_types,category_ladders,claim_code_url,contributors,is_downloaded,is_returnable,media,origin_asin,pdf_url,percent_complete,price,product_attrs,product_desc,product_extended_attrs,product_plan_details,product_plans,provided_review,rating,relationships,review_attrs,reviews,sample,series,sku";
 			responseGroups.ToQueryString().Should().Be(expected);
 		}
-	}
+    }
 }
 
+namespace LibraryOptions_ImageSizeOptions_Tests
+{
+	[TestClass]
+    public class ToQueryString
+	{
+		[TestMethod]
+		public void invalid_throws()
+		{
+			var imageSize = (LibraryOptions.ImageSizeOptions)(1 << 11);
+			Assert.ThrowsException<Exception>(() => imageSize.ToQueryString());
+		}
+
+		[TestMethod]
+		public void None_returns_empty()
+			=> LibraryOptions.ImageSizeOptions.None
+			.ToQueryString()
+			.Should().BeEmpty();
+
+		[TestMethod]
+		public void parse_1()
+		{
+			var imageSize = LibraryOptions.ImageSizeOptions._1215;
+			var expected = "image_sizes=1215";
+			imageSize.ToQueryString().Should().Be(expected);
+		}
+
+		[TestMethod]
+		public void parse_multiple()
+		{
+			var imageSize = LibraryOptions.ImageSizeOptions._1215 | LibraryOptions.ImageSizeOptions._500;
+			var expected = "image_sizes=500,1215";
+			imageSize.ToQueryString().Should().Be(expected);
+		}
+
+		[TestMethod]
+		public void parse_all()
+		{
+			var imageSizes = LibraryOptions.ImageSizeOptions.ALL_OPTIONS;
+			var expected = "image_sizes=252,315,360,408,500,558,570,882,900,1215";
+			imageSizes.ToQueryString().Should().Be(expected);
+		}
+	}
+}
 namespace LibraryOptions_SortByOptions_Tests
 {
 	[TestClass]

@@ -27,6 +27,21 @@ namespace AudibleApi
 			return str;
 		}
 
+		public static string ToQueryString(this LibraryOptions.ImageSizeOptions imageSizeOptions)
+		{
+			if (imageSizeOptions == LibraryOptions.ImageSizeOptions.None)
+				return "";
+
+			var descriptions = imageSizeOptions
+				.ToValues()
+				.Select(e => e.GetDescription())
+				.ToList();
+			if (!descriptions.Any() || descriptions.Any(d => d is null))
+				throw new Exception("Unexpected value in image size");
+			var str = "image_sizes=" + descriptions.Aggregate((a, b) => $"{a},{b}");
+			return str;
+		}
+
 		public static string ToQueryString(this LibraryOptions.SortByOptions sortByOptions)
 		{
 			if (sortByOptions == LibraryOptions.SortByOptions.None)
@@ -54,6 +69,9 @@ namespace AudibleApi
 
 			if (libraryOptions.ResponseGroups != LibraryOptions.ResponseGroupOptions.None)
 				parameters.Add(libraryOptions.ResponseGroups.ToQueryString());
+
+			if (libraryOptions.ImageSizes != LibraryOptions.ImageSizeOptions.None)
+				parameters.Add(libraryOptions.ImageSizes.ToQueryString());
 
 			if (libraryOptions.SortBy != LibraryOptions.SortByOptions.None)
 				parameters.Add(libraryOptions.SortBy.ToQueryString());
@@ -149,6 +167,35 @@ namespace AudibleApi
 		}
 		public ResponseGroupOptions ResponseGroups { get; set; }
 
+		[Flags]
+		public enum ImageSizeOptions
+		{
+			None = 0,
+			[Description("252")]
+			_252 = 1 << 0,
+			[Description("315")]
+			_315 = 1 << 1,
+			[Description("360")]
+			_360 = 1 << 2,
+			[Description("408")]
+			_408 = 1 << 3,
+			[Description("500")]
+			_500 = 1 << 4,
+			[Description("558")]
+			_558 = 1 << 5,
+			[Description("570")]
+			_570 = 1 << 6,
+			[Description("882")]
+			_882 = 1 << 7,
+			[Description("900")]
+			_900 = 1 << 8,
+			[Description("1215")]
+			_1215 = 1 << 9,
+			// https://stackoverflow.com/questions/7467722
+			ALL_OPTIONS = ~(1 << 10)
+		}
+		public ImageSizeOptions ImageSizes { get; set; }
+
 		public enum SortByOptions
 		{
 			None,
@@ -208,7 +255,7 @@ namespace AudibleApi
 		// all strings passed here are assumed to be unconditionally valid
 		private async Task<JObject> getLibraryAsync(string parameters)
 		{
-			var url = $"{LIBRARY_PATH}?{parameters + "&image_sizes=1215,500"}";
+			var url = $"{LIBRARY_PATH}?{parameters}";
 			var response = await AdHocAuthenticatedGetAsync(url);
 			var obj = await response.Content.ReadAsJObjectAsync();
 			return obj;
@@ -283,44 +330,55 @@ namespace AudibleApi
 		#endregion
 
 		#region GetAllLibraryItemsAsync
-		public async Task<List<Item>> GetAllLibraryItemsAsync() => await GetAllLibraryItemsAsync(LibraryOptions.ResponseGroupOptions.ALL_OPTIONS);
+		public async Task<List<Item>> GetAllLibraryItemsAsync()
+			=> await GetAllLibraryItemsAsync(
+				new LibraryOptions
+				{
+					ResponseGroups = LibraryOptions.ResponseGroupOptions.ALL_OPTIONS,
+					ImageSizes = LibraryOptions.ImageSizeOptions._500 | LibraryOptions.ImageSizeOptions._1215
+				});
+
 		public async Task<List<Item>> GetAllLibraryItemsAsync(LibraryOptions.ResponseGroupOptions responseGroups)
-		{
-			var libraryOptions = new LibraryOptions
-			{
-				PurchasedAfter = new DateTime(2000, 1, 1),
-				ResponseGroups = responseGroups
-			};
+			=> await getAllLibraryItemsAsync_gated(new LibraryOptions { ResponseGroups = responseGroups });
+
+		public async Task<List<Item>> GetAllLibraryItemsAsync(LibraryOptions libraryOptions)
+			=> await getAllLibraryItemsAsync_gated(libraryOptions);
+
+		private async Task<List<Item>> getAllLibraryItemsAsync_gated(LibraryOptions libraryOptions)
+        {
+			if (!libraryOptions.PurchasedAfter.HasValue || libraryOptions.PurchasedAfter.Value < new DateTime(1970, 1, 1))
+				libraryOptions.PurchasedAfter = new DateTime(1970, 1, 1);
 
 			try
-			{
-				// max 1000 however with higher numbers it stops returning 'provided_review' and 'reviews' groups.
-				// Sometimes this threshold is as high as 900, sometimes as low as 400.
-				// I've never had problems at 300. Another user had nearly constant problems at 300.
-				libraryOptions.NumberOfResultPerPage = 250;
-				return await getAllLibraryItemsAsync(libraryOptions);
-			}
-			catch (Exception ex) when (ex is TaskCanceledException || ex is TimeoutException)
-			{
-				// if it times out with 250, try 50. This takes about 5 seconds longer for a library of 1,100
-				//
-				// For each batch size, I ran 3 tests. Results in milliseconds
-				//   1000    19389 , 17760 , 19256
-				//    500    19099 , 19905 , 18553
-				//    250    20288 , 19163 , 19605
-				//    100    22156 , 22058 , 22438
-				//     50    25017 , 24292 , 24491
-				//     25    28627 , 30006 , 31201
-				//     10    45006 , 46717 , 44924
-				libraryOptions.NumberOfResultPerPage = 50;
-				return await getAllLibraryItemsAsync(libraryOptions);
-			}
-			catch (Exception)
-			{
-				throw;
-			}
-		}
-		public async Task<List<Item>> getAllLibraryItemsAsync(LibraryOptions libraryOptions)
+            {
+                // max 1000 however with higher numbers it stops returning 'provided_review' and 'reviews' groups.
+                // Sometimes this threshold is as high as 900, sometimes as low as 400.
+                // I've never had problems at 300. Another user had nearly constant problems at 300.
+                libraryOptions.NumberOfResultPerPage = 250;
+                return await getAllLibraryItemsAsync_internal(libraryOptions);
+            }
+            catch (Exception ex) when (ex is TaskCanceledException || ex is TimeoutException)
+            {
+                // if it times out with 250, try 50. This takes about 5 seconds longer for a library of 1,100
+                //
+                // For each batch size, I ran 3 tests. Results in milliseconds
+                //   1000    19389 , 17760 , 19256
+                //    500    19099 , 19905 , 18553
+                //    250    20288 , 19163 , 19605
+                //    100    22156 , 22058 , 22438
+                //     50    25017 , 24292 , 24491
+                //     25    28627 , 30006 , 31201
+                //     10    45006 , 46717 , 44924
+                libraryOptions.NumberOfResultPerPage = 50;
+                return await getAllLibraryItemsAsync_internal(libraryOptions);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+		private async Task<List<Item>> getAllLibraryItemsAsync_internal(LibraryOptions libraryOptions)
 		{
 			var allItems = new List<Item>();
 
