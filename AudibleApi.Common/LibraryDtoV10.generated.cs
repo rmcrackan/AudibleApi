@@ -556,6 +556,8 @@ namespace AudibleApi.Common
 	{
 		[JsonProperty("500")]
 		public Uri The500 { get; set; }
+		[JsonProperty("1215")]
+		public Uri The1215 { get; set; }
 	}
 
 	public partial class Rating

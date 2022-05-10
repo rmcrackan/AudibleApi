@@ -97,6 +97,13 @@ namespace AudibleApi.Common
 				.Split('/').Last() // 51T1NWIkR4L._SL500_.jpg?foo=bar
 				.Split('.').First() // 51T1NWIkR4L
 			;
+		
+		public string PictureId_1215
+			=> The1215
+				?.AbsoluteUri
+				.Split('/').Last()
+				.Split('.').First()
+			;
 
 		public override string ToString() => $"{The500?.AbsoluteUri}";
 	}
