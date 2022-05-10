@@ -4,14 +4,14 @@
 # template used:
 # https://github.com/marketplace/actions/publish-nuget
 
-name: AudibleApi publish to nuget
+name: AudibleApi.Common publish to nuget
 on:
   push:
     branches:
       - master # Default release branch
 jobs:
   publish:
-    name: AudibleApi build, pack & publish
+    name: AudibleApi.Common build, pack & publish
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -21,15 +21,15 @@ jobs:
           dotnet-version: 6.0.x
 
       # Publish
-      - name: AudibleApi publish on version change
+      - name: AudibleApi.Common publish on version change
         id: publish_nuget
         uses: rohith/publish-nuget@v2
         with:
           # Filepath of the project to be packaged, relative to root of repository
-          PROJECT_FILE_PATH: AudibleApi/AudibleApi.csproj
+          PROJECT_FILE_PATH: AudibleApi.Common/AudibleApi.Common.csproj
           
           # NuGet package id, used for version detection & defaults to project name
-          PACKAGE_NAME: AudibleApi
+          PACKAGE_NAME: AudibleApi.Common
           
           # Filepath with version info, relative to root of repository & defaults to PROJECT_FILE_PATH
           # VERSION_FILE_PATH: Directory.Build.props

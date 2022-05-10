@@ -9,12 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AudibleApi.Common" Version="2.2.5.1" />
     <PackageReference Include="Jint" Version="2.11.58" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\AudibleApi.Common\AudibleApi.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
