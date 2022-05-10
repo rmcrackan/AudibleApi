@@ -14,7 +14,7 @@ namespace AudibleApi.Common
 			=> Relationships?.Any(r => (r.RelationshipToProduct == RelationshipToProduct.Child || r.RelationshipToProduct == RelationshipToProduct.Parent) && r.RelationshipType == RelationshipType.Episode)
 			?? false;
 		public string PictureId => ProductImages?.PictureId;
-		public string PictureId_1215 => ProductImages?.PictureId_1215;
+		public string PictureLarge => ProductImages?.PictureLarge;
 		public DateTime DateAdded => PurchaseDate.UtcDateTime;
 
 		public float Product_OverallStars => Convert.ToSingle(Rating?.OverallDistribution?.DisplayStars ?? 0);

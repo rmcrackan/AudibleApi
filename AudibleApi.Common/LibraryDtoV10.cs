@@ -92,18 +92,19 @@ namespace AudibleApi.Common
 	public partial class ProductImages
 	{
 		public string PictureId
-			=> The500
-				?.AbsoluteUri // https://m.media-amazon.com/images/I/51T1NWIkR4L._SL500_.jpg?foo=bar
-				.Split('/').Last() // 51T1NWIkR4L._SL500_.jpg?foo=bar
-				.Split('.').First() // 51T1NWIkR4L
-			;
-		
-		public string PictureId_1215
-			=> The1215
-				?.AbsoluteUri
-				.Split('/').Last()
-				.Split('.').First()
-			;
+			=> PictureIDfromUrl(The500?.AbsoluteUri);
+		// https://m.media-amazon.com/images/I/51T1NWIkR4L._SL500_.jpg?foo=bar
+			
+		public string PictureLarge
+			=> PictureIDfromUrl(The1215?.AbsoluteUri);
+
+		private static string PictureIDfromUrl(string url)
+		{
+			if (url is null) return null;
+			int lastSlash = url.LastIndexOf("/") + 1;
+			int dot = url.IndexOf(".", lastSlash);
+			return url.Substring(lastSlash, dot - lastSlash);
+		}
 
 		public override string ToString() => $"{The500?.AbsoluteUri}";
 	}
