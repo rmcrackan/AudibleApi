@@ -208,7 +208,7 @@ namespace AudibleApi
 		// all strings passed here are assumed to be unconditionally valid
 		private async Task<JObject> getLibraryAsync(string parameters)
 		{
-			var url = $"{LIBRARY_PATH}?{parameters}";
+			var url = $"{LIBRARY_PATH}?{parameters + "&image_sizes=1215,500"}";
 			var response = await AdHocAuthenticatedGetAsync(url);
 			var obj = await response.Content.ReadAsJObjectAsync();
 			return obj;
