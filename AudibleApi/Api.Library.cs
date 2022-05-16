@@ -252,6 +252,12 @@ namespace AudibleApi
 			return await getLibraryAsync(libraryOptions);
 		}
 
+		//
+		// state token for library requests: https://github.com/mkb79/Audible/issues/93
+		// You will only get new items or removed items since the state-token was created.
+		// Removed items will be in the 'items' list with 'status' : 'Revoked'
+		//
+
 		// all strings passed here are assumed to be unconditionally valid
 		private async Task<JObject> getLibraryAsync(string parameters)
 		{
