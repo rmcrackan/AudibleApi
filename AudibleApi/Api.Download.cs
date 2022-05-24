@@ -159,8 +159,26 @@ namespace AudibleApi
             var client = Sharer.GetSharedHttpClient($"https://www.audible.{_locale.TopDomain}");
             var response = await AdHocAuthenticatedGetAsync(request, client);
 
+            validatePdfDownloadUrl(asin, response);
+
             var downloadUrl = response.Headers.Location.AbsoluteUri;
             return downloadUrl;
+        }
+
+        private void validatePdfDownloadUrl(string asin, HttpResponseMessage response)
+        {
+            var body = $"\r\nASIN:{asin}\r\nLocale:{_locale}";
+
+            if (response is null)
+                throw new HttpRequestException("Response is null." + body);
+
+            body += $"\r\nStatus Code:{(int)response.StatusCode} - {response.StatusCode}";
+
+            if (response.Headers is null)
+                throw new HttpRequestException("Response Headers are null." + body);
+
+            if (response.Headers.Location is null)
+                throw new HttpRequestException("Response Location is null." + body + $"\r\n{response.Headers}");
         }
     }
 }
