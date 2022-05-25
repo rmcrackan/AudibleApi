@@ -26,17 +26,17 @@ namespace AudibleApi
 
 		private class LibraryItemAsyncEnumerator : IAsyncEnumerator<Item>
 		{
-			private string ContinuationToken;
-
-			/// <summary>Holds all Items from each call to GetNextBatch</summary>
-			private readonly List<Item> Items = new();
-
 			/// <summary>Holds all GetNextBatch tasks</summary>
 			private readonly BlockingCollection<ValueTask<Item[]>> GetItemsTasks = new();
-
 			/// <summary>The downloader loop task that makes successive calls to GetNextBatch</summary>
 			private readonly Task GetAllItemsTask;
-			private int currentIndex = -1;
+			/// <summary>The Continuation-Token received from the last call to the Api.</summary>
+			private string ContinuationToken;
+			/// <summary>Holds all Items from a call to GetNextBatch</summary>
+			private Item[] Items;
+			/// <summary>Index in <see cref="Items"/> for the enumerator's current position.</summary>
+			private int currentIndex = 0;
+
 			public LibraryItemAsyncEnumerator(Api api, string queryString)
 			{
 				GetAllItemsTask = GetAllItems(api, queryString);
@@ -97,15 +97,17 @@ namespace AudibleApi
 
 			public async ValueTask<bool> MoveNextAsync()
 			{
-				if (++currentIndex >= Items.Count)
+				currentIndex++;
+				if (Items is null || currentIndex >= Items.Length)
 				{
 					if (!GetItemsTasks.TryTake(out var itemsTask, -1))
 					{
 						await GetAllItemsTask;
 						return false;
 					}
-					
-					Items.AddRange(await itemsTask);
+
+					Items = await itemsTask;
+					currentIndex = 0;
 				}
 
 				return true;
