@@ -64,17 +64,16 @@ namespace AudibleApi
 				var continuationQuery = ContinuationToken is null ? string.Empty : $"continuation_token={ContinuationToken}&";
 				var response = await api.getLibraryResponseAsync($"{continuationQuery}{queryString}");
 
-				var page = await response.Content.ReadAsJObjectAsync();
-				var pageStr = page.ToString();
+				var page = await response.Content.ReadAsStringAsync();
 				LibraryDtoV10 libResult;
 				try
 				{
 					// important! use this convert/deser method
-					libResult = LibraryDtoV10.FromJson(pageStr);
+					libResult = LibraryDtoV10.FromJson(page);
 				}
 				catch (Exception ex)
 				{
-					Serilog.Log.Logger.Error(ex, "Error converting library for importing use. Full library:\r\n" + pageStr);
+					Serilog.Log.Logger.Error(ex, "Error converting library for importing use. Full library:\r\n" + page);
 					throw;
 				}
 				if (response.Headers.TryGetValues("Continuation-Token", out var values))
