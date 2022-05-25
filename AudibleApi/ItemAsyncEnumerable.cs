@@ -59,7 +59,7 @@ namespace AudibleApi
 						// max 1000 however with higher numbers it stops returning 'provided_review' and 'reviews' groups.
 						// Sometimes this threshold is as high as 900, sometimes as low as 400.
 						// I've never had problems at 300. Another user had nearly constant problems at 300.
-						libraryOptions.NumberOfResultPerPage = 5;
+						libraryOptions.NumberOfResultPerPage = 250;
 						var currentGetItemsTask = GetBatchContinuing(api, libraryOptions.ToQueryString());
 						GetItemsTasks.Add(currentGetItemsTask);
 
