@@ -92,7 +92,7 @@ namespace AudibleApi
 						throw;
 					}
 
-					if (TotalCount < 10000)
+					if (!string.IsNullOrEmpty(ContinuationToken) && TotalCount <= 10000)
 					{
 						//Get remaining books by page number in parallel
 						getRemainingByPage = true;
@@ -109,7 +109,7 @@ namespace AudibleApi
 					var queryString = libraryOptions.ToQueryString();
 					int numPages = (int)Math.Ceiling((double)TotalCount / libraryOptions.NumberOfResultPerPage.Value);
 
-					Parallel.For(1, numPages + 1,
+					Parallel.For(2, numPages + 1,
 						new ParallelOptions { MaxDegreeOfParallelism = MAX_PARALLEL_REQUESTS },
 						async (pageNumber) =>
 					{
