@@ -50,6 +50,8 @@ namespace AudibleApi
 
 					GetItemsTasks.Add(currentGetItemsTask);
 
+					//Must await here because the ContinuationToken for the next call
+					//to GetNextBatch is returned by the curret call to GetNextBatch
 					await currentGetItemsTask;
 
 				} while (!string.IsNullOrEmpty(ContinuationToken));
