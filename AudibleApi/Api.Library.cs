@@ -357,7 +357,7 @@ namespace AudibleApi
 			=> await getAllLibraryItemsAsync_gated(libraryOptions);
 
 		public IAsyncEnumerable<Item> GetLibraryItemAsyncEnumerable(LibraryOptions libraryOptions) =>
-			new LibraryItemAsyncEnumerable(this, libraryOptions);
+			new ItemAsyncEnumerable(this, libraryOptions);
 
 		private async Task<List<Item>> getAllLibraryItemsAsync_gated(LibraryOptions libraryOptions)
         {
