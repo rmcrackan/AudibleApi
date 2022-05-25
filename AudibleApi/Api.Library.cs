@@ -363,7 +363,7 @@ namespace AudibleApi
 				libraryOptions.PurchasedAfter = new DateTime(1970, 1, 1);
 
 			libraryOptions.NumberOfResultPerPage = 0;
-			int totalCount = await GetItemsCount(this, libraryOptions);
+			int totalCount = await GetItemsCountAsync(this, libraryOptions);
 			libraryOptions.NumberOfResultPerPage = 50;
 
 			await foreach (var itemBlock in getItemsBatchesAsyncEnumerable(libraryOptions, totalCount))
@@ -392,7 +392,7 @@ namespace AudibleApi
 					concurrencySemaphore.Wait();
 					try
 					{
-						var items = await GetPageBatch(queryString);
+						var items = await GetPageBatchAsync(queryString);
 						Serilog.Log.Logger.Information($"Page {pageNumber}: {items.Length} results");
 						return items;
 					}
@@ -413,7 +413,7 @@ namespace AudibleApi
 			}
 		}
 
-		private async Task<Item[]> GetPageBatch(string queryString)
+		private async Task<Item[]> GetPageBatchAsync(string queryString)
 		{
 			var response = await getLibraryResponseAsync($"{queryString}");
 
@@ -433,7 +433,7 @@ namespace AudibleApi
 			return libResult.Items;
 		}
 
-		private async Task<int> GetItemsCount(Api api, LibraryOptions libraryOptions)
+		private async Task<int> GetItemsCountAsync(Api api, LibraryOptions libraryOptions)
 		{
 			var response = await api.getLibraryResponseAsync(libraryOptions.ToQueryString());
 
