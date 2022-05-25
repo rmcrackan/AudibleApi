@@ -364,7 +364,7 @@ namespace AudibleApi
 
 			libraryOptions.NumberOfResultPerPage = 0;
 			int totalCount = await GetItemsCount(this, libraryOptions);
-			libraryOptions.NumberOfResultPerPage = 25;
+			libraryOptions.NumberOfResultPerPage = 50;
 
 			await foreach (var itemBlock in getItemsBatchesAsyncEnumerable(libraryOptions, totalCount))
 			{
