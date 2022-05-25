@@ -366,72 +366,57 @@ namespace AudibleApi
 			int totalCount = await GetItemsCountAsync(this, libraryOptions);
 			libraryOptions.NumberOfResultPerPage = numItemsPerRequest;
 
-			await foreach (var itemBlock in getItemsBatchesAsyncEnumerable(libraryOptions, totalCount, maxConcurrentRequests))
-			{
-				foreach (var item in itemBlock)
-					yield return item;
-			}
-		}
-
-		private async IAsyncEnumerable<Item[]> getItemsBatchesAsyncEnumerable(LibraryOptions libraryOptions, int totalCount, int maxConcurrency)
-		{
 			int numPages = totalCount / libraryOptions.NumberOfResultPerPage.Value;
 			if (numPages * libraryOptions.NumberOfResultPerPage.Value < totalCount)
 				numPages++;
 
-			List<Task<Item[]>> tasks = new();
-			using SemaphoreSlim concurrencySemaphore = new(maxConcurrency);
+			List<Task<Item[]>> allDlTasks = new();
+			using SemaphoreSlim concurrencySemaphore = new(maxConcurrentRequests);
 
 			for (int page = 1; page <= numPages; page++)
 			{
 				libraryOptions.PageNumber = page;
 				var queryString = libraryOptions.ToQueryString();
-				var pageNumber = page;
 
-				var pageDlTassk = Task.Run(async () =>
-				{
-					concurrencySemaphore.Wait();
-					try
-					{
-						var items = await GetPageBatchAsync(queryString);
-						Serilog.Log.Logger.Information($"Page {pageNumber}: {items.Length} results");
-						return items;
-					}
-					finally
-					{
-						concurrencySemaphore.Release();
-					}
-				});
-
-				tasks.Add(pageDlTassk);
+				allDlTasks.Add(downloadItemPage(concurrencySemaphore, queryString, page));
 			}
 
-			while (tasks.Count > 0)
+			while (allDlTasks.Count > 0)
 			{
-				var completed = await Task.WhenAny(tasks);
-				tasks.Remove(completed);
-				yield return await completed;
+				var completed = await Task.WhenAny(allDlTasks);
+				allDlTasks.Remove(completed);
+				foreach (var item in completed.Result)
+					yield return item;
 			}
 		}
 
-		private async Task<Item[]> GetPageBatchAsync(string queryString)
+		private async Task<Item[]> downloadItemPage(SemaphoreSlim concurrencySemaphore, string queryString, int pageNumber)
 		{
-			var response = await getLibraryResponseAsync($"{queryString}");
-
-			var page = await response.Content.ReadAsStringAsync();
-			LibraryDtoV10 libResult;
+			await concurrencySemaphore.WaitAsync();
 			try
 			{
-				// important! use this convert/deser method
-				libResult = LibraryDtoV10.FromJson(page);
-			}
-			catch (Exception ex)
-			{
-				Serilog.Log.Logger.Error(ex, "Error converting library for importing use. Full library:\r\n" + page);
-				throw;
-			}
+				var response = await getLibraryResponseAsync($"{queryString}");
 
-			return libResult.Items;
+				var page = await response.Content.ReadAsStringAsync();
+				LibraryDtoV10 libResult;
+				try
+				{
+					// important! use this convert/deser method
+					libResult = LibraryDtoV10.FromJson(page);
+				}
+				catch (Exception ex)
+				{
+					Serilog.Log.Logger.Error(ex, "Error converting library for importing use. Full library:\r\n" + page);
+					throw;
+				}
+
+				Serilog.Log.Logger.Information($"Page {pageNumber}: {libResult.Items.Length} results");
+				return libResult.Items;
+			}
+			finally
+			{
+				concurrencySemaphore.Release();
+			}
 		}
 
 		private async Task<int> GetItemsCountAsync(Api api, LibraryOptions libraryOptions)
