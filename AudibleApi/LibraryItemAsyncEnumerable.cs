@@ -1,6 +1,7 @@
 ﻿using AudibleApi.Common;
 using Dinah.Core.Net.Http;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -25,21 +26,41 @@ namespace AudibleApi
 
 		private class LibraryItemAsyncEnumerator : IAsyncEnumerator<Item>
 		{
-			private readonly Api Api;
-			private readonly string QueryString;
 			private string ContinuationToken;
 
-			private IEnumerator<Item> itemEnumerator;
+			/// <summary>Holds all Items from each call to GetNextBatch</summary>
+			private readonly List<Item> Items = new();
+
+			/// <summary>Holds all GetNextBatch tasks</summary>
+			private readonly BlockingCollection<ValueTask<Item[]>> GetItemsTasks = new();
+
+			/// <summary>The downloader loop task that makes successive calls to GetNextBatch</summary>
+			private readonly Task GetAllItemsTask;
+			private int currentIndex = -1;
 			public LibraryItemAsyncEnumerator(Api api, string queryString)
 			{
-				Api = api;
-				QueryString = queryString;
+				GetAllItemsTask = GetAllItems(api, queryString);
 			}
 
-			private async ValueTask<IEnumerator<Item>> GetNextBatch()
+			private async Task GetAllItems(Api api, string queryString)
+			{
+				do
+				{
+					var currentGetItemsTask = GetNextBatch(api, queryString);
+
+					GetItemsTasks.Add(currentGetItemsTask);
+
+					await currentGetItemsTask;
+
+				} while (!string.IsNullOrEmpty(ContinuationToken));
+
+				GetItemsTasks.CompleteAdding();
+			}
+
+			private async ValueTask<Item[]> GetNextBatch(Api api, string queryString)
 			{
 				var continuationQuery = ContinuationToken is null ? string.Empty : $"continuation_token={ContinuationToken}&";
-				var response = await Api.getLibraryResponseAsync($"{continuationQuery}{QueryString}");
+				var response = await api.getLibraryResponseAsync($"{continuationQuery}{queryString}");
 
 				var page = await response.Content.ReadAsJObjectAsync();
 				var pageStr = page.ToString();
@@ -61,30 +82,31 @@ namespace AudibleApi
 				else
 					ContinuationToken = null;
 
-				return libResult.Items.AsEnumerable().GetEnumerator();
+				return libResult.Items;
 			}
 
-			public Item Current => itemEnumerator.Current;
+			public Item Current => Items[currentIndex];
 
 			public ValueTask DisposeAsync()
 			{
-				itemEnumerator?.Dispose();
+				GetItemsTasks.Dispose();
 				return ValueTask.CompletedTask;
 			}
 
 			public async ValueTask<bool> MoveNextAsync()
 			{
-				itemEnumerator ??= await GetNextBatch();
-
-				if (itemEnumerator.MoveNext()) return true;
-
-				if (!string.IsNullOrEmpty(ContinuationToken))
+				if (++currentIndex >= Items.Count)
 				{
-					itemEnumerator = await GetNextBatch();
-					return itemEnumerator.MoveNext();
+					if (!GetItemsTasks.TryTake(out var itemsTask, -1))
+					{
+						await GetAllItemsTask;
+						return false;
+					}
+					
+					Items.AddRange(await itemsTask);
 				}
 
-				return false;
+				return true;
 			}
 		}
 	}
