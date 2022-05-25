@@ -27,7 +27,7 @@ namespace AudibleApi
 		private class LibraryItemAsyncEnumerator : IAsyncEnumerator<Item>
 		{
 			/// <summary>Holds all GetNextBatch tasks</summary>
-			private readonly BlockingCollection<ValueTask<Item[]>> GetItemsTasks = new();
+			private readonly BlockingCollection<Task<Item[]>> GetItemsTasks = new();
 			/// <summary>The downloader loop task that makes successive calls to GetNextBatch</summary>
 			private readonly Task GetAllItemsTask;
 			/// <summary>The Continuation-Token received from the last call to the Api.</summary>
@@ -59,7 +59,7 @@ namespace AudibleApi
 				GetItemsTasks.CompleteAdding();
 			}
 
-			private async ValueTask<Item[]> GetNextBatch(Api api, string queryString)
+			private async Task<Item[]> GetNextBatch(Api api, string queryString)
 			{
 				var continuationQuery = ContinuationToken is null ? string.Empty : $"continuation_token={ContinuationToken}&";
 				var response = await api.getLibraryResponseAsync($"{continuationQuery}{queryString}");
