@@ -261,10 +261,16 @@ namespace AudibleApi
 		// all strings passed here are assumed to be unconditionally valid
 		private async Task<JObject> getLibraryAsync(string parameters)
 		{
-			var url = $"{LIBRARY_PATH}?{parameters}";
-			var response = await AdHocAuthenticatedGetAsync(url);
+			var response = await getLibraryResponseAsync(parameters);
 			var obj = await response.Content.ReadAsJObjectAsync();
 			return obj;
+		}
+
+		internal async Task<System.Net.Http.HttpResponseMessage> getLibraryResponseAsync(string parameters)
+		{
+			var url = $"{LIBRARY_PATH}?{parameters}";
+			var response = await AdHocAuthenticatedGetAsync(url);
+			return response;
 		}
 		#endregion
 
@@ -349,6 +355,9 @@ namespace AudibleApi
 
 		public async Task<List<Item>> GetAllLibraryItemsAsync(LibraryOptions libraryOptions)
 			=> await getAllLibraryItemsAsync_gated(libraryOptions);
+
+		public IAsyncEnumerable<Item> GetLibraryItemAsyncEnumerable(LibraryOptions libraryOptions) =>
+			new LibraryItemAsyncEnumerable(this, libraryOptions);
 
 		private async Task<List<Item>> getAllLibraryItemsAsync_gated(LibraryOptions libraryOptions)
         {
