@@ -357,26 +357,27 @@ namespace AudibleApi
 		public async Task<List<Item>> GetAllLibraryItemsAsync(LibraryOptions libraryOptions)
 			=> await getAllLibraryItemsAsync_gated(libraryOptions);
 		
-		public async IAsyncEnumerable<Item> GetLibraryItemAsyncEnumerable(LibraryOptions libraryOptions)
+		public async IAsyncEnumerable<Item> GetLibraryItemAsyncEnumerable(LibraryOptions libraryOptions, int numItemsPerRequest = 50, int maxConcurrentRequests = 10)
 		{
 			if (!libraryOptions.PurchasedAfter.HasValue || libraryOptions.PurchasedAfter.Value < new DateTime(1970, 1, 1))
 				libraryOptions.PurchasedAfter = new DateTime(1970, 1, 1);
 
 			libraryOptions.NumberOfResultPerPage = 0;
 			int totalCount = await GetItemsCountAsync(this, libraryOptions);
-			libraryOptions.NumberOfResultPerPage = 50;
+			libraryOptions.NumberOfResultPerPage = numItemsPerRequest;
 
-			await foreach (var itemBlock in getItemsBatchesAsyncEnumerable(libraryOptions, totalCount))
+			await foreach (var itemBlock in getItemsBatchesAsyncEnumerable(libraryOptions, totalCount, maxConcurrentRequests))
 			{
 				foreach (var item in itemBlock)
 					yield return item;
 			}
 		}
 
-		private async IAsyncEnumerable<Item[]> getItemsBatchesAsyncEnumerable(LibraryOptions libraryOptions, int totalCount)
+		private async IAsyncEnumerable<Item[]> getItemsBatchesAsyncEnumerable(LibraryOptions libraryOptions, int totalCount, int maxConcurrency)
 		{
-			int maxConcurrency = 10;
-			int numPages = (int)Math.Ceiling((double)totalCount / libraryOptions.NumberOfResultPerPage.Value);
+			int numPages = totalCount / libraryOptions.NumberOfResultPerPage.Value;
+			if (numPages * libraryOptions.NumberOfResultPerPage.Value < totalCount)
+				numPages++;
 
 			List<Task<Item[]>> tasks = new();
 			using SemaphoreSlim concurrencySemaphore = new(maxConcurrency);
