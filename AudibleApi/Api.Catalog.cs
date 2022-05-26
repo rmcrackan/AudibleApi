@@ -118,7 +118,7 @@ namespace AudibleApi
 	{
 		const string CATALOG_PATH = "/1.0/catalog";
 
-		#region GetCatalogProductAsyncAsync
+		#region GetCatalogProductAsync
 		public Task<Item> GetCatalogProductAsync(string asin, CatalogOptions.ResponseGroupOptions responseGroups)
 			=> GetCatalogProductAsync(asin, responseGroups.ToQueryString());
 
@@ -156,7 +156,7 @@ namespace AudibleApi
 		}
 		#endregion
 
-		#region GetCatalogProductsAsyncAsync
+		#region GetCatalogProductsAsync
 		public Task<List<Item>> GetCatalogProductsAsync(IEnumerable<string> asins, CatalogOptions.ResponseGroupOptions responseGroups)
 			=> GetCatalogProductsAsync(new CatalogOptions { ResponseGroups = responseGroups, Asins = asins.ToList() });
 
