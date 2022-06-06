@@ -92,8 +92,20 @@ namespace AudibleApi
 			Sample = 1 << 10,
 			[Description("sku")]
 			Sku = 1 << 11,
+			[Description("relationships")]
+			Relationships = 1 << 12,
+			[Description("category_ladders")]
+			CategoryLadders = 1 << 13,
+			[Description("claim_code_url")]
+			ClaimCodeUrl = 1 << 14,
+			[Description("price")]
+			Price = 1 << 15,
+			[Description("provided_review")]
+			ProvidedReview = 1 << 16,
+			[Description("series")]
+			Series = 1 << 17,
 			// https://stackoverflow.com/questions/7467722
-			ALL_OPTIONS = ~(1 << 12)
+			ALL_OPTIONS = ~(1 << 18)
 		}
 		public ResponseGroupOptions ResponseGroups { get; set; }
 
