@@ -11,8 +11,13 @@ namespace AudibleApi.Common
 		public int LengthInMinutes => RuntimeLengthMin ?? 0;
 		public string Description => PublisherSummary;
 		public bool IsEpisodes
-			=> Relationships?.Any(r => (r.RelationshipToProduct == RelationshipToProduct.Child || r.RelationshipToProduct == RelationshipToProduct.Parent) && r.RelationshipType == RelationshipType.Episode)
+			=> Relationships?.Any(r => r.RelationshipToProduct == RelationshipToProduct.Parent && r.RelationshipType == RelationshipType.Episode)
 			?? false;
+		public bool IsSeriesParent
+			=> Relationships is null ? false :
+			Relationships.Any(r => r.RelationshipToProduct == RelationshipToProduct.Child && r.RelationshipType == RelationshipType.Episode) && 
+			!Relationships.Any(r => r.RelationshipToProduct == RelationshipToProduct.Parent);
+		
 		public string PictureId => ProductImages?.PictureId;
 		public string PictureLarge => ProductImages?.PictureLarge;
 		public DateTime DateAdded => PurchaseDate.UtcDateTime;
