@@ -9,10 +9,10 @@ namespace AudibleApi
 	{
 		internal static string ToResponseGroupsQueryString(this Enum responseGroupOptions)
 			=> "response_groups=" + responseGroupOptions.ToFlagDescriptions();
-		internal static string ToImageSizesQueryString(this Enum responseGroupOptions)
-			=> "image_sizes=" + responseGroupOptions.ToFlagDescriptions();
-		internal static string ToSortByQueryString(this Enum responseGroupOptions)
-			=> "sort_by=" + responseGroupOptions.ToDescription();
+		internal static string ToImageSizesQueryString(this Enum imageSizeOptions)
+			=> "image_sizes=" + imageSizeOptions.ToFlagDescriptions();
+		internal static string ToSortByQueryString(this Enum sortByOptions)
+			=> "sort_by=" + sortByOptions.ToDescription();
 
 		private static string ToFlagDescriptions(this Enum flagEnumValue)
 		{

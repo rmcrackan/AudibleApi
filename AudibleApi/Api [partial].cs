@@ -43,8 +43,6 @@ namespace AudibleApi
 				throw new ArgumentNullException(nameof(method));
 			if (method.Method == HttpMethod.Post.Method && postData is null)
 				throw new ArgumentNullException(nameof(postData), $"Must provide post data when using {nameof(HttpMethod)}.{nameof(HttpMethod.Post)}");
-			if (!IsAuthenticated)
-				throw new NotAuthenticatedException(new Uri(requestUri), new JObject { "Target endpoint requires authentication" });
 
 			var request = new HttpRequestMessage(method, requestUri);
 
@@ -66,8 +64,6 @@ namespace AudibleApi
 				throw new ArgumentNullException(nameof(requestUri));
 			if (string.IsNullOrWhiteSpace(requestUri))
 				throw new ArgumentException($"{nameof(requestUri)} may not be blank");
-			if (!IsAuthenticated)
-				throw new NotAuthenticatedException(new Uri(requestUri), new JObject { "Api is not authenticated" });
 
 			var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
 
