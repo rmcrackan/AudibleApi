@@ -43,20 +43,13 @@ namespace AudibleApi
 			return description;
 		}
 
-		private static IEnumerable<string> getFlaggedDescriptions(this Enum input, bool checkZero = false, bool checkFlags = true)
+		private static IEnumerable<string> getFlaggedDescriptions(this Enum input)
 		{
 			Type enumType = input.GetType();
 			if (!enumType.IsEnum)
 				yield break;
 
 			ulong setBits = Convert.ToUInt64(input);
-			// if no flags are set, return empty
-			if (!checkZero && (0 == setBits))
-				yield break;
-
-			// if it's not a flag enum, return empty
-			if (checkFlags && !enumType.IsDefined(typeof(FlagsAttribute), false))
-				yield break;
 
 			// check each enum value mask if it is in input bits
 			foreach (Enum value in Enum.GetValues(enumType))
