@@ -93,9 +93,9 @@ namespace AudibleApi
 		}
 	}
 
-	public partial class Api
+	public partial class ApiUnauthenticated
 	{
-		const string CATALOG_PATH = "/1.0/catalog";
+		protected const string CATALOG_PATH = "/1.0/catalog";
 
 		public async Task<Item> GetCatalogProductAsync(string asin, CatalogOptions.ResponseGroupOptions responseGroups)
 			=> (await GetCatalogProductsAsync(new CatalogOptions { ResponseGroups = responseGroups, Asins = new() { asin } })).Single();
@@ -114,8 +114,8 @@ namespace AudibleApi
 			var url = $"{CATALOG_PATH}/products/";
 			if (!string.IsNullOrWhiteSpace(options))
 				url += "?" + options;
-			var obj = await AdHocNonAuthenticatedGetAsync(url);
-			var objStr = obj.ToString();
+			var response = await AdHocNonAuthenticatedGetAsync(url);
+			var objStr = await response.Content.ReadAsStringAsync();
 
 			ProductsDtoV10 dto;
 			try
