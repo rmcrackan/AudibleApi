@@ -18,8 +18,6 @@ namespace AudibleApi
     }
     public partial class Api
     {
-        const string CONTENT_PATH = "/1.0/content";
-
         #region Download License
 
         /// <summary>
@@ -43,16 +41,12 @@ namespace AudibleApi
                 { "quality", quality.ToString() },
                 { "response_groups", "last_position_heard,pdf_url,content_reference,chapter_info"}
             };
-            var url = $"{CONTENT_PATH}/{asin}/licenserequest";
 
-            var request = new HttpRequestMessage(HttpMethod.Post, url);
-            request.AddContent(body);
-            await signRequestAsync(request);
-
+            string requestUri = $"{CONTENT_PATH}/{asin}/licenserequest";
             HttpResponseMessage response;
             try
             {
-                response = await _client.SendAsync(request);
+                response = await AdHocAuthenticatedRequestAsync(requestUri, HttpMethod.Post, _client, body);
             }
             catch (ApiErrorException ex)
             {
@@ -63,7 +57,7 @@ namespace AudibleApi
             catch (Exception ex)
             {
                 var apiExp = new ApiErrorException(
-                    request.RequestUri,
+                    new Uri(requestUri),
                     body,
                     $"Error requesting license for asin: [{asin}]",
                     ex);
@@ -155,9 +149,8 @@ namespace AudibleApi
 
             //// this works for now:
             // MUST use relative url here
-            var request = new HttpRequestMessage(HttpMethod.Head, $"/companion-file/{asin}");
-            var client = Sharer.GetSharedHttpClient($"https://www.audible.{_locale.TopDomain}");
-            var response = await AdHocAuthenticatedGetAsync(request, client);
+            var client = Sharer.GetSharedHttpClient(_locale.AudibleLoginUri());
+            var response = await AdHocAuthenticatedRequestAsync($"/companion-file/{asin}", HttpMethod.Head, client);
 
             validatePdfDownloadUrl(asin, response);
 

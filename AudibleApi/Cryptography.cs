@@ -84,7 +84,7 @@ namespace AudibleApi
         {
             var dataBytes = Encoding.UTF8.GetBytes(dataString);
 
-            using var sha256 = new SHA256Managed();
+            using var sha256 = SHA256.Create();
             using var rsaCSP = CreateRsaProviderFromPrivateKey(private_key);
             var digestion = sha256.ComputeHash(dataBytes);
             // as string: digestion.Select(x => $"{x:x2}").Aggregate("", (a, b) => a + b);
@@ -107,7 +107,7 @@ namespace AudibleApi
             var RSA = new RSACryptoServiceProvider();
             var RSAparams = new RSAParameters();
 
-            //Guess the key size based on modulus size. Assume key size is multiple of 128 bits.
+            //Guess the key size based on modulus size. Assume key size is multiple of 32 bits.
             int keySizeGuess = (int)Math.Round(keySequence.Children[1].Value.Length / 4d, 0) * 32;
 
             RSAparams.Modulus = ValidateInt(keySequence.Children[1].Value, keySizeGuess, 8);

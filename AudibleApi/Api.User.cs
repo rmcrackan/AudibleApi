@@ -26,9 +26,8 @@ namespace AudibleApi
 			// note: this call uses the amazon api uri, NOT audible
 			var client = Sharer.GetSharedHttpClient(_locale.AmazonApiUri());
 
-            var accessToken = await _identityMaintainer.GetAccessTokenAsync();
-            var request = new HttpRequestMessage(HttpMethod.Get, $"/user/profile?access_token={accessToken.TokenValue}");
-            var response = await client.SendAsync(request);
+            var response = await AdHocAuthenticatedGetWithAccessTokenAsync($"/user/profile", client);
+
             var json = await response.Content.ReadAsStringAsync();
 
             // return full json string. consumer to parse it

@@ -57,19 +57,13 @@ namespace AudibleApi
 
             var body = JObject.Parse($@"{{""asin"":""{asin}""}}");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, WISHLIST_PATH);
-            // POST body: see AddContent overloads
-            request.AddContent(body);
-
-            await signRequestAsync(request);
-
-            var response = await _client.SendAsync(request);
+            var response = await AdHocAuthenticatedRequestAsync(WISHLIST_PATH, HttpMethod.Post, _client, body);
             var responseString = await response.Content.ReadAsStringAsync();
 
             // same return values whether it already existed in wish list or newly added
             if (response.StatusCode != HttpStatusCode.Created)
                 throw new ApiErrorException(
-                    request.RequestUri,
+                    new Uri(WISHLIST_PATH),
                     JObject.Parse(responseString),
                     $"Add to Wish List failed. Invalid status code. Code: {response.StatusCode}"
                     );
@@ -77,7 +71,7 @@ namespace AudibleApi
             var location = response.Headers.Location.ToString();
             if (location != $"{WISHLIST_PATH}/{asin}")
                 throw new ApiErrorException(
-                    request.RequestUri,
+                    new Uri(WISHLIST_PATH),
                     JObject.Parse(responseString),
                     $"Add to Wish List failed. Bad location. Location: {location}"
                     );
@@ -91,17 +85,14 @@ namespace AudibleApi
                 throw new ArgumentException();
 
             var requestUri = $"{WISHLIST_PATH}/{asin}";
-            var request = new HttpRequestMessage(HttpMethod.Delete, requestUri);
 
-            await signRequestAsync(request);
-
-            var response = await _client.SendAsync(request);
+            var response = await AdHocAuthenticatedRequestAsync(requestUri, HttpMethod.Delete, _client);
             var responseString = await response.Content.ReadAsStringAsync();
 
             // same return values whether it already existed in wish list or newly added
             if (response.StatusCode != HttpStatusCode.NoContent)
                 throw new ApiErrorException(
-                    request.RequestUri,
+                    new Uri(requestUri),
                     JObject.Parse(responseString),
                     $"Delete from Wish List failed. Invalid status code. Code: {response.StatusCode}. Asin: {asin}"
                     );
