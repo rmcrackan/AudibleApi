@@ -16,15 +16,15 @@ namespace AudibleApi
 		private IIdentityMaintainer _identityMaintainer { get; }
 
 		public Api(IIdentityMaintainer identityMaintainer) 
-			: base(identityMaintainer?.Locale ?? throw new ArgumentNullException(nameof(identityMaintainer)))
+			: base(identityMaintainer?.Locale)
 		{
-			_identityMaintainer = identityMaintainer;
+			_identityMaintainer = identityMaintainer ?? throw new ArgumentNullException(nameof(identityMaintainer));
 		}
 
 		public Api(IIdentityMaintainer identityMaintainer, IHttpClientSharer sharer) 
-			: base(identityMaintainer?.Locale ?? throw new ArgumentNullException(nameof(identityMaintainer)), sharer)
+			: base(identityMaintainer?.Locale, sharer)
 		{
-			_identityMaintainer = identityMaintainer;
+			_identityMaintainer = identityMaintainer ?? throw new ArgumentNullException(nameof(identityMaintainer));
 		}
 
 		public Task<HttpResponseMessage> AdHocAuthenticatedGetAsync(string requestUri)

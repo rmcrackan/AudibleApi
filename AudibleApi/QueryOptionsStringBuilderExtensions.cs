@@ -5,14 +5,29 @@ using System.Linq;
 
 namespace AudibleApi
 {
-	internal static class QueryOptionsStringBuilderExtensions
+	public static class QueryOptionsStringBuilderExtensions
 	{
-		internal static string ToResponseGroupsQueryString(this Enum responseGroupOptions)
-			=> "response_groups=" + responseGroupOptions.ToFlagDescriptions();
-		internal static string ToImageSizesQueryString(this Enum imageSizeOptions)
-			=> "image_sizes=" + imageSizeOptions.ToFlagDescriptions();
-		internal static string ToSortByQueryString(this Enum sortByOptions)
-			=> "sort_by=" + sortByOptions.ToDescription();
+		public static string ToResponseGroupsQueryString(this Enum responseGroupOptions)
+		{
+			var respondeGroupes = responseGroupOptions.ToFlagDescriptions();
+			if (string.IsNullOrEmpty(respondeGroupes))
+				return string.Empty;
+			return "response_groups=" + respondeGroupes;
+		}
+		public static string ToImageSizesQueryString(this Enum imageSizeOptions)
+		{
+			var imageSizes = imageSizeOptions.ToFlagDescriptions();
+			if (string.IsNullOrEmpty(imageSizes))
+				return string.Empty;
+			return "image_sizes=" + imageSizes;
+		}
+		public static string ToSortByQueryString(this Enum sortByOptions)
+		{
+			var sortBy = sortByOptions.ToDescription();
+			if (string.IsNullOrEmpty(sortBy))
+				return string.Empty;
+			return "sort_by=" + sortBy;
+		}
 
 		private static string ToFlagDescriptions(this Enum flagEnumValue)
 		{

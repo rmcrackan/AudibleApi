@@ -13,18 +13,17 @@ namespace AudibleApi
 		protected Locale _locale { get; }
 		protected IHttpClientActions _client
 			=> Sharer.GetSharedHttpClient(_locale.AudibleApiUri());
-
-		public ApiUnauthenticated(Locale locale, IHttpClientSharer sharer)
-		{
-			_locale = locale;
-			Sharer = sharer ?? throw new ArgumentNullException(nameof(sharer));
-		}
-
 		public ApiUnauthenticated(Locale locale)
 		{
 			StackBlocker.ApiTestBlocker();
-			_locale = locale;
+			_locale = locale ?? throw new ArgumentNullException(nameof(locale));
 			Sharer = new HttpClientSharer();
+		}
+
+		public ApiUnauthenticated(Locale locale, IHttpClientSharer sharer)
+		{
+			_locale = locale ?? throw new ArgumentNullException(nameof(locale));
+			Sharer = sharer ?? throw new ArgumentNullException(nameof(sharer));
 		}
 
 		public Task<HttpResponseMessage> AdHocNonAuthenticatedGetAsync(string requestUri)
