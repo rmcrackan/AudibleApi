@@ -11,78 +11,6 @@ using Newtonsoft.Json.Linq;
 
 namespace AudibleApi
 {
-	public static class LibraryQueryStringBuilderExtensions
-	{
-		public static string ToQueryString(this LibraryOptions.ResponseGroupOptions responseGroupOptions)
-		{
-			if (responseGroupOptions == LibraryOptions.ResponseGroupOptions.None)
-				return "";
-
-			var descriptions = responseGroupOptions
-				.ToValues()
-				.Select(e => e.GetDescription())
-				.ToList();
-			if (!descriptions.Any() || descriptions.Any(d => d is null))
-				throw new Exception("Unexpected value in response group");
-			var str = "response_groups=" + descriptions.Aggregate((a, b) => $"{a},{b}");
-			return str;
-		}
-
-		public static string ToQueryString(this LibraryOptions.ImageSizeOptions imageSizeOptions)
-		{
-			if (imageSizeOptions == LibraryOptions.ImageSizeOptions.None)
-				return "";
-
-			var descriptions = imageSizeOptions
-				.ToValues()
-				.Select(e => e.GetDescription())
-				.ToList();
-			if (!descriptions.Any() || descriptions.Any(d => d is null))
-				throw new Exception("Unexpected value in image size");
-			var str = "image_sizes=" + descriptions.Aggregate((a, b) => $"{a},{b}");
-			return str;
-		}
-
-		public static string ToQueryString(this LibraryOptions.SortByOptions sortByOptions)
-		{
-			if (sortByOptions == LibraryOptions.SortByOptions.None)
-				return "";
-
-			var description = sortByOptions.GetDescription();
-			if (description is null)
-				throw new Exception("Unexpected value for sort by");
-			var str = "sort_by=" + description;
-			return str;
-		}
-
-		public static string ToQueryString(this LibraryOptions libraryOptions)
-		{
-			var parameters = new List<string>();
-
-			if (libraryOptions.NumberOfResultPerPage.HasValue)
-				parameters.Add("num_results=" + libraryOptions.NumberOfResultPerPage.Value);
-
-			if (libraryOptions.PageNumber.HasValue)
-				parameters.Add("page=" + libraryOptions.PageNumber.Value);
-
-			if (libraryOptions.PurchasedAfter.HasValue)
-				parameters.Add("purchased_after=" + libraryOptions.PurchasedAfter.Value.ToRfc3339String());
-
-			if (libraryOptions.ResponseGroups != LibraryOptions.ResponseGroupOptions.None)
-				parameters.Add(libraryOptions.ResponseGroups.ToQueryString());
-
-			if (libraryOptions.ImageSizes != LibraryOptions.ImageSizeOptions.None)
-				parameters.Add(libraryOptions.ImageSizes.ToQueryString());
-
-			if (libraryOptions.SortBy != LibraryOptions.SortByOptions.None)
-				parameters.Add(libraryOptions.SortBy.ToQueryString());
-
-			if (!parameters.Any())
-				return "";
-
-			return parameters.Aggregate((a, b) => $"{a}&{b}");
-		}
-	}
 	public class LibraryOptions
 	{
 		public const int NUMBER_OF_RESULTS_PER_PAGE_MIN = 0;
@@ -163,8 +91,7 @@ namespace AudibleApi
 			Series = 1 << 22,
 			[Description("sku")]
 			Sku = 1 << 23,
-			// https://stackoverflow.com/questions/7467722
-			ALL_OPTIONS = ~(1 << 24)
+			ALL_OPTIONS = (1 << 24) - 1
 		}
 		public ResponseGroupOptions ResponseGroups { get; set; }
 
@@ -192,8 +119,7 @@ namespace AudibleApi
 			_900 = 1 << 8,
 			[Description("1215")]
 			_1215 = 1 << 9,
-			// https://stackoverflow.com/questions/7467722
-			ALL_OPTIONS = ~(1 << 10)
+			ALL_OPTIONS = (1 << 10) - 1
 		}
 		public ImageSizeOptions ImageSizes { get; set; }
 
@@ -222,6 +148,34 @@ namespace AudibleApi
 			Title
 		}
 		public SortByOptions SortBy { get; set; }
+
+		public string ToQueryString()
+		{
+			var parameters = new List<string>();
+
+			if (NumberOfResultPerPage.HasValue)
+				parameters.Add("num_results=" + NumberOfResultPerPage.Value);
+
+			if (PageNumber.HasValue)
+				parameters.Add("page=" + PageNumber.Value);
+
+			if (PurchasedAfter.HasValue)
+				parameters.Add("purchased_after=" + PurchasedAfter.Value.ToRfc3339String());
+
+			if (ResponseGroups != ResponseGroupOptions.None)
+				parameters.Add(ResponseGroups.ToResponseGroupsQueryString());
+
+			if (ImageSizes != ImageSizeOptions.None)
+				parameters.Add(ImageSizes.ToImageSizesQueryString());
+
+			if (SortBy != SortByOptions.None)
+				parameters.Add(SortBy.ToSortByQueryString());
+
+			if (!parameters.Any())
+				return "";
+
+			return parameters.Aggregate((a, b) => $"{a}&{b}");
+		}
 	}
 
 	public partial class Api
@@ -277,7 +231,7 @@ namespace AudibleApi
 
 		#region GetLibraryBookAsync
 		public Task<Item> GetLibraryBookAsync(string asin, LibraryOptions.ResponseGroupOptions responseGroups)
-			=> GetLibraryBookAsync(asin, responseGroups.ToQueryString());
+			=> GetLibraryBookAsync(asin, responseGroups.ToResponseGroupsQueryString());
 
 		public async Task<Item> GetLibraryBookAsync(string asin, string responseGroups)
 		{
@@ -310,35 +264,6 @@ namespace AudibleApi
 			}
 
 			return dto.Item;
-		}
-		#endregion
-
-		#region GetLibraryBookChapters
-		public async Task<ContentMetadata> GetLibraryBookMetadataAsync(string asin)
-		{
-			if (asin is null)
-				throw new ArgumentNullException(nameof(asin));
-			if (string.IsNullOrWhiteSpace(asin))
-				throw new ArgumentException("asin may not be blank", nameof(asin));
-
-			asin = asin.ToUpper().Trim();
-
-			var url = $"{CONTENT_PATH}/{asin}/metadata?response_groups=chapter_info,content_reference";
-			var response = await AdHocAuthenticatedGetAsync(url);
-			var bookJObj = await response.Content.ReadAsJObjectAsync();
-			var metadataJson = bookJObj.ToString();
-
-			MetadataDtoV10 contentMetadata;
-			try
-			{
-				contentMetadata = MetadataDtoV10.FromJson(metadataJson);
-			}
-			catch (Exception ex)
-			{
-				Serilog.Log.Logger.Error(ex, $"Error retrieving content metadata for asin: {asin}");
-				throw;
-			}
-			return contentMetadata?.ContentMetadata;
 		}
 		#endregion
 

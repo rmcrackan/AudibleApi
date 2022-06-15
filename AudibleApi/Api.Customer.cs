@@ -3,43 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using Dinah.Core;
 using Dinah.Core.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AudibleApi
 {
-	public static class CustomerQueryStringBuilderExtensions
-	{
-		public static string ToQueryString(this CustomerOptions.ResponseGroupOptions responseGroupOptions)
-		{
-			if (responseGroupOptions == CustomerOptions.ResponseGroupOptions.None)
-				return "";
-
-			var descriptions = responseGroupOptions
-				.ToValues()
-				.Select(e => e.GetDescription())
-				.ToList();
-			if (!descriptions.Any() || descriptions.Any(d => d is null))
-				throw new Exception("Unexpected value in response group");
-			var str = "response_groups=" + descriptions.Aggregate((a, b) => $"{a},{b}");
-			return str;
-		}
-
-		public static string ToQueryString(this CustomerOptions customerOptions)
-		{
-			var parameters = new List<string>();
-
-			if (customerOptions.ResponseGroups != CustomerOptions.ResponseGroupOptions.None)
-				parameters.Add(customerOptions.ResponseGroups.ToQueryString());
-
-			if (!parameters.Any())
-				return "";
-
-			return parameters.Aggregate((a, b) => $"{a}&{b}");
-		}
-	}
 	public class CustomerOptions
 	{
 		public static CustomerOptions All => new CustomerOptions { ResponseGroups = ResponseGroupOptions.ALL_OPTIONS };
@@ -58,10 +27,21 @@ namespace AudibleApi
 			CustomerSegment = 1 << 3,
 			[Description("subscription_details_channels")]
 			SubscriptionDetailsChannels = 1 << 4,
-			// https://stackoverflow.com/questions/7467722
-			ALL_OPTIONS = ~(1 << 5)
+			ALL_OPTIONS = (1 << 5) - 1
 		}
 		public ResponseGroupOptions ResponseGroups { get; set; }
+		public string ToQueryString()
+		{
+			var parameters = new List<string>();
+
+			if (ResponseGroups != ResponseGroupOptions.None)
+				parameters.Add(ResponseGroups.ToResponseGroupsQueryString());
+
+			if (!parameters.Any())
+				return "";
+
+			return parameters.Aggregate((a, b) => $"{a}&{b}");
+		}
 	}
 
 	public partial class Api

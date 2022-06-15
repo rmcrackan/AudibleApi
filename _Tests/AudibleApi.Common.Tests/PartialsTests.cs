@@ -69,7 +69,7 @@ namespace PartialsTests
 			{
 				new Relationship { RelationshipToProduct = RelationshipToProduct.Child }
 			}
-		}.IsEpisodes.Should().BeFalse();
+		}.IsSeriesParent.Should().BeFalse();
 		[TestMethod]
 		public void IsEpisodes_true() => new Item
 		{
@@ -78,7 +78,7 @@ namespace PartialsTests
 				new Relationship
 				{
 					RelationshipType = RelationshipType.Episode,
-					RelationshipToProduct = RelationshipToProduct.Child
+					RelationshipToProduct = RelationshipToProduct.Parent
 				}
 			}
 		}.IsEpisodes.Should().BeTrue();

@@ -26,7 +26,6 @@ namespace LibraryOptionsTests
 		{
 			var libraryOptions = new LibraryOptions();
 			Assert.ThrowsException<ArgumentException>(() => libraryOptions.NumberOfResultPerPage = -1);
-			Assert.ThrowsException<ArgumentException>(() => libraryOptions.NumberOfResultPerPage = 0);
 			Assert.ThrowsException<ArgumentException>(() => libraryOptions.NumberOfResultPerPage = 1001);
 		}
 
@@ -203,14 +202,14 @@ namespace LibraryOptions_ResponseGroupOptions_Tests
 		[TestMethod]
 		public void invalid_groups_throws()
 		{
-			var responseGroups = (LibraryOptions.ResponseGroupOptions)(1 << 31);
-			Assert.ThrowsException<Exception>(() => responseGroups.ToQueryString());
+			var responseGroups = (LibraryOptions.ResponseGroupOptions)(1 << 30);
+			Assert.ThrowsException<Exception>(() => responseGroups.ToResponseGroupsQueryString());
 		}
 
 		[TestMethod]
 		public void None_returns_empty()
 			=> LibraryOptions.ResponseGroupOptions.None
-			.ToQueryString()
+			.ToResponseGroupsQueryString()
 			.Should().BeEmpty();
 
 		[TestMethod]
@@ -218,7 +217,7 @@ namespace LibraryOptions_ResponseGroupOptions_Tests
 		{
 			var responseGroups = LibraryOptions.ResponseGroupOptions.Sku;
 			var expected = "response_groups=sku";
-			responseGroups.ToQueryString().Should().Be(expected);
+			responseGroups.ToResponseGroupsQueryString().Should().Be(expected);
 		}
 
 		[TestMethod]
@@ -226,7 +225,7 @@ namespace LibraryOptions_ResponseGroupOptions_Tests
 		{
 			var responseGroups = LibraryOptions.ResponseGroupOptions.Sku | LibraryOptions.ResponseGroupOptions.Reviews;
 			var expected = "response_groups=reviews,sku";
-			responseGroups.ToQueryString().Should().Be(expected);
+			responseGroups.ToResponseGroupsQueryString().Should().Be(expected);
 		}
 
 		[TestMethod]
@@ -234,7 +233,7 @@ namespace LibraryOptions_ResponseGroupOptions_Tests
 		{
 			var responseGroups = LibraryOptions.ResponseGroupOptions.ALL_OPTIONS;
 			var expected = "response_groups=badge_types,category_ladders,claim_code_url,contributors,is_downloaded,is_returnable,media,origin_asin,pdf_url,percent_complete,price,product_attrs,product_desc,product_extended_attrs,product_plan_details,product_plans,provided_review,rating,relationships,review_attrs,reviews,sample,series,sku";
-			responseGroups.ToQueryString().Should().Be(expected);
+			responseGroups.ToResponseGroupsQueryString().Should().Be(expected);
 		}
     }
 }
@@ -248,13 +247,13 @@ namespace LibraryOptions_ImageSizeOptions_Tests
 		public void invalid_throws()
 		{
 			var imageSize = (LibraryOptions.ImageSizeOptions)(1 << 11);
-			Assert.ThrowsException<Exception>(() => imageSize.ToQueryString());
+			Assert.ThrowsException<Exception>(() => imageSize.ToImageSizesQueryString());
 		}
 
 		[TestMethod]
 		public void None_returns_empty()
 			=> LibraryOptions.ImageSizeOptions.None
-			.ToQueryString()
+			.ToImageSizesQueryString()
 			.Should().BeEmpty();
 
 		[TestMethod]
@@ -262,7 +261,7 @@ namespace LibraryOptions_ImageSizeOptions_Tests
 		{
 			var imageSize = LibraryOptions.ImageSizeOptions._1215;
 			var expected = "image_sizes=1215";
-			imageSize.ToQueryString().Should().Be(expected);
+			imageSize.ToImageSizesQueryString().Should().Be(expected);
 		}
 
 		[TestMethod]
@@ -270,7 +269,7 @@ namespace LibraryOptions_ImageSizeOptions_Tests
 		{
 			var imageSize = LibraryOptions.ImageSizeOptions._1215 | LibraryOptions.ImageSizeOptions._500;
 			var expected = "image_sizes=500,1215";
-			imageSize.ToQueryString().Should().Be(expected);
+			imageSize.ToImageSizesQueryString().Should().Be(expected);
 		}
 
 		[TestMethod]
@@ -278,7 +277,7 @@ namespace LibraryOptions_ImageSizeOptions_Tests
 		{
 			var imageSizes = LibraryOptions.ImageSizeOptions.ALL_OPTIONS;
 			var expected = "image_sizes=252,315,360,408,500,558,570,882,900,1215";
-			imageSizes.ToQueryString().Should().Be(expected);
+			imageSizes.ToImageSizesQueryString().Should().Be(expected);
 		}
 	}
 }
@@ -292,7 +291,7 @@ namespace LibraryOptions_SortByOptions_Tests
 		{
 			var libraryOptions = new LibraryOptions
 			{
-				SortBy = (LibraryOptions.SortByOptions)(1 << 31)
+				SortBy = (LibraryOptions.SortByOptions)(1 << 30)
 			};
 			Assert.ThrowsException<Exception>(() => libraryOptions.ToQueryString());
 		}
@@ -300,13 +299,13 @@ namespace LibraryOptions_SortByOptions_Tests
 		[TestMethod]
 		public void None_returns_empty()
 			=> LibraryOptions.SortByOptions.None
-			.ToQueryString()
+			.ToSortByQueryString()
 			.Should().BeEmpty();
 
 		[TestMethod]
 		public void parse_valid()
 			=> LibraryOptions.SortByOptions.TitleDesc
-			.ToQueryString()
+			.ToSortByQueryString()
 			.Should().Be("sort_by=-Title");
 	}
 }

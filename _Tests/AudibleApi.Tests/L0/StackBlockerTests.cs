@@ -158,9 +158,21 @@ namespace StackBlockerTests_L1_Pass
 	[TestClass]
 	public class Api_ctor_identityMaintainer
 	{
+		class MockIdentityMaintainer : IIdentityMaintainer
+		{
+			public ISystemDateTime SystemDateTime => throw new NotImplementedException();
+			public Locale Locale => Localization.Get("us");
+			public string DeviceSerialNumber => throw new NotImplementedException();
+			public string DeviceType => throw new NotImplementedException();
+			public string AmazonAccountId => throw new NotImplementedException();
+			public Task<AccessToken> GetAccessTokenAsync() => throw new NotImplementedException();
+			public Task<AdpToken> GetAdpTokenAsync() => throw new NotImplementedException();
+			public Task<PrivateKey> GetPrivateKeyAsync() => throw new NotImplementedException();
+		}
+
 		[TestMethod]
 		public void access_from_L1_passes()
-			=> new Api(new Mock<IIdentityMaintainer>().Object);
+			=> new Api(new MockIdentityMaintainer());
 
 		[TestMethod]
 		public void null_param_throws()
