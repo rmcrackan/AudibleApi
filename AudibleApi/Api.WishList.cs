@@ -57,7 +57,7 @@ namespace AudibleApi
 
 			var body = JObject.Parse($@"{{""asin"":""{asin}""}}");
 
-			var response = await AdHocAuthenticatedRequestAsync(WISHLIST_PATH, HttpMethod.Post, _client, body);
+			var response = await AdHocAuthenticatedRequestAsync(WISHLIST_PATH, HttpMethod.Post, Client, body);
 			var responseString = await response.Content.ReadAsStringAsync();
 
 			// same return values whether it already existed in wish list or newly added
@@ -86,7 +86,7 @@ namespace AudibleApi
 
 			var requestUri = $"{WISHLIST_PATH}/{asin}";
 
-			var response = await AdHocAuthenticatedRequestAsync(requestUri, HttpMethod.Delete, _client);
+			var response = await AdHocAuthenticatedRequestAsync(requestUri, HttpMethod.Delete, Client);
 			var responseString = await response.Content.ReadAsStringAsync();
 
 			// same return values whether it already existed in wish list or newly added

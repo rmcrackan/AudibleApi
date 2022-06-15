@@ -28,7 +28,7 @@ namespace AudibleApi
 		}
 
 		public Task<HttpResponseMessage> AdHocAuthenticatedGetAsync(string requestUri)
-			=> AdHocAuthenticatedRequestAsync(requestUri, HttpMethod.Get, _client);
+			=> AdHocAuthenticatedRequestAsync(requestUri, HttpMethod.Get, Client);
 
 		public Task<HttpResponseMessage> AdHocAuthenticatedGetAsync(string requestUri, IHttpClientActions client)
 			=> AdHocAuthenticatedRequestAsync(requestUri, HttpMethod.Get, client);

@@ -10,24 +10,25 @@ namespace AudibleApi
 	{
 		public virtual bool IsAuthenticated => false;
 		public IHttpClientSharer Sharer { get; }
-		protected Locale _locale { get; }
-		protected IHttpClientActions _client
-			=> Sharer.GetSharedHttpClient(_locale.AudibleApiUri());
+		protected Locale Locale { get; }
+		protected IHttpClientActions Client
+			=> Sharer.GetSharedHttpClient(Locale.AudibleApiUri());
+
 		public ApiUnauthenticated(Locale locale)
 		{
 			StackBlocker.ApiTestBlocker();
-			_locale = locale ?? throw new ArgumentNullException(nameof(locale));
+			Locale = locale ?? throw new ArgumentNullException(nameof(locale));
 			Sharer = new HttpClientSharer();
 		}
 
 		public ApiUnauthenticated(Locale locale, IHttpClientSharer sharer)
 		{
-			_locale = locale ?? throw new ArgumentNullException(nameof(locale));
+			Locale = locale ?? throw new ArgumentNullException(nameof(locale));
 			Sharer = sharer ?? throw new ArgumentNullException(nameof(sharer));
 		}
 
 		public Task<HttpResponseMessage> AdHocNonAuthenticatedGetAsync(string requestUri)
-			=> AdHocNonAuthenticatedGetAsync(requestUri, _client);
+			=> AdHocNonAuthenticatedGetAsync(requestUri, Client);
 
 		public async Task<HttpResponseMessage> AdHocNonAuthenticatedGetAsync(string requestUri, IHttpClientActions client)
 		{

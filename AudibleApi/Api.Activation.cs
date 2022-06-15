@@ -16,7 +16,7 @@ namespace AudibleApi
         public async Task<string> GetActivationBytesAsync()
         {
             // note: this call uses the audible login uri, NOT api
-            var client = Sharer.GetSharedHttpClient(_locale.AudibleLoginUri());
+            var client = Sharer.GetSharedHttpClient(Locale.AudibleLoginUri());
 
             var response = await AdHocAuthenticatedGetAsync($"/license/token?action=register&player_manuf=Audible,iPhone&player_model=iPhone", client);
 

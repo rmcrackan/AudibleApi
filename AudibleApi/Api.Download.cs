@@ -46,7 +46,7 @@ namespace AudibleApi
             HttpResponseMessage response;
             try
             {
-                response = await AdHocAuthenticatedRequestAsync(requestUri, HttpMethod.Post, _client, body);
+                response = await AdHocAuthenticatedRequestAsync(requestUri, HttpMethod.Post, Client, body);
             }
             catch (ApiErrorException ex)
             {
@@ -149,7 +149,7 @@ namespace AudibleApi
 
             //// this works for now:
             // MUST use relative url here
-            var client = Sharer.GetSharedHttpClient(_locale.AudibleLoginUri());
+            var client = Sharer.GetSharedHttpClient(Locale.AudibleLoginUri());
             var response = await AdHocAuthenticatedRequestAsync($"/companion-file/{asin}", HttpMethod.Head, client);
 
             validatePdfDownloadUrl(asin, response);
@@ -160,7 +160,7 @@ namespace AudibleApi
 
         private void validatePdfDownloadUrl(string asin, HttpResponseMessage response)
         {
-            var body = $"\r\nASIN:{asin}\r\nLocale:{_locale}";
+            var body = $"\r\nASIN:{asin}\r\nLocale:{Locale}";
 
             if (response is null)
                 throw new HttpRequestException("Response is null." + body);
