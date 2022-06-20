@@ -41,6 +41,9 @@ namespace AudibleApi.Common
 
     public partial class Chapter
     {
+        [JsonProperty("chapters")]
+        public Chapter[] Chapters { get; set; }
+
         [JsonProperty("length_ms")]
         public long LengthMs { get; set; }
 
@@ -52,6 +55,7 @@ namespace AudibleApi.Common
 
         [JsonProperty("title")]
         public string Title { get; set; }
+        public override string ToString() => Title;
     }
 
     public partial class ContentReference
