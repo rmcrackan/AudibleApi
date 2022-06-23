@@ -45,18 +45,18 @@ namespace AudibleApi
 
 		protected async Task<HttpResponseMessage> SendClientRequest(IHttpClientActions client, HttpRequestMessage request)
 		{
-			var cts = new CancellationTokenSource();
+			//https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.sendasync?view=net-6.0
 			try
 			{
-				return await client.SendAsync(request, cts.Token);
+				return await client.SendAsync(request);
 			}
-			catch (TaskCanceledException ex)
+			catch (TaskCanceledException)
 			{
-				if (ex.CancellationToken != cts.Token)
-				{
-					throw new ApiErrorException(request.RequestUri, new Newtonsoft.Json.Linq.JObject { { "http_error", "Timeout" } });
-				}
-				else throw;
+				throw new ApiErrorException(request.RequestUri, new Newtonsoft.Json.Linq.JObject { { "http_error", "The request failed due to timeout." } });
+			}
+			catch (HttpRequestException)
+			{
+				throw new ApiErrorException(request.RequestUri, new Newtonsoft.Json.Linq.JObject { { "http_error", "The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout." } });
 			}
 		}
 	}
