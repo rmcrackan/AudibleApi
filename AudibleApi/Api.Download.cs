@@ -158,6 +158,12 @@ namespace AudibleApi
             return downloadUrl;
         }
 
+        // keep the brackets, the key, the colon, and the first and last 2 char.s.
+        // Assumes value is 4+ characters long
+        private System.Text.RegularExpressions.Regex adpTokenRegex = new("{([a-z]+:..).*?(..)}", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Compiled);
+        // same as above but for "device-token"
+        private System.Text.RegularExpressions.Regex deviceTokenRegex = new("(device-token=..).*?(..;)", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Compiled);
+        private string regexReplacement = "$1...$2";
         private void validatePdfDownloadUrl(string asin, HttpResponseMessage response)
         {
             var body = $"\r\nASIN:{asin}\r\nLocale:{Locale}";
@@ -166,6 +172,14 @@ namespace AudibleApi
                 throw new HttpRequestException("Response is null." + body);
 
             body += $"\r\nStatus Code:{(int)response.StatusCode} - {response.StatusCode}";
+
+            // mask for log output
+            // original:
+            //   device-token=aZ/aZ/aZ; Domain=.audible.com; Expires=Wed, 22-Jun-2022 17:14:43 GMT; Path=/; Secure; HttpOnly, adpToken="{enc:a1Z+/=}{key:a1Z+/==}{iv:a1Z+/==}{name:AAZ1}{serial:Mg==}"; Domain=.audible.com;
+            // result:
+            // device-token=aZ...aZ; Domain=.audible.com; Expires=Wed, 22-Jun-2022 17:14:43 GMT; Path=/; Secure; HttpOnly, adpToken="{enc:a1.../=}{key:a1...==}{iv:a1...==}{name:AA...Z1}{serial:Mg...==}"; Domain=.audible.com;
+            body = adpTokenRegex.Replace(body, regexReplacement);
+            body = deviceTokenRegex.Replace(body, regexReplacement);
 
             if (response.Headers is null)
                 throw new HttpRequestException("Response Headers are null." + body);
