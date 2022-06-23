@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AudibleApi
@@ -39,8 +40,24 @@ namespace AudibleApi
 
 			var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
 
-			var response = await client.SendAsync(request);
-			return response;
+			return await SendClientRequest(client, request);
+		}
+
+		protected async Task<HttpResponseMessage> SendClientRequest(IHttpClientActions client, HttpRequestMessage request)
+		{
+			var cts = new CancellationTokenSource();
+			try
+			{
+				return await client.SendAsync(request, cts.Token);
+			}
+			catch (TaskCanceledException ex)
+			{
+				if (ex.CancellationToken != cts.Token)
+				{
+					throw new ApiErrorException(request.RequestUri, new Newtonsoft.Json.Linq.JObject { { "http_error", "Timeout" } });
+				}
+				else throw;
+			}
 		}
 	}
 }
