@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AudibleApi
@@ -39,8 +40,24 @@ namespace AudibleApi
 
 			var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
 
-			var response = await client.SendAsync(request);
-			return response;
+			return await SendClientRequest(client, request);
+		}
+
+		protected async Task<HttpResponseMessage> SendClientRequest(IHttpClientActions client, HttpRequestMessage request)
+		{
+			//https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.sendasync?view=net-6.0
+			try
+			{
+				return await client.SendAsync(request);
+			}
+			catch (TaskCanceledException)
+			{
+				throw new ApiErrorException(request.RequestUri, new Newtonsoft.Json.Linq.JObject { { "http_error", "The request failed due to timeout." } });
+			}
+			catch (HttpRequestException)
+			{
+				throw new ApiErrorException(request.RequestUri, new Newtonsoft.Json.Linq.JObject { { "http_error", "The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout." } });
+			}
 		}
 	}
 }

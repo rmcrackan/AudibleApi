@@ -54,8 +54,7 @@ namespace AudibleApi
 					await _identityMaintainer.GetAdpTokenAsync(),
 					await _identityMaintainer.GetPrivateKeyAsync());
 
-			var response = await client.SendAsync(request);
-			return response;
+			return await SendClientRequest(client, request);
 		}
 
 		public async Task<HttpResponseMessage> AdHocAuthenticatedGetWithAccessTokenAsync(string requestUri, IHttpClientActions client)
@@ -71,8 +70,7 @@ namespace AudibleApi
 
 			request.Headers.Add("x-amz-access-token", accessToken.TokenValue);
 
-			var response = await client.SendAsync(request);
-			return response;
+			return await SendClientRequest(client, request);
 		}
 	}
 }

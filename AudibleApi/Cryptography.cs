@@ -124,19 +124,30 @@ namespace AudibleApi
         }
 
         /// <summary>
-        /// Trim any leading zeroes to ensure <see cref="RSAParameters"/> are valid.
+        /// Trim or add leading zeroes to ensure <see cref="RSAParameters"/> are valid.
         /// https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wcce/5cf2e6b9-3195-4f85-bc18-05b50e6d4e11?redirectedfrom=MSDN
         /// </summary>
         private static byte[] ValidateInt(byte[] integer, int keySize, int quotient)
         {
-            if (integer.Length != Math.Ceiling(keySize / (double)quotient) &&
-                    integer[0] == 0)
+            var expectedSize = keySize / quotient;
+
+            if (integer.Length == expectedSize)
+                return integer;
+            else if (integer.Length == expectedSize + 1 && integer[0] == 0)
             {
-                var bts = new byte[integer.Length - 1];
+                var bts = new byte[expectedSize];
                 Buffer.BlockCopy(integer, 1, bts, 0, bts.Length);
                 return bts;
             }
-            return integer;
+            else if (integer.Length == expectedSize - 1)
+            {
+                var bts = new byte[expectedSize];
+                Buffer.BlockCopy(integer, 0, bts, 1, integer.Length);
+                return bts;
+            }
+            else
+                //If this happens, it won't happen for all key parameters, so logging the real value will not reveal the complete key.
+                throw new CryptographicException($"Unable to parse rsa parameter integer: {BitConverter.ToString(integer)}");
         }
     }
 }
