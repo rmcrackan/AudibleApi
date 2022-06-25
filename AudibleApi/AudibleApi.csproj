@@ -13,6 +13,14 @@
 	  <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+	
   <ItemGroup>
     <Compile Update="Api.*.cs">
       <DependentUpon>Api [partial].cs</DependentUpon>
