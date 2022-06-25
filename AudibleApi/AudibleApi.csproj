@@ -9,9 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AudibleApi.Common" Version="4.1.1.1" />
-    <PackageReference Include="Jint" Version="2.11.58" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+	  <PackageReference Include="AudibleApi.Common" Version="4.1.1.1" />
+	  <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,9 +38,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Cryptography.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="locales.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

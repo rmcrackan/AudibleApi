@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using Dinah.Core;
 using Dinah.Core.Net;
 using Dinah.Core.Net.Http;
@@ -24,6 +26,27 @@ namespace AudibleApi
 			};
 			return create(innerHander);
 		}
+
+		public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+		{
+			//https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.sendasync?view=net-6.0
+			try
+			{
+				return await base.SendAsync(request, cancellationToken);
+			}
+			catch (TaskCanceledException tcex)
+			{
+				if (tcex.CancellationToken == cancellationToken)
+					throw;
+
+				throw new ApiErrorException(request.RequestUri, new Newtonsoft.Json.Linq.JObject { { "http_error", "The request failed due to timeout." } });
+			}
+			catch (HttpRequestException)
+			{
+				throw new ApiErrorException(request.RequestUri, new Newtonsoft.Json.Linq.JObject { { "http_error", "The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout." } });
+			}
+		}
+
 		public static ApiHttpClient Create(HttpClientHandler innerHandler)
 		{
 			if (innerHandler is null)
