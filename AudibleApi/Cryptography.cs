@@ -10,32 +10,24 @@ namespace AudibleApi
 {
     public static partial class Cryptography
     {
+        private static readonly uint[] AmazonKey = new uint[] { 4169969034, 4087877101, 1706678977, 3681020276 };
+
         public static string EncryptMetadata(string metadata)
         {
             if (metadata is null)
                 throw new ArgumentNullException(nameof(metadata));
 
-            var engine = new Jint.Engine()
-                .SetValue("log", new Action<object>(Console.WriteLine))
-                .Execute(Javascript);
+            var metadataBts = Encoding.ASCII.GetBytes(metadata);
 
-            var val = engine
-                .Execute($@"
-                    var metadata = '{metadata}';
-                    var update_val = update(metadata);
-                    var hex_hash = format(update_val);
-                    var str_to_parse = hex_hash + '#' + metadata;
-                    var parsed = parse(str_to_parse);
-                    var evaled = evaluate(parsed);
+            var crc = Crc32.ComputeChecksum(metadataBts).ToString("X8");
 
-                    // return
-                    'ECdITeCs:' + evaled
-                ")
-                .GetCompletionValue()
-                .ToObject()
-                .ToString();
+            var clearString = crc + "#" + metadata;
 
-            return val;
+            var clearBytes = Encoding.ASCII.GetBytes(clearString);
+
+            var cipherBytes = XXTEA.Encrypt(clearBytes, AmazonKey);
+
+            return "ECdITeCs:" + Convert.ToBase64String(cipherBytes);
         }
 
         public static void SignRequest(this HttpRequestMessage request, DateTime dateTime, AdpToken adpToken, PrivateKey privateKey)
@@ -134,11 +126,7 @@ namespace AudibleApi
             if (integer.Length == expectedSize)
                 return integer;
             else if (integer.Length == expectedSize + 1 && integer[0] == 0)
-            {
-                var bts = new byte[expectedSize];
-                Buffer.BlockCopy(integer, 1, bts, 0, bts.Length);
-                return bts;
-            }
+                return integer[1..];
             else if (integer.Length == expectedSize - 1)
             {
                 var bts = new byte[expectedSize];
