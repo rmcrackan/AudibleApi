@@ -14,10 +14,10 @@ namespace AudibleApi.Common
 			=> Relationships?.Any(r => r.RelationshipToProduct == RelationshipToProduct.Parent && r.RelationshipType == RelationshipType.Episode)
 			?? false;
 		public bool IsSeriesParent
-			=> Relationships is null ? false :
-			Relationships.Any(r => r.RelationshipToProduct == RelationshipToProduct.Child && r.RelationshipType == RelationshipType.Episode) && 
-			!Relationships.Any(r => r.RelationshipToProduct == RelationshipToProduct.Parent);
-		
+			=> Relationships is not null
+			&& Relationships.Any(r => r.RelationshipToProduct == RelationshipToProduct.Child && r.RelationshipType == RelationshipType.Episode)
+			&& !Relationships.Any(r => r.RelationshipToProduct == RelationshipToProduct.Parent && r.RelationshipType == RelationshipType.Season);
+
 		public string PictureId => ProductImages?.PictureId;
 		public string PictureLarge => ProductImages?.PictureLarge;
 		public DateTime DateAdded => PurchaseDate.UtcDateTime;
