@@ -11,10 +11,8 @@ namespace AudibleApi
 {
     public enum DownloadQuality
     {
-        Extreme,
         High,
-        Normal,
-        Low
+        Normal
     }
     public partial class Api
     {
@@ -30,7 +28,7 @@ namespace AudibleApi
         /// <exception cref="InvalidResponseException">Thrown when the Api did not return a proper <see cref="ContentLicense"/>.</exception>
         /// <exception cref="InvalidValueException">Thrown when <see cref="ContentLicense.StatusCode"/> is not "Granted" or "Denied".</exception>
         /// <exception cref="ValidationErrorException">Thrown when <see cref="ContentLicense.StatusCode"/> is "Denied".</exception>
-        public async Task<ContentLicense> GetDownloadLicenseAsync(string asin, DownloadQuality quality = DownloadQuality.Extreme)
+        public async Task<ContentLicense> GetDownloadLicenseAsync(string asin, DownloadQuality quality = DownloadQuality.High)
         {
             ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
 
