@@ -57,7 +57,7 @@ namespace AudibleApi
             catch (Exception ex)
             {
                 var apiExp = new ApiErrorException(
-                    new Uri(requestUri),
+                    requestUri,
                     body,
                     $"Error requesting license for asin: [{asin}]",
                     ex);
@@ -68,7 +68,7 @@ namespace AudibleApi
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 var ex = new ApiErrorException(
-                    response.Headers.Location,
+                    response?.Headers?.Location,
                     //Assume this response does not contain PII.
                     new JObject { { "http_response_code", response.StatusCode.ToString() }, { "response", await response.Content.ReadAsStringAsync() } },
                     $"License response not \"OK\" for asin: [{asin}]");

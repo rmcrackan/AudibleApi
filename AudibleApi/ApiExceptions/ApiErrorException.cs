@@ -11,9 +11,13 @@ namespace AudibleApi
         public ApiErrorException(Uri requestUri, JObject jObj)
             : this(requestUri, jObj, null, null) { }
 
+        public ApiErrorException(string requestUri, JObject jObj, string message)
+            : this(requestUri, jObj, message, null) { }
+        public ApiErrorException(string requestUri, JObject jObj, string message, Exception innerException)
+            : base(requestUri, jObj, message, innerException) { }
+
         public ApiErrorException(Uri requestUri, JObject jObj, string message)
             : this(requestUri, jObj, message, null) { }
-
         public ApiErrorException(Uri requestUri, JObject jObj, string message, Exception innerException)
             : base(requestUri, jObj, message, innerException) { }
     }

@@ -27,7 +27,7 @@ namespace ExceptionTests
             var jObj = JObject.Parse(jObjString);
             var exception = new FakeAbstractException(uri, jObj);
 
-            Assert.AreEqual(exception.RequestUri, uri);
+            Assert.AreEqual(exception.RequestUri, uri.OriginalString);
             Assert.AreEqual(exception.JsonMessage, jObjString);
             Assert.AreEqual(exception.Message, $"Exception of type '{typeof(FakeAbstractException).FullName}' was thrown.");
             Assert.AreEqual(exception.InnerException, null);
@@ -45,7 +45,7 @@ namespace ExceptionTests
             var message = "my message";
             var exception = new FakeAbstractException(uri, jObj, message);
 
-            Assert.AreEqual(exception.RequestUri, uri);
+            Assert.AreEqual(exception.RequestUri, uri.OriginalString);
             Assert.AreEqual(exception.JsonMessage, jObjString);
             Assert.AreEqual(exception.Message, message);
             Assert.AreEqual(exception.InnerException, null);
@@ -64,7 +64,7 @@ namespace ExceptionTests
             var innerException = new Exception("foo");
             var exception = new FakeAbstractException(uri, jObj, message, innerException);
 
-            Assert.AreEqual(exception.RequestUri, uri);
+            Assert.AreEqual(exception.RequestUri, uri.OriginalString);
             Assert.AreEqual(exception.JsonMessage, jObjString);
             Assert.AreEqual(exception.Message, message);
             Assert.AreEqual(exception.InnerException, innerException);

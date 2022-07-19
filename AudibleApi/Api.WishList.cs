@@ -63,7 +63,7 @@ namespace AudibleApi
 			// same return values whether it already existed in wish list or newly added
 			if (response.StatusCode != HttpStatusCode.Created)
 				throw new ApiErrorException(
-					new Uri(WISHLIST_PATH),
+					WISHLIST_PATH,
 					JObject.Parse(responseString),
 					$"Add to Wish List failed. Invalid status code. Code: {response.StatusCode}"
 					);
@@ -71,7 +71,7 @@ namespace AudibleApi
 			var location = response.Headers.Location.ToString();
 			if (location != $"{WISHLIST_PATH}/{asin}")
 				throw new ApiErrorException(
-					new Uri(WISHLIST_PATH),
+					WISHLIST_PATH,
 					JObject.Parse(responseString),
 					$"Add to Wish List failed. Bad location. Location: {location}"
 					);
@@ -92,7 +92,7 @@ namespace AudibleApi
 			// same return values whether it already existed in wish list or newly added
 			if (response.StatusCode != HttpStatusCode.NoContent)
 				throw new ApiErrorException(
-					new Uri(requestUri),
+					requestUri,
 					JObject.Parse(responseString),
 					$"Delete from Wish List failed. Invalid status code. Code: {response.StatusCode}. Asin: {asin}"
 					);
