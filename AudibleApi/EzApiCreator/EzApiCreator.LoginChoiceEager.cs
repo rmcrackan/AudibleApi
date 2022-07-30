@@ -39,7 +39,7 @@ namespace AudibleApi
 			var loginUrl = externalLogin.GetLoginUrl();
 
 			var choiceIn = new ChoiceIn(loginUrl);
-			var choiceOut = loginChoiceEager.Start(choiceIn);
+			var choiceOut = await loginChoiceEager.StartAsync(choiceIn);
 
 			if (choiceOut is null)
 			{

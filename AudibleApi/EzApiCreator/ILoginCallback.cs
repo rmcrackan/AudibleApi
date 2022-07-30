@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace AudibleApi
 {
 	/// <summary>If not already logged in, log in with API</summary>
 	public interface ILoginCallback
 	{
-		(string email, string password) GetLogin();
-		string GetCaptchaAnswer(byte[] captchaImage);
-		(string name, string value) GetMfaChoice(MfaConfig mfaConfig);
-		string Get2faCode();
-		void ShowApprovalNeeded();
+		Task<(string email, string password)> GetLoginAsync();
+		Task<string> GetCaptchaAnswerAsync(byte[] captchaImage);
+		Task<(string name, string value)> GetMfaChoiceAsync(MfaConfig mfaConfig);
+		Task<string> Get2faCodeAsync();
+		Task ShowApprovalNeededAsync();
 	}
 }
