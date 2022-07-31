@@ -40,7 +40,7 @@ namespace AudibleApi
 			Dinah.Core.ArgumentValidator.EnsureNotNull(locale, nameof(locale));
 			Dinah.Core.ArgumentValidator.EnsureNotNull(responder, nameof(responder));
 
-			var (email, password) = getUserLogin(responder);
+			var (email, password) = await getUserLoginAsync(responder);
 
 			return await loginEmailPasswordAsync(locale, responder, email, password);
 		}
@@ -56,28 +56,28 @@ namespace AudibleApi
 				switch (loginResult)
 				{
 					case CredentialsPage credentialsPage:
-						var (emailInput, pwInput) = getUserLogin(responder);
+						var (emailInput, pwInput) = await getUserLoginAsync(responder);
 						loginResult = await credentialsPage.SubmitAsync(emailInput, pwInput);
 						break;
 
 					case CaptchaPage captchaResult:
 						var imageBytes = await downloadImageAsync(captchaResult.CaptchaImage);
-						var guess = responder.GetCaptchaAnswer(imageBytes);
+						var guess = await responder.GetCaptchaAnswerAsync(imageBytes);
 						loginResult = await captchaResult.SubmitAsync(guess);
 						break;
 
 					case TwoFactorAuthenticationPage _2fa:
-						var _2faCode = responder.Get2faCode();
+						var _2faCode = await responder.Get2faCodeAsync();
 						loginResult = await _2fa.SubmitAsync(_2faCode);
 						break;
 
 					case ApprovalNeededPage approvalNeeded:
-						responder.ShowApprovalNeeded();
+						await responder.ShowApprovalNeededAsync();
 						loginResult = await approvalNeeded.SubmitAsync();
 						break;
 
 					case MfaSelectionPage mfaSelection:
-						(var name, var value) = responder.GetMfaChoice(mfaSelection.MfaConfig);
+						(var name, var value) = await responder.GetMfaChoiceAsync(mfaSelection.MfaConfig);
 						loginResult = await mfaSelection.SubmitAsync(name, value);
 						break;
 
@@ -90,9 +90,9 @@ namespace AudibleApi
 			}
 		}
 
-		private static (string email, string password) getUserLogin(ILoginCallback responder)
+		private static async Task<(string email, string password)> getUserLoginAsync(ILoginCallback responder)
 		{
-			var (email, password) = responder.GetLogin();
+			var (email, password) = await responder.GetLoginAsync();
 
 			if (email is null && password is null)
 				// TODO: exceptions should not be used for control flow. fix this
