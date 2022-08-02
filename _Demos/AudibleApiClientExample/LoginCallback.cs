@@ -1,19 +1,20 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using AudibleApi;
 
 namespace AudibleApiClientExample
 {
 	public class LoginCallback : ILoginCallback
 	{
-		public string Get2faCode()
+		public Task<string> Get2faCodeAsync()
 		{
 			Console.WriteLine("Two-Step Verification code:");
 			var _2faCode = Console.ReadLine();
-			return _2faCode;
+			return Task.FromResult(_2faCode);
 		}
 
-		public string GetCaptchaAnswer(byte[] captchaImage)
+		public Task<string> GetCaptchaAnswerAsync(byte[] captchaImage)
 		{
 			var tempFileName = Path.Combine(Path.GetTempPath(), "audible_api_captcha_" + Guid.NewGuid() + ".jpg");
 
@@ -32,7 +33,7 @@ namespace AudibleApiClientExample
 
 				Console.WriteLine("CAPTCHA answer: ");
 				var guess = Console.ReadLine();
-				return guess;
+				return Task.FromResult(guess);
 			}
 			finally
 			{
@@ -41,27 +42,27 @@ namespace AudibleApiClientExample
 			}
 		}
 
-		public (string email, string password) GetLogin()
+		public Task<(string email, string password)> GetLoginAsync()
 		{
 			var secrets = Program.GetSecrets();
 			if (secrets is not null)
 			{
 				if (!string.IsNullOrWhiteSpace(secrets.email) && !string.IsNullOrWhiteSpace(secrets.password))
-					return (secrets.email, secrets.password);
+					return Task.FromResult((secrets.email, secrets.password));
 			}
 
 			Console.WriteLine("Email:");
 			var e = Console.ReadLine().Trim();
 			Console.WriteLine("Password:");
 			var pw = Dinah.Core.ConsoleLib.ConsoleExt.ReadPassword();
-			return (e, pw);
+			return Task.FromResult((e, pw));
 		}
 
 		//
 		// not all parts are implemented for demo app
 		//
-		public (string name, string value) GetMfaChoice(MfaConfig mfaConfig) => throw new NotImplementedException();
+		public Task<(string name, string value)> GetMfaChoiceAsync(MfaConfig mfaConfig) => throw new NotImplementedException();
 
-		public void ShowApprovalNeeded() => throw new NotImplementedException();
+		public Task ShowApprovalNeededAsync() => throw new NotImplementedException();
 	}
 }

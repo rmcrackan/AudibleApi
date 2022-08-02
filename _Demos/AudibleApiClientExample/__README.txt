@@ -1,5 +1,7 @@
 ﻿SETUP
 =====
+Demo example is Windows only. For a different OS, edit: LoginCallback.GetCaptchaAnswerAsync
+
 1) to use demo app WITHOUT live libation settings, fill out these settings in _UserSetup.cs
 	LOCALE_NAME
 	IDENTITY_FILE_PATH
