@@ -286,11 +286,11 @@ namespace AudibleApi
 		{
 			if (!libraryOptions.PurchasedAfter.HasValue || libraryOptions.PurchasedAfter.Value < new DateTime(1970, 1, 1))
 				libraryOptions.PurchasedAfter = new DateTime(1970, 1, 1);
-
-			libraryOptions.NumberOfResultPerPage = 0;
-			int totalCount = await GetItemsCountAsync(this, libraryOptions);
+			
 			libraryOptions.NumberOfResultPerPage = numItemsPerRequest;
-
+			
+			int totalCount = await GetItemsCountAsync(libraryOptions);
+			
 			int numPages = totalCount / libraryOptions.NumberOfResultPerPage.Value;
 			if (numPages * libraryOptions.NumberOfResultPerPage.Value < totalCount)
 				numPages++;
@@ -344,15 +344,25 @@ namespace AudibleApi
 			}
 		}
 
-		private async Task<int> GetItemsCountAsync(Api api, LibraryOptions libraryOptions)
+		public async Task<int> GetItemsCountAsync(LibraryOptions libraryOptions)
 		{
-			var response = await api.getLibraryResponseAsync(libraryOptions.ToQueryString());
+			var orig = libraryOptions.NumberOfResultPerPage;
 
-			int totalCount = -1;
-			if (response.Headers.TryGetValues("Total-Count", out var values))
-				totalCount = int.Parse(values.First());
+			try
+			{
+				libraryOptions.NumberOfResultPerPage = 1;
 
-			return totalCount;
+				var response = await getLibraryResponseAsync(libraryOptions.ToQueryString());
+
+				if (response.Headers.TryGetValues("Total-Count", out var values))
+					return int.Parse(values.First());
+
+				return -1;
+			}
+			finally
+			{
+				libraryOptions.NumberOfResultPerPage = orig;
+			}
 		}
 
 		private async Task<List<Item>> getAllLibraryItemsAsync_gated(LibraryOptions libraryOptions)
