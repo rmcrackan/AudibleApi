@@ -66,7 +66,7 @@ namespace AudibleApi
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 var ex = new ApiErrorException(
-                    response?.Headers?.Location,
+                    response.RequestMessage.RequestUri,
                     //Assume this response does not contain PII.
                     new JObject { { "http_response_code", response.StatusCode.ToString() }, { "response", await response.Content.ReadAsStringAsync() } },
                     $"License response not \"OK\" for asin: [{asin}]");
@@ -84,7 +84,7 @@ namespace AudibleApi
             catch (Exception ex)
             {
                 var apiExp = new InvalidResponseException(
-                    response.Headers.Location,
+                    response.RequestMessage.RequestUri,
                     responseJobj, //Even if the object doesn't parse, it may contain PII.
                     $"License response could not be parsed for asin: [{asin}]",
                     ex);
@@ -95,7 +95,7 @@ namespace AudibleApi
             if (contentLicenseDtoV10?.Message is not null)
             {
                 var ex = new InvalidResponseException(
-                    response.Headers.Location,
+					response.RequestMessage.RequestUri,
                     new JObject { { "message", contentLicenseDtoV10.Message } }, //Assume this message does not contain PII.
                     $"License response returned error for asin: [{asin}]");
                 Serilog.Log.Logger.Error(ex, "License response returned error");
@@ -105,7 +105,7 @@ namespace AudibleApi
             if (contentLicenseDtoV10?.ContentLicense?.StatusCode is null)
             {
                 var ex = new InvalidValueException(
-                    response.Headers.Location,
+					response.RequestMessage.RequestUri,
                     responseJobj, //This error shouldn't happen, so log the entire response which contains PII.
                     $"License response does not contain a valid status code for asin: [{asin}]");
                 Serilog.Log.Logger.Verbose(ex, "License response does not contain a valid status code");
@@ -114,19 +114,16 @@ namespace AudibleApi
 
             if (contentLicenseDtoV10.ContentLicense.StatusCode.EqualsInsensitive("Denied"))
             {
-                var ex = new ValidationErrorException(
-                    response.Headers.Location,
-                    //Denial reasons may contain PII.
-                    new JObject { { "license_denial_reasons", JArray.FromObject(contentLicenseDtoV10.ContentLicense.LicenseDenialReasons) } },
-                    $"Content License denied for asin: [{asin}]");
-                Serilog.Log.Logger.Verbose(ex, "Content License denied");
+				var ex = new ContentLicenseDeniedException(response.RequestMessage.RequestUri, contentLicenseDtoV10.ContentLicense);
+
+                Serilog.Log.Logger.Error(ex, "Content License denied");
                 throw ex;
             }
 
             if (!contentLicenseDtoV10.ContentLicense.StatusCode.EqualsInsensitive("Granted"))
             {
                 var ex = new InvalidValueException(
-                    response.Headers.Location,
+                    response.RequestMessage.RequestUri,
                     responseJobj, //This error shouldn't happen, so log the entire response which contains PII.
                     $"Unrecognized status code \"{contentLicenseDtoV10.ContentLicense.StatusCode}\" for asin: [{asin}]");
                 Serilog.Log.Logger.Verbose(ex, "Unrecognized status code");

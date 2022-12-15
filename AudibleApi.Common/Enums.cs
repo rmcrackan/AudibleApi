@@ -304,4 +304,34 @@ namespace AudibleApi.Common
 		public const string Series = "series";
 	}
 	#endregion
+
+	#region License Rejection
+
+	/// <summary>
+	/// RejectionReason
+	///		[JsonProperty("rejectionReason")]
+	///		public string RejectionReason { get; set; }
+	/// </summary>
+
+	public static class RejectionReason
+	{
+		public const string ContentEligibility = "ContentEligibility";
+		public const string RequesterEligibility = "RequesterEligibility";
+		public const string GenericError = "GenericError";
+	}
+
+	/// <summary>
+	/// RejectionReason
+	///		[JsonProperty("rejectionReason")]
+	///		public string ValidationType { get; set; }
+	/// </summary>
+	public static class ValidationType
+	{
+		public const string Client = "Client";
+		public const string Ownership = "Ownership";
+		public const string Membership = "Membership";
+		public const string AYCL = "AYCL";
+	}
+
+	#endregion
 }
