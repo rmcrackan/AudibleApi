@@ -7,7 +7,7 @@ namespace AudibleApi
     {
         public string RequestUri { get; }
         // strore as string, not dynamic JObject. Serilog sometimes prints dynamic JObject as "[[[]]]"
-        public string JsonMessage { get; }
+        public string JsonMessage { get; protected init; }
 
         public AudibleApiException(Uri requestUri, JObject jsonMessage) : this(requestUri, jsonMessage, null, null) { }
 
@@ -18,7 +18,7 @@ namespace AudibleApi
         public AudibleApiException(string requestUri, JObject jsonMessage, string message, Exception innerException) : base(message, innerException)
         {
             RequestUri = requestUri;
-            JsonMessage = jsonMessage.ToString(Newtonsoft.Json.Formatting.None);
+            JsonMessage = jsonMessage?.ToString(Newtonsoft.Json.Formatting.None);
         }
     }
 }
