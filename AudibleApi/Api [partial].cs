@@ -33,7 +33,7 @@ namespace AudibleApi
 		public Task<HttpResponseMessage> AdHocAuthenticatedGetAsync(string requestUri, IHttpClientActions client)
 			=> AdHocAuthenticatedRequestAsync(requestUri, HttpMethod.Get, client);
 
-		public async Task<HttpResponseMessage> AdHocAuthenticatedRequestAsync(string requestUri, HttpMethod method, IHttpClientActions client, JObject postData = null)
+		public async Task<HttpResponseMessage> AdHocAuthenticatedRequestAsync(string requestUri, HttpMethod method, IHttpClientActions client, JObject requestBody = null)
 		{
 			if (requestUri is null)
 				throw new ArgumentNullException(nameof(requestUri));
@@ -41,13 +41,13 @@ namespace AudibleApi
 				throw new ArgumentException($"{nameof(requestUri)} may not be blank");
 			if (method is null)
 				throw new ArgumentNullException(nameof(method));
-			if (method.Method == HttpMethod.Post.Method && postData is null)
-				throw new ArgumentNullException(nameof(postData), $"Must provide post data when using {nameof(HttpMethod)}.{nameof(HttpMethod.Post)}");
+			if (requestBody is null && (method.Method == HttpMethod.Post.Method || method.Method == HttpMethod.Put.Method))
+				throw new ArgumentNullException(nameof(requestBody), $"Must provide request body content when using the {method.Method} {nameof(HttpMethod)}");
 
 			var request = new HttpRequestMessage(method, requestUri);
 
-			if (method.Method == HttpMethod.Post.Method)
-				request.AddContent(postData);
+			if (method.Method == HttpMethod.Post.Method || method.Method == HttpMethod.Put.Method)
+				request.AddContent(requestBody);
 
 			request.SignRequest(
 					_identityMaintainer.SystemDateTime.UtcNow,
