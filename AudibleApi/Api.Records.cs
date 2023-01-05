@@ -13,30 +13,30 @@ namespace AudibleApi
 		private const string FIONA_DOMAIN = "ht" + "tps://cde-ta-g7g.amazon.com";
 		private const string FIONA_SIDECAR_PATH = "/FionaCDEServiceEngine/sidecar";
 
-		public async Task<bool> CreateRecordsAsync(RecordCreator recordCreator)
+		public async Task<bool> CreateRecordsAsync(AnnotationBuilder annotationBuilder)
 		{
 			const string requestUri = FIONA_SIDECAR_PATH + $"?type=AUDI";
 
-			ArgumentValidator.EnsureNotNull(recordCreator, nameof(recordCreator));
-			if (recordCreator.Count == 0) return false;
+			ArgumentValidator.EnsureNotNull(annotationBuilder, nameof(annotationBuilder));
+			if (annotationBuilder.Count == 0) return false;
 
 			try
 			{
 				var client = Sharer.GetSharedHttpClient(FIONA_DOMAIN);
-				var response = await AdHocAuthenticatedXmlPostAsync(requestUri, client, recordCreator.Annotation);
+				var response = await AdHocAuthenticatedXmlPostAsync(requestUri, client, annotationBuilder.Annotation);
 
 				if (!response.IsSuccessStatusCode)
 					Serilog.Log.Information(
 						"Record creation failed for {asin}. {Response} {@DebugInfo}",
-						recordCreator.Asin,
+						annotationBuilder.Asin,
 						await response.Content.ReadAsStringAsync(),
-						recordCreator.Annotation);
+						annotationBuilder.Annotation);
 				
 				return response.IsSuccessStatusCode;
 			}
 			catch (Exception ex)
 			{
-				Serilog.Log.Error(ex, "Error encountered while trying to create records for {asin}.", recordCreator.Asin);
+				Serilog.Log.Error(ex, "Error encountered while trying to create records for {asin}.", annotationBuilder.Asin);
 				throw;
 			}
 		}
@@ -64,7 +64,7 @@ namespace AudibleApi
 						new XElement(record.GetName(),
 							new XAttribute("action", "delete"),
 							new XAttribute("begin", record.StartPosition),
-							new XAttribute("timestamp", RecordCreator.ToXmlDateTime(DateTimeOffset.Now)));
+							new XAttribute("timestamp", AnnotationBuilder.ToXmlDateTime(DateTimeOffset.Now)));
 
 					if (record is IRangeAnnotation range)
 						deleteAction.Add(new XAttribute("end", range.EndPosition));
@@ -72,7 +72,7 @@ namespace AudibleApi
 					return deleteAction;
 				}
 
-				var (annotation, book) = RecordCreator.CreateAnnotation(asin);
+				var (annotation, book) = AnnotationBuilder.CreateAnnotation(asin);
 				book.Add(records.Select(r => createDeleteAction(r)));
 
 				var client = Sharer.GetSharedHttpClient(FIONA_DOMAIN);

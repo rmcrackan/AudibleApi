@@ -11,23 +11,23 @@ namespace AudibleApi
 
 	SAMPLE USEAGE:
 
-		RecordCreator rc = new(asin);
+		AnnotationBuilder ab = new(asin);
 
-		rc.AddClip(5000000, 5030000, "clip 1 title", "clip 1 note");
-		rc.AddClip(6000000, 6030000, "clip 2 title", "clip 2 note");
-		rc.SetLastHeard(7654321);
-		rc.AddBookmark(70000000);
-		rc.AddBookmark(60000000);
-		rc.AddNote(69000000, 69900000, "Standalone note 1");
-		rc.AddNote(42000000, 42200000, "Standalone note 2");
+		ab.AddClip(5000000, 5030000, "clip 1 title", "clip 1 note");
+		ab.AddClip(6000000, 6030000, "clip 2 title", "clip 2 note");
+		ab.SetLastHeard(7654321);
+		ab.AddBookmark(70000000);
+		ab.AddBookmark(60000000);
+		ab.AddNote(69000000, 69900000, "Standalone note 1");
+		ab.AddNote(42000000, 42200000, "Standalone note 2");
 
-		var success = await CreateRecordsAsync(rc);
+		var success = await CreateRecordsAsync(ab);
 	*/
 	/// <summary>
 	/// <para>Create records (e.g. <see cref="RecordType.LastHeard"/>, <see cref="RecordType.Bookmark"/>, <see cref="RecordType.Note"/>, and <see cref="RecordType.Clip"/>) for an audiobook.</para>
 	/// <para>Used with <see cref="Api.CreateRecordsAsync(RecordCreator)"/></para>
 	/// </summary>
-	public class RecordCreator
+	public class AnnotationBuilder
 	{
 		private readonly XElement _book;
 		public string Asin { get; }
@@ -35,7 +35,7 @@ namespace AudibleApi
 		/// <summary>The Xml annotation request post body</summary>
 		public XElement Annotation { get; }
 
-		public RecordCreator(string asin)
+		public AnnotationBuilder(string asin)
 		{
 			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
 			Asin = asin;
