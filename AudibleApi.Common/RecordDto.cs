@@ -43,6 +43,8 @@ namespace AudibleApi.Common
 			static IRecord createRecord(JObject jObj)
 			{
 				var type = jObj.Value<string>("type");
+
+				//creationTime and lastModificationTime are UTC strings with no time zone.
 				var creationTime = DateTime.Parse(jObj.Value<string>("creationTime")).ToLocalTime();
 				var startPosition = TimeSpan.FromMilliseconds(jObj.Value<long>("startPosition"));
 
