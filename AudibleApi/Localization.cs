@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 
@@ -8,7 +9,7 @@ namespace AudibleApi
 	{
 		public static Locale Get(string localeName) => Locales.SingleOrDefault(l => l.Name == localeName) ?? Locale.Empty;
 
-		public static IReadOnlyList<Locale> Locales { get; }
+		public static ReadOnlyCollection<Locale> Locales { get; }
 
 		static Localization()
 		{
@@ -123,7 +124,7 @@ namespace AudibleApi
 				}
 			};
 
-			Locales = locales.ToObject<IReadOnlyList<Locale>>();
+			Locales = locales.ToObject<ReadOnlyCollection<Locale>>();
 		}
 	}
 }

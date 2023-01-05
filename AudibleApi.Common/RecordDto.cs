@@ -43,13 +43,13 @@ namespace AudibleApi.Common
 			static IRecord createRecord(JObject jObj)
 			{
 				var type = jObj.Value<string>("type");
-				var creationTime = DateTimeOffset.Parse(jObj.Value<string>("creationTime") + " Z").ToLocalTime();
+				var creationTime = DateTime.Parse(jObj.Value<string>("creationTime")).ToLocalTime();
 				var startPosition = jObj.Value<long>("startPosition");
 
 				if (type == RecordType.LastHeard)
 					return new LastHeard(creationTime, startPosition);
 
-				var lastModificationTime = DateTimeOffset.Parse(jObj.Value<string>("lastModificationTime") + " Z").ToLocalTime(); 
+				var lastModificationTime = DateTime.Parse(jObj.Value<string>("lastModificationTime")).ToLocalTime(); 
 				var annotationId = jObj.Value<string>("annotationId");
 
 				if (type == RecordType.Bookmark)
