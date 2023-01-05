@@ -66,6 +66,9 @@ namespace AudibleApi.Common
         [JsonProperty("asin")]
         public string Asin { get; set; }
 
+        [JsonProperty("codec")]
+        public string Codec { get; set; }
+
         [JsonProperty("content_format")]
         public string ContentFormat { get; set; }
 
@@ -86,7 +89,6 @@ namespace AudibleApi.Common
         public string Tempo { get; set; }
 
         [JsonProperty("version")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long Version { get; set; }
+        public string Version { get; set; }
     }
 }

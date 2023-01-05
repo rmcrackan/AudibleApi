@@ -32,7 +32,24 @@ namespace AudibleApi
         {
             ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
 
-            var body = new JObject
+            RecordCreator rc = new(asin);
+			rc.AddClip(5000000, 5030000, "clip 1 title", "clip 1 note");
+			rc.AddClip(6000000, 6030000, "clip 2 title", "clip 2 note");
+			rc.SetLastHeard(7654321);
+			rc.AddBookmark(70000000);
+			rc.AddBookmark(60000000);
+			rc.AddNote(69000000, 69900000, "Standalone note 1");
+			rc.AddNote(42000000, 42200000, "Standalone note 2");
+
+			var success = await CreateRecordsAsync(rc);
+
+            var records = await GetRecordsAsync(asin);
+            await DeleteRecordsAsync(asin, records);
+			records = await GetRecordsAsync(asin);
+			await DeleteRecordsAsync(asin, records);
+			records = await GetRecordsAsync(asin);
+
+			var body = new JObject
             {
                 { "consumption_type", "Download" },
                 { "supported_drm_types", new JArray{ "Adrm", "Mpeg" } },
