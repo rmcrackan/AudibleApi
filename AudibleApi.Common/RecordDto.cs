@@ -44,7 +44,7 @@ namespace AudibleApi.Common
 			{
 				var type = jObj.Value<string>("type");
 				var creationTime = DateTime.Parse(jObj.Value<string>("creationTime")).ToLocalTime();
-				var startPosition = jObj.Value<long>("startPosition");
+				var startPosition = TimeSpan.FromMilliseconds(jObj.Value<long>("startPosition"));
 
 				if (type == RecordType.LastHeard)
 					return new LastHeard(creationTime, startPosition);
@@ -55,7 +55,7 @@ namespace AudibleApi.Common
 				if (type == RecordType.Bookmark)
 					return new Bookmark(creationTime, startPosition, annotationId, lastModificationTime);
 
-				var endPosition = jObj.Value<long>("endPosition");
+				var endPosition = TimeSpan.FromMilliseconds(jObj.Value<long>("endPosition"));
 
 				if (type == RecordType.Note)
 				{
@@ -88,7 +88,7 @@ namespace AudibleApi.Common
 	public interface IRecord
 	{
 		DateTimeOffset Created { get; }
-		long StartPosition { get; }
+		TimeSpan Start { get; }
 		string GetName();
 	}
 	public interface IAnnotation : IRecord
@@ -98,29 +98,29 @@ namespace AudibleApi.Common
 	}
 	public interface IRangeAnnotation : IAnnotation
 	{
-		long EndPosition { get; }
+		TimeSpan End { get; }
 		string Text { get; }
 	}
 
-	public record LastHeard(DateTimeOffset Created, long StartPosition)
+	public record LastHeard(DateTimeOffset Created, TimeSpan Start)
 		: IRecord
 	{
 		public const string Name = "last_heard";
 		public string GetName() => Name;
 	}
-	public record Bookmark(DateTimeOffset Created, long StartPosition, string AnnotationId, DateTimeOffset LastModified)
+	public record Bookmark(DateTimeOffset Created, TimeSpan Start, string AnnotationId, DateTimeOffset LastModified)
 		: IAnnotation
 	{
 		public const string Name = "bookmark";
 		public string GetName() => Name;
 	}
-	public record Note(DateTimeOffset Created, long StartPosition, string AnnotationId, DateTimeOffset LastModified, long EndPosition, string Text)
+	public record Note(DateTimeOffset Created, TimeSpan Start, string AnnotationId, DateTimeOffset LastModified, TimeSpan End, string Text)
 		: IRangeAnnotation
 	{
 		public const string Name = "note";
 		public string GetName() => Name;
 	}
-	public record Clip(DateTimeOffset Created, long StartPosition, string AnnotationId, DateTimeOffset LastModified, long EndPosition, string Text, string Title)
+	public record Clip(DateTimeOffset Created, TimeSpan Start, string AnnotationId, DateTimeOffset LastModified, TimeSpan End, string Text, string Title)
 		: IRangeAnnotation
 	{
 		public const string Name = "clip";

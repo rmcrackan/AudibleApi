@@ -64,11 +64,11 @@ namespace AudibleApi
 					var deleteAction =
 						new XElement(record.GetName(),
 							new XAttribute("action", "delete"),
-							new XAttribute("begin", record.StartPosition),
+							new XAttribute("begin", (long)record.Start.TotalMilliseconds),
 							new XAttribute("timestamp", AnnotationBuilder.ToXmlDateTime(DateTimeOffset.Now)));
 
 					if (record is IRangeAnnotation range)
-						deleteAction.Add(new XAttribute("end", range.EndPosition));
+						deleteAction.Add(new XAttribute("end", (long)range.End.TotalMilliseconds));
 
 					return deleteAction;
 				}
