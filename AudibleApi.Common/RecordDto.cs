@@ -104,8 +104,24 @@ namespace AudibleApi.Common
 		string Text { get; }
 	}
 
-	public record LastHeard(DateTimeOffset Created, long StartPosition) : IRecord { public const string Name = "last_heard"; public string GetName() => Name; }
-	public record Bookmark(DateTimeOffset Created, long StartPosition, string AnnotationId, DateTimeOffset LastModified) : IAnnotation { public const string Name = "bookmark"; public string GetName() => Name; }
-	public record Note(DateTimeOffset Created, long StartPosition, string AnnotationId, DateTimeOffset LastModified, long EndPosition, string Text) : IRangeAnnotation { public const string Name = "note"; public string GetName() => Name; }
-	public record Clip(DateTimeOffset Created, long StartPosition, string AnnotationId, DateTimeOffset LastModified, long EndPosition, string Text, string Title) : IRangeAnnotation { public const string Name = "clip"; public string GetName() => Name; }
+	public record LastHeard(DateTimeOffset Created, long StartPosition) : IRecord
+	{
+		public const string Name = "last_heard";
+		public string GetName() => Name;
+	}
+	public record Bookmark(DateTimeOffset Created, long StartPosition, string AnnotationId, DateTimeOffset LastModified) : IAnnotation
+	{
+		public const string Name = "bookmark";
+		public string GetName() => Name;
+	}
+	public record Note(DateTimeOffset Created, long StartPosition, string AnnotationId, DateTimeOffset LastModified, long EndPosition, string Text) : IRangeAnnotation
+	{
+		public const string Name = "note";
+		public string GetName() => Name;
+	}
+	public record Clip(DateTimeOffset Created, long StartPosition, string AnnotationId, DateTimeOffset LastModified, long EndPosition, string Text, string Title) : IRangeAnnotation
+	{
+		public const string Name = "clip";
+		public string GetName() => Name;
+	}
 }
