@@ -16,19 +16,19 @@ namespace AudibleApi
     }
     public partial class Api
     {
-        #region Download License
+		#region Download License
 
-        /// <summary>
-        /// Requests a license to download Audible content.
-        /// </summary>
-        /// <param name="asin">Audible Asin of book</param>
-        /// <param name="quality">Desired audio Quality</param>
-        /// <returns>a valid <see cref="ContentLicense"/> containing content_reference, chapter_info, and pdf_url.</returns>
-        /// <exception cref="ApiErrorException">Thrown when the Api request failed.</exception>
-        /// <exception cref="InvalidResponseException">Thrown when the Api did not return a proper <see cref="ContentLicense"/>.</exception>
-        /// <exception cref="InvalidValueException">Thrown when <see cref="ContentLicense.StatusCode"/> is not "Granted" or "Denied".</exception>
-        /// <exception cref="ValidationErrorException">Thrown when <see cref="ContentLicense.StatusCode"/> is "Denied".</exception>
-        public async Task<ContentLicense> GetDownloadLicenseAsync(string asin, DownloadQuality quality = DownloadQuality.High)
+		/// <summary>
+		/// Requests a license to download Audible content.
+		/// </summary>
+		/// <param name="asin">Audible Asin of book</param>
+		/// <param name="quality">Desired audio Quality</param>
+		/// <returns>a valid <see cref="ContentLicense"/> containing content_reference, chapter_info, and pdf_url.</returns>
+		/// <exception cref="ApiErrorException">Thrown when the Api request failed.</exception>
+		/// <exception cref="InvalidResponseException">Thrown when the Api did not return a proper <see cref="ContentLicense"/>.</exception>
+		/// <exception cref="InvalidValueException">Thrown when <see cref="ContentLicense.StatusCode"/> is not "Granted" or "Denied".</exception>
+		/// <exception cref="ContentLicenseDeniedException">Thrown when <see cref="ContentLicense.StatusCode"/> is "Denied".</exception>
+		public async Task<ContentLicense> GetDownloadLicenseAsync(string asin, DownloadQuality quality = DownloadQuality.High)
         {
             ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
 
