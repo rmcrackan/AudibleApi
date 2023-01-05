@@ -64,7 +64,7 @@ namespace AudibleApi
 		/// <param name="startMs">Timestamp for the last_heard record, in milliseconds from the beginning of the audiobook</param>
 		public void SetLastHeard(long startMs)
 		{
-			validate(startMs);
+			Validate(startMs);
 
 			_book
 				.Elements()
@@ -84,7 +84,7 @@ namespace AudibleApi
 		/// <param name="startMs">Timestamp for the bookmark, in milliseconds from the beginning of the audiobook</param>
 		public void AddBookmark(long startMs)
 		{
-			validate(startMs);
+			Validate(startMs);
 			RemoveDuplicate(Bookmark.Name, startMs);
 
 			_book.Add(
@@ -102,7 +102,7 @@ namespace AudibleApi
 		/// <param name="note">Note text</param>
 		public void AddNote(long startMs, long endMs, string note)
 		{
-			validate(startMs, endMs);
+			Validate(startMs, endMs);
 			ArgumentValidator.EnsureNotNullOrEmpty(note, nameof(note));
 			RemoveDuplicate(Note.Name, startMs, endMs);
 
@@ -132,7 +132,7 @@ namespace AudibleApi
 		/// <param name="note"><para>Clip note</para></param>
 		public void AddClip(long startMs, long endMs, string title = null, string note = null)
 		{
-			validate(startMs, endMs);
+			Validate(startMs, endMs);
 			//Clips can only be 45 seconds long
 			ArgumentValidator.EnsureGreaterThan(startMs + 45_001, nameof(endMs), endMs);
 
@@ -160,12 +160,12 @@ namespace AudibleApi
 
 		}
 
-		private static void validate(long startMs)
+		private static void Validate(long startMs)
 			=> ArgumentValidator.EnsureGreaterThan(startMs, nameof(startMs), -1);
 
-		private static void validate(long startMs, long endMs)
+		private static void Validate(long startMs, long endMs)
 		{
-			validate(startMs);
+			Validate(startMs);
 			ArgumentValidator.EnsureGreaterThan(endMs + 1, nameof(endMs), startMs);
 		}
 
@@ -183,9 +183,10 @@ namespace AudibleApi
 
 		internal static string ToXmlDateTime(DateTimeOffset dt)
 		{
-			//The K formatter inserts a colon, but that's invalid for these requests
 			var dtString = dt.ToString("yyyy-MM-ddTHH\\:mm\\:ssK");
-			return dtString[..^3] + dtString[^2..];
+
+			//The K formatter inserts a colon, but that's invalid for these requests
+			return dtString.Remove(dtString.Length - 3, 1);
 		}
 	}
 }
