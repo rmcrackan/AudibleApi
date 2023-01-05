@@ -31,8 +31,8 @@ namespace AudibleApi
         public async Task<ContentLicense> GetDownloadLicenseAsync(string asin, DownloadQuality quality = DownloadQuality.High)
         {
             ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
-                       
-			var body = new JObject
+
+            var body = new JObject
             {
                 { "consumption_type", "Download" },
                 { "supported_drm_types", new JArray{ "Adrm", "Mpeg" } },
@@ -95,7 +95,7 @@ namespace AudibleApi
             if (contentLicenseDtoV10?.Message is not null)
             {
                 var ex = new InvalidResponseException(
-					response.RequestMessage.RequestUri,
+                    response.RequestMessage.RequestUri,
                     new JObject { { "message", contentLicenseDtoV10.Message } }, //Assume this message does not contain PII.
                     $"License response returned error for asin: [{asin}]");
                 Serilog.Log.Logger.Error(ex, "License response returned error");
@@ -105,7 +105,7 @@ namespace AudibleApi
             if (contentLicenseDtoV10?.ContentLicense?.StatusCode is null)
             {
                 var ex = new InvalidValueException(
-					response.RequestMessage.RequestUri,
+                    response.RequestMessage.RequestUri,
                     responseJobj, //This error shouldn't happen, so log the entire response which contains PII.
                     $"License response does not contain a valid status code for asin: [{asin}]");
                 Serilog.Log.Logger.Verbose(ex, "License response does not contain a valid status code");
@@ -114,7 +114,7 @@ namespace AudibleApi
 
             if (contentLicenseDtoV10.ContentLicense.StatusCode.EqualsInsensitive("Denied"))
             {
-				var ex = new ContentLicenseDeniedException(response.RequestMessage.RequestUri, contentLicenseDtoV10.ContentLicense);
+                var ex = new ContentLicenseDeniedException(response.RequestMessage.RequestUri, contentLicenseDtoV10.ContentLicense);
 
                 Serilog.Log.Logger.Error(ex, "Content License denied");
                 throw ex;
