@@ -13,30 +13,31 @@ namespace AudibleApi
 		private const string FIONA_DOMAIN = "ht" + "tps://cde-ta-g7g.amazon.com";
 		private const string FIONA_SIDECAR_PATH = "/FionaCDEServiceEngine/sidecar";
 
-		public async Task<bool> CreateRecordsAsync(AnnotationBuilder annotationBuilder)
+		public async Task<bool> CreateRecordsAsync(string asin, AnnotationBuilder annotationBuilder)
 		{
 			const string requestUri = FIONA_SIDECAR_PATH + $"?type=AUDI";
 
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
 			ArgumentValidator.EnsureNotNull(annotationBuilder, nameof(annotationBuilder));
 			if (annotationBuilder.Count == 0) return false;
 
 			try
 			{
 				var client = Sharer.GetSharedHttpClient(FIONA_DOMAIN);
-				var response = await AdHocAuthenticatedXmlPostAsync(requestUri, client, annotationBuilder.Annotation);
+				var response = await AdHocAuthenticatedXmlPostAsync(requestUri, client, annotationBuilder.GetAnnotation(asin));
 
 				if (!response.IsSuccessStatusCode)
 					Serilog.Log.Information(
 						"Record creation failed for {asin}. {Response} {@DebugInfo}",
-						annotationBuilder.Asin,
+						asin,
 						await response.Content.ReadAsStringAsync(),
-						annotationBuilder.Annotation);
+						annotationBuilder.GetAnnotation(asin));
 				
 				return response.IsSuccessStatusCode;
 			}
 			catch (Exception ex)
 			{
-				Serilog.Log.Error(ex, "Error encountered while trying to create records for {asin}.", annotationBuilder.Asin);
+				Serilog.Log.Error(ex, "Error encountered while trying to create records for {asin}.", asin);
 				throw;
 			}
 		}

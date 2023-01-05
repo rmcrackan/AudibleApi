@@ -11,7 +11,7 @@ namespace AudibleApi
 
 	SAMPLE USEAGE:
 
-		AnnotationBuilder ab = new(asin);
+		AnnotationBuilder ab = new();
 
 		ab.AddClip(5000000, 5030000, "clip 1 title", "clip 1 note");
 		ab.AddClip(6000000, 6030000, "clip 2 title", "clip 2 note");
@@ -21,7 +21,7 @@ namespace AudibleApi
 		ab.AddNote(69000000, 69900000, "Standalone note 1");
 		ab.AddNote(42000000, 42200000, "Standalone note 2");
 
-		var success = await CreateRecordsAsync(ab);
+		var success = await CreateRecordsAsync(asin, ab);
 	*/
 	/// <summary>
 	/// <para>Create records (e.g. <see cref="RecordType.LastHeard"/>, <see cref="RecordType.Bookmark"/>, <see cref="RecordType.Note"/>, and <see cref="RecordType.Clip"/>) for an audiobook.</para>
@@ -30,18 +30,21 @@ namespace AudibleApi
 	public class AnnotationBuilder
 	{
 		private readonly XElement _book;
-		public string Asin { get; }
+		private readonly XElement _annotation;
+		public override string ToString() => _annotation.ToString();
 		public int Count => _book.Elements().Count();
-		/// <summary>The Xml annotation request post body</summary>
-		public XElement Annotation { get; }
 
-		public AnnotationBuilder(string asin)
+
+		public AnnotationBuilder()
+		{
+			(_annotation, _book) = CreateAnnotation("[ASIN]");
+		}
+		internal XElement GetAnnotation(string asin)
 		{
 			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
-			Asin = asin;
-			(Annotation, _book) = CreateAnnotation(asin);
+			_book.Attribute("key").Value = asin;
+			return _annotation;
 		}
-
 		internal static (XElement annotation, XElement book) CreateAnnotation(string asin)
 		{
 			var book =
@@ -159,6 +162,10 @@ namespace AudibleApi
 				);
 
 		}
+		/// <summary>
+		/// Remove all records from the <see cref="AnnotationBuilder"/>
+		/// </summary>
+		public void Clear() => _book.RemoveNodes();
 
 		private static void Validate(long startMs)
 			=> ArgumentValidator.EnsureGreaterThan(startMs, nameof(startMs), -1);
