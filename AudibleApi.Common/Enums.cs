@@ -321,7 +321,7 @@ namespace AudibleApi.Common
 	}
 
 	/// <summary>
-	/// RejectionReason
+	/// ValidationType
 	///		[JsonProperty("validationType")]
 	///		public string ValidationType { get; set; }
 	/// </summary>
