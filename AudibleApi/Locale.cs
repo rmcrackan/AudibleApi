@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using Dinah.Core;
 
 namespace AudibleApi
 {
-	public class Locale : ValueObject
+	public record Locale
 	{
 		public static Locale Empty => new Locale();
 		private Locale() => Name = "[empty]";
@@ -27,18 +26,5 @@ namespace AudibleApi
 			Language = ArgumentValidator.EnsureNotNullOrWhiteSpace(language, nameof(language)).Trim();
 			WithUsername = withUsername;
 		}
-
-		protected override IEnumerable<object> GetEqualityComponents()
-		{
-			yield return Name;
-
-			yield return CountryCode;
-			yield return TopDomain;
-			yield return MarketPlaceId;
-			yield return Language;
-			yield return WithUsername;
-		}
-
-		public override string ToString() => Name;
 	}
 }

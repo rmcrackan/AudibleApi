@@ -321,8 +321,8 @@ namespace AudibleApi.Common
 	}
 
 	/// <summary>
-	/// RejectionReason
-	///		[JsonProperty("rejectionReason")]
+	/// ValidationType
+	///		[JsonProperty("validationType")]
 	///		public string ValidationType { get; set; }
 	/// </summary>
 	public static class ValidationType
@@ -331,6 +331,23 @@ namespace AudibleApi.Common
 		public const string Ownership = "Ownership";
 		public const string Membership = "Membership";
 		public const string AYCL = "AYCL";
+	}
+
+	#endregion
+
+	#region Records
+
+	/// <summary>
+	/// RecordType
+	///		[JsonProperty("type")]
+	///		public string Type { get; set; }
+	/// </summary>
+	public static class RecordType
+	{
+		public const string Bookmark = "audible.bookmark";
+		public const string Clip = "audible.clip";
+		public const string LastHeard = "audible.last_heard";
+		public const string Note = "audible.note";
 	}
 
 	#endregion

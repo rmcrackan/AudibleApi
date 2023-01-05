@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using AudibleApi.Authorization;
+using Dinah.Core;
 using Dinah.Core.Net.Http;
 using Newtonsoft.Json.Linq;
 
@@ -35,19 +38,35 @@ namespace AudibleApi
 
 		public async Task<HttpResponseMessage> AdHocAuthenticatedRequestAsync(string requestUri, HttpMethod method, IHttpClientActions client, JObject requestBody = null)
 		{
-			if (requestUri is null)
-				throw new ArgumentNullException(nameof(requestUri));
-			if (string.IsNullOrWhiteSpace(requestUri))
-				throw new ArgumentException($"{nameof(requestUri)} may not be blank");
-			if (method is null)
-				throw new ArgumentNullException(nameof(method));
-			if (requestBody is null && (method.Method == HttpMethod.Post.Method || method.Method == HttpMethod.Put.Method))
-				throw new ArgumentNullException(nameof(requestBody), $"Must provide request body content when using the {method.Method} {nameof(HttpMethod)}");
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(requestUri, nameof(requestUri));
+			ArgumentValidator.EnsureNotNull(method, nameof(method));
+			ArgumentValidator.EnsureNotNull(client, nameof(client));
 
-			var request = new HttpRequestMessage(method, requestUri);
+			using var request = new HttpRequestMessage(method, requestUri);
 
-			if (method.Method == HttpMethod.Post.Method || method.Method == HttpMethod.Put.Method)
+			if (method.In(HttpMethod.Post, HttpMethod.Put))
+			{
+				ArgumentValidator.EnsureNotNull(requestBody, nameof(requestBody));
 				request.AddContent(requestBody);
+			}
+
+			request.SignRequest(
+					_identityMaintainer.SystemDateTime.UtcNow,
+					await _identityMaintainer.GetAdpTokenAsync(),
+					await _identityMaintainer.GetPrivateKeyAsync());
+
+			return await SendClientRequest(client, request);
+		}
+
+		public async Task<HttpResponseMessage> AdHocAuthenticatedXmlPostAsync(string requestUri, IHttpClientActions client, XElement requestBody)
+		{
+			ArgumentValidator.EnsureNotNull(requestUri, nameof(requestUri));
+			ArgumentValidator.EnsureNotNull(client, nameof(client));
+			ArgumentValidator.EnsureNotNull(requestBody, nameof(requestBody));
+
+			using var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
+
+			request.AddContent(new StringContent(requestBody.ToString(SaveOptions.DisableFormatting), Encoding.UTF8, "application/xml"));
 
 			request.SignRequest(
 					_identityMaintainer.SystemDateTime.UtcNow,
@@ -59,10 +78,8 @@ namespace AudibleApi
 
 		public async Task<HttpResponseMessage> AdHocAuthenticatedGetWithAccessTokenAsync(string requestUri, IHttpClientActions client)
 		{
-			if (requestUri is null)
-				throw new ArgumentNullException(nameof(requestUri));
-			if (string.IsNullOrWhiteSpace(requestUri))
-				throw new ArgumentException($"{nameof(requestUri)} may not be blank");
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(requestUri, nameof(requestUri));
+			ArgumentValidator.EnsureNotNull(client, nameof(client));
 
 			var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
 
