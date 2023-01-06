@@ -3,6 +3,7 @@ using Dinah.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -24,7 +25,7 @@ namespace AudibleApi
 			try
 			{
 				var client = Sharer.GetSharedHttpClient(FIONA_DOMAIN);
-				var response = await AdHocAuthenticatedXmlPostAsync(requestUri, client, annotationBuilder.GetAnnotation(asin));
+				var response = await AdHocAuthenticatedRequestAsync(requestUri, HttpMethod.Post, client, annotationBuilder.GetAnnotation(asin));
 
 				if (!response.IsSuccessStatusCode)
 					Serilog.Log.Information(
@@ -62,7 +63,7 @@ namespace AudibleApi
 				static XElement createDeleteAction(IRecord record)
 				{
 					var deleteAction =
-						new XElement(record.GetName(),
+						new XElement(record.RecordType,
 							new XAttribute("action", "delete"),
 							new XAttribute("begin", (long)record.Start.TotalMilliseconds),
 							new XAttribute("timestamp", AnnotationBuilder.ToXmlDateTime(DateTimeOffset.Now)));
@@ -77,7 +78,7 @@ namespace AudibleApi
 				book.Add(records.Select(r => createDeleteAction(r)));
 
 				var client = Sharer.GetSharedHttpClient(FIONA_DOMAIN);
-				var response = await AdHocAuthenticatedXmlPostAsync(requestUri, client, annotation);
+				var response = await AdHocAuthenticatedRequestAsync(requestUri, HttpMethod.Post, client, annotation);
 
 				if (!response.IsSuccessStatusCode)
 					Serilog.Log.Information(

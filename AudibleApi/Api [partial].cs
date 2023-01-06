@@ -36,7 +36,7 @@ namespace AudibleApi
 		public Task<HttpResponseMessage> AdHocAuthenticatedGetAsync(string requestUri, IHttpClientActions client)
 			=> AdHocAuthenticatedRequestAsync(requestUri, HttpMethod.Get, client);
 
-		public async Task<HttpResponseMessage> AdHocAuthenticatedRequestAsync(string requestUri, HttpMethod method, IHttpClientActions client, JObject requestBody = null)
+		public async Task<HttpResponseMessage> AdHocAuthenticatedRequestAsync(string requestUri, HttpMethod method, IHttpClientActions client, HttpBody requestBody = null)
 		{
 			ArgumentValidator.EnsureNotNullOrWhiteSpace(requestUri, nameof(requestUri));
 			ArgumentValidator.EnsureNotNull(method, nameof(method));
@@ -49,24 +49,6 @@ namespace AudibleApi
 				ArgumentValidator.EnsureNotNull(requestBody, nameof(requestBody));
 				request.AddContent(requestBody);
 			}
-
-			request.SignRequest(
-					_identityMaintainer.SystemDateTime.UtcNow,
-					await _identityMaintainer.GetAdpTokenAsync(),
-					await _identityMaintainer.GetPrivateKeyAsync());
-
-			return await SendClientRequest(client, request);
-		}
-
-		public async Task<HttpResponseMessage> AdHocAuthenticatedXmlPostAsync(string requestUri, IHttpClientActions client, XElement requestBody)
-		{
-			ArgumentValidator.EnsureNotNull(requestUri, nameof(requestUri));
-			ArgumentValidator.EnsureNotNull(client, nameof(client));
-			ArgumentValidator.EnsureNotNull(requestBody, nameof(requestBody));
-
-			using var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
-
-			request.AddContent(new StringContent(requestBody.ToString(SaveOptions.DisableFormatting), Encoding.UTF8, "application/xml"));
 
 			request.SignRequest(
 					_identityMaintainer.SystemDateTime.UtcNow,
