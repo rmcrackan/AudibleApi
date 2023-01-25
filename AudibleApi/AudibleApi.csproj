@@ -2,14 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <Version>7.3.1.1</Version>
+    <Version>7.3.2.1</Version>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>
       $(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb
     </AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
   <ItemGroup>
-	  <PackageReference Include="AudibleApi.Common" Version="7.3.1.1" />
+	  <PackageReference Include="AudibleApi.Common" Version="7.3.2.1" />
 	  <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
 
