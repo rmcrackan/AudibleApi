@@ -6,7 +6,7 @@ Implementation of an Audible API in C#. Aside from the goal of having this be pu
 1) fully integratable into other software
 2) fully testable and tested
 
-### If you found this useful, tell a friend. If you found this REALLY useful, you can click here to [PalPal.me](https://paypal.me/mcrackan?locale.x=en_us)
+### If you found this useful, tell a friend. If you found this REALLY useful, you can click here to [PayPal.me](https://paypal.me/mcrackan?locale.x=en_us)
 ...or just tell more friends. As long as I'm maintaining this software, it will remain **free** and **open source**.
 
 Thanks to these other Audible APIs which I used for reference and whose authors were very responsive and helpful with questions:
