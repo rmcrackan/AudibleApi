@@ -35,7 +35,8 @@ namespace AudibleApi.Authentication
 
 			return await GetResultsPageAsync(authenticate, inputs, url);
 		}
-		private static async Task<LoginResult> GetResultsPageAsync(Authenticate authenticate, Dictionary<string, string> inputs, string url)
+
+		public static async Task<LoginResult> GetResultsPageAsync(Authenticate authenticate, Dictionary<string, string> inputs, string url)
 		{
 			if (authenticate is null)
 				throw new ArgumentNullException(nameof(authenticate));
@@ -229,14 +230,14 @@ namespace AudibleApi.Authentication
                 return response;
             }
 
-            var redirectUri = response.Headers.Location;
+			var redirectUri = response.Headers.Location;
             if (!redirectUri.IsAbsoluteUri)
                 redirectUri = new Uri(uri.GetOrigin() + redirectUri);
 
 			Serilog.Log.Logger.Information($"Redirecting to {redirectUri}");
 
 			// re-directs should always be GET
-            return await makeRequestAsync(authenticate, HttpMethod.Get, redirectUri);
+			return await makeRequestAsync(authenticate, HttpMethod.Get, redirectUri);
         }
-    }
+	}
 }

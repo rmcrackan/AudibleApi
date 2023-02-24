@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using AudibleApi.Authorization;
 using Dinah.Core;
 using Dinah.Core.Net;
 using Dinah.Core.Net.Http;
@@ -16,7 +17,10 @@ namespace AudibleApi.Authentication
         public ISystemDateTime SystemDateTime { get; }
         public Locale Locale { get; }
 
-        public CookieCollection GetCookies(Uri uri) => LoginClient.CookieJar.GetCookies(uri);
+		public string DeviceSerialNumber { get; }
+		public string CodeVerifier { get; }
+
+		public CookieCollection GetCookies(Uri uri) => LoginClient.CookieJar.GetCookies(uri);
 
         public Authenticate(Locale locale) : this(locale, ApiHttpClient.Create(), new SystemDateTime())
             => StackBlocker.ApiTestBlocker();
@@ -30,8 +34,11 @@ namespace AudibleApi.Authentication
             SystemDateTime = systemDateTime ?? throw new ArgumentNullException(nameof(systemDateTime));
             Locale = locale ?? throw new ArgumentNullException(nameof(locale));
 
-            initClientState();
-        }
+            DeviceSerialNumber = build_device_serial();
+            CodeVerifier = create_code_verifier();
+
+			initClientState();
+		}
 		private void initClientState()
 		{
             var baseUri = Locale.LoginUri();
@@ -39,12 +46,10 @@ namespace AudibleApi.Authentication
             LoginClient.Timeout = new TimeSpan(0, 0, 30);
 			LoginClient.BaseAddress = baseUri;
 
-            LoginClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-            LoginClient.DefaultRequestHeaders.Add("Accept-Charset", "utf-8");
             LoginClient.DefaultRequestHeaders.Add("Accept-Language", Locale.Language);
-            LoginClient.DefaultRequestHeaders.Add("Host", baseUri.Host);
-            LoginClient.DefaultRequestHeaders.Add("Origin", baseUri.GetOrigin());
-            LoginClient.DefaultRequestHeaders.Add("User-Agent", Resources.USER_AGENT);
+            LoginClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip");
+			LoginClient.DefaultRequestHeaders.Add("Host", baseUri.Host);
+            LoginClient.DefaultRequestHeaders.Add("User-Agent", Resources.User_Agent);
             LoginClient.CookieJar.Add(buildInitCookies());
         }
 
@@ -79,15 +84,8 @@ namespace AudibleApi.Authentication
 
         public async Task<LoginResult> SubmitCredentialsAsync(string email, string password)
         {
-            // pre 1st visit: load init session cookies
-            await LoadSessionCookiesAsync();
-
             // 1st visit: response = get 1st login page
             var login1_body = await getInitialLoginPage();
-
-            // post 1st visit: set OAUTH_URL header
-            // this will be our referer for all login calls AFTER initial oauth get
-            LoginClient.DefaultRequestHeaders.Add("Referer", Locale.OAuthUrl());
 
             var page = new CredentialsPage(this, login1_body);
             return await page.SubmitAsync(email, password);
@@ -95,14 +93,14 @@ namespace AudibleApi.Authentication
 
         private async Task<string> getInitialLoginPage()
         {
-            var response = await LoginClient.GetAsync(Locale.OAuthUrl());
+            var response = await LoginClient.GetAsync(Locale.OAuthUrl(DeviceSerialNumber, CodeVerifier));
             response.EnsureSuccessStatusCode();
 
             var login1_body = await response.Content.ReadAsStringAsync();
             return login1_body;
         }
 
-        private CookieCollection buildInitCookies()
+		private CookieCollection buildInitCookies()
         {
             //Build initial cookies to prevent captcha in most cases
             //https://github.com/mkb79/Audible/blob/master/src/audible/login.py
@@ -115,12 +113,12 @@ namespace AudibleApi.Authentication
                 { "device_user_dictionary", new JArray() },
                 { "device_registration_data", 
                     new JObject {
-                        {"software_version", "33501644" }
+                        {"software_version", Resources.SoftwareVersion }
                     }
                 },
                 { "app_identifier",
                     new JObject {
-                        {"app_version", "3.35.1" },
+                        {"app_version", Resources.AppVersion },
                         {"bundle_id", "com.audible.iphone" }
                     }
                 }
@@ -140,5 +138,16 @@ namespace AudibleApi.Authentication
 
             return initCookies;
         }
-    }
+
+
+		//https://github.com/mkb79/Audible/blob/master/src/audible/login.py
+		public static string build_device_serial() => Guid.NewGuid().ToString("N").ToUpper();
+
+		public static string create_code_verifier()
+		{
+			var code_verifier = new byte[32];
+			new Random().NextBytes(code_verifier);
+            return Convert.ToBase64String(code_verifier).Replace('+', '-').Replace('/', '_').TrimEnd('=');
+		}
+	}
 }

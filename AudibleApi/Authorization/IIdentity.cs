@@ -26,7 +26,9 @@ namespace AudibleApi.Authorization
 
         string DeviceSerialNumber { get; }
 
-        string DeviceType { get; }
+		OAuth2 Authorization { get; }
+
+		string DeviceType { get; }
 
         string AmazonAccountId { get; }
 

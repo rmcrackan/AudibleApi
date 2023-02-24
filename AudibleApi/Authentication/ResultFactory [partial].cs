@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Dinah.Core;
-using Dinah.Core.Net;
-using Dinah.Core.Net.Http;
 
 namespace AudibleApi.Authentication
 {
@@ -33,7 +31,7 @@ namespace AudibleApi.Authentication
         /// <summary>
         /// If true, the body sent to the IsMatch check may be blank
         /// </summary>
-        protected virtual bool AllowBlankBodyIn_IsMatch => false;
+        protected virtual bool AllowBlankBodyIn_IsMatch => true;
 
         public static Task<bool> IsCompleteAsync(HttpResponseMessage response)
             => new LoginCompleteFactory().IsMatchAsync(response);

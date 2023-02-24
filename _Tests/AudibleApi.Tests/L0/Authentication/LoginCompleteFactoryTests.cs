@@ -68,7 +68,7 @@ namespace Authentic.ResultFactoryTests.LoginCompleteFactoryTests
         public async Task valid_returns_true()
         {
             var response = new HttpResponseMessage { StatusCode = HttpStatusCode.Moved, Content = new StringContent("foo") };
-            response.Headers.Location = new Uri("http://t.co/?openid.oa2.access_token=Atna|&openid.pape.auth_time=2000-01-01");
+            response.Headers.Location = new Uri("http://t.co/?openid.oa2.authorization_code=t");
             (await ResultFactory.LoginComplete.IsMatchAsync(response)).Should().BeTrue();
         }
     }

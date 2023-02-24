@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Dinah.Core;
-using Dinah.Core.Net;
-using Dinah.Core.Net.Http;
 
 namespace AudibleApi.Authentication
 {
@@ -11,7 +7,7 @@ namespace AudibleApi.Authentication
     {
         public Uri CaptchaImage { get; }
 
-        public CaptchaPage(Authenticate authenticate, string responseBody, Uri img, string password) : base(authenticate, responseBody)
+        public CaptchaPage(Authenticate authenticate, string responseBody, Uri img, string email, string password) : base(authenticate, responseBody)
         {
             if (img is null)
                 throw new ArgumentNullException(nameof(img));
@@ -21,7 +17,8 @@ namespace AudibleApi.Authentication
             if (string.IsNullOrWhiteSpace(password))
                 throw new ArgumentException("Password may not be blank", nameof(password));
 
-            Inputs["password"] = password;
+			Inputs["email"] = email;
+			Inputs["password"] = password;
 
             CaptchaImage = img;
         }
@@ -37,6 +34,7 @@ namespace AudibleApi.Authentication
             Inputs["rememberMe"] = "true";
             Inputs["use_image_captcha"] = "true";
             Inputs["use_audio_captcha"] = "false";
+            Inputs["showPasswordChecked"] = "false";
 
             return await LoginResultRunner.GetResultsPageAsync(Authenticate, Inputs);
         }

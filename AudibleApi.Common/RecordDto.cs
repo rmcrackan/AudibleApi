@@ -89,9 +89,9 @@ namespace AudibleApi.Common
 
 	public interface IRecord
 	{
+		public string RecordType { get; }
 		DateTimeOffset Created { get; }
 		TimeSpan Start { get; }
-		string GetName();
 	}
 	public interface IAnnotation : IRecord
 	{
@@ -108,24 +108,24 @@ namespace AudibleApi.Common
 		: IRecord
 	{
 		public const string Name = "last_heard";
-		public string GetName() => Name;
+		public string RecordType => Name;
 	}
 	public record Bookmark(DateTimeOffset Created, TimeSpan Start, string AnnotationId, DateTimeOffset LastModified)
 		: IAnnotation
 	{
 		public const string Name = "bookmark";
-		public string GetName() => Name;
+		public string RecordType => Name;
 	}
 	public record Note(DateTimeOffset Created, TimeSpan Start, string AnnotationId, DateTimeOffset LastModified, TimeSpan End, string Text)
 		: IRangeAnnotation
 	{
 		public const string Name = "note";
-		public string GetName() => Name;
+		public string RecordType => Name;
 	}
 	public record Clip(DateTimeOffset Created, TimeSpan Start, string AnnotationId, DateTimeOffset LastModified, TimeSpan End, string Text, string Title)
 		: IRangeAnnotation
 	{
 		public const string Name = "clip";
-		public string GetName() => Name;
+		public string RecordType => Name;
 	}
 }

@@ -4,8 +4,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Dinah.Core;
-using Dinah.Core.Net;
-using Dinah.Core.Net.Http;
 
 namespace AudibleApi.Authentication
 {
@@ -28,11 +26,12 @@ namespace AudibleApi.Authentication
             {
                 if (!oldInputs.ContainsKey("password"))
                     throw new ArgumentException("Provided inputs do not contain a password", nameof(oldInputs));
+                var email = oldInputs["email"];
                 var password = oldInputs["password"];
 
                 var captchaUri = getCaptchaUri(body);
 
-                return new CaptchaPage(authenticate, body, captchaUri, password);
+                return new CaptchaPage(authenticate, body, captchaUri, email, password);
             }
 
             private static Uri getCaptchaUri(string body)

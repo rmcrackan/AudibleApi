@@ -41,7 +41,7 @@
 
   <ItemGroup>
     <Compile Update="Authentication\ResultFactory.*.cs">
-      <DependentUpon>Authentication\ResultFactory [partial].cs</DependentUpon>
+      <DependentUpon>ResultFactory [partial].cs</DependentUpon>
     </Compile>
   </ItemGroup>
 

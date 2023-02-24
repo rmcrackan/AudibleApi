@@ -7,7 +7,7 @@ namespace AudibleApi.Authorization
 {
 	public interface IAuthorize
 	{
-		Task<JObject> RegisterAsync(AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies);
+		Task<JObject> RegisterAsync(OAuth2 authorization);
 
 		Task<bool> DeregisterAsync(AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies);
 
