@@ -131,7 +131,7 @@ namespace AudibleApi.Authorization
 			request.Headers.Add("Accept-Charset", "utf-8");
 			request.Headers.Add("x-amzn-identity-auth-domain", locale.RegistrationUri().Host);
 			request.Headers.Add("Accept", "application/json");
-			request.Headers.TryAddWithoutValidation("User-Agent", Resources.USER_AGENT);
+			request.Headers.TryAddWithoutValidation("User-Agent", Resources.User_Agent);
 			request.Headers.Add("Accept-Language", "en_US");
 			request.Headers.Add("Authorization", $"Bearer {accessToken.TokenValue}");
 

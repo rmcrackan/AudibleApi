@@ -49,7 +49,7 @@ namespace AudibleApi.Authentication
             LoginClient.DefaultRequestHeaders.Add("Accept-Language", Locale.Language);
             LoginClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip");
 			LoginClient.DefaultRequestHeaders.Add("Host", baseUri.Host);
-            LoginClient.DefaultRequestHeaders.Add("User-Agent", Resources.USER_AGENT);
+            LoginClient.DefaultRequestHeaders.Add("User-Agent", Resources.User_Agent);
             LoginClient.CookieJar.Add(buildInitCookies());
         }
 

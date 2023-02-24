@@ -9,7 +9,8 @@ namespace AudibleApi
 {
 	public static class Resources
 	{
-		public const string USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148";
+		public const string User_Agent = "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148";
+		public const string Download_User_Agent = "Audible/671 CFNetwork/1240.0.4 Darwin/20.6.0";
 		public const string DeviceType = "A2CZJZGLK2JJVM";
 		public const string IosVersion = "15.0.0";
 		public const string SoftwareVersion = "35602678";

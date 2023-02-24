@@ -126,7 +126,7 @@ namespace AudibleApi.Authentication
 					}
 				},
 				{ "referrer", "" },
-				{ "userAgent", Resources.USER_AGENT },
+				{ "userAgent", Resources.User_Agent },
 				{ "location", locale.LoginUri() },
 				{ "webDriver", null },
 				{ "history",
