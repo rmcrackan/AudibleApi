@@ -39,6 +39,9 @@ namespace AudibleApi.Authorization
 		[JsonProperty]
 		public string DeviceSerialNumber { get; private set; }
 
+		[JsonIgnore]
+		public OAuth2 Authorization { get; private set; }
+
 		[JsonProperty]
 		public string DeviceType { get; private set; }
 
@@ -54,16 +57,20 @@ namespace AudibleApi.Authorization
 		protected Identity() { }
 
 		public Identity(Locale locale)
-			: this(locale, AccessToken.Empty, new Dictionary<string, string>()) { }
-		public Identity(Locale locale, AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies)
 		{
-			ArgumentValidator.EnsureNotNull(locale, nameof(locale));
-			ArgumentValidator.EnsureNotNull(cookies, nameof(cookies));
+			LocaleName = ArgumentValidator.EnsureNotNull(locale, nameof(locale)).Name;
+			ExistingAccessToken = AccessToken.Empty;
+			_cookies = new List<KVP<string, string>>();
+		}
 
-			ExistingAccessToken = ArgumentValidator.EnsureNotNull(accessToken, nameof(accessToken));
-
-			LocaleName = locale.Name;
-			_cookies = cookies.Select(kvp => new KVP<string, string> { Key = kvp.Key, Value = kvp.Value }).ToList();
+		public Identity(Locale locale, OAuth2 authorization, IEnumerable<KeyValuePair<string, string>> cookies)
+		{
+			LocaleName = ArgumentValidator.EnsureNotNull(locale, nameof(locale)).Name;
+			Authorization = ArgumentValidator.EnsureNotNull(authorization, nameof(authorization));
+			ExistingAccessToken = AccessToken.Empty;
+			_cookies = ArgumentValidator.EnsureNotNull(cookies, nameof(cookies))
+						.Select(kvp => new KVP<string, string> { Key = kvp.Key, Value = kvp.Value })
+						.ToList();
 		}
 
 		public void Update(AccessToken accessToken)

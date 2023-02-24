@@ -54,7 +54,7 @@ namespace Authoriz.IdentityTests
 		{
 			Assert.ThrowsException<ArgumentNullException>(() => new Identity(
 				null,
-				AccessToken.Empty,
+				OAuth2.Empty,
 				new List<KeyValuePair<string, string>>()));
 			Assert.ThrowsException<ArgumentNullException>(() => new Identity(
 				Locale.Empty,
@@ -62,14 +62,14 @@ namespace Authoriz.IdentityTests
 				new List<KeyValuePair<string, string>>()));
 			Assert.ThrowsException<ArgumentNullException>(() => new Identity(
 				Locale.Empty,
-				AccessToken.Empty,
+				OAuth2.Empty,
 				null));
 		}
 
 		[TestMethod]
 		public void loads_cookies()
 		{
-			var idMgr = new Identity(Locale.Empty, AccessToken.Empty, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("name1", "value1") });
+			var idMgr = new Identity(Locale.Empty, OAuth2.Empty, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("name1", "value1") });
 
 			idMgr.Cookies.Count().Should().Be(1);
 			idMgr.Cookies.Single().Key.Should().Be("name1");

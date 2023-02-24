@@ -19,7 +19,7 @@ namespace AudibleApi.Authentication
 
 			public LoginCompleteFactory() : base(nameof(LoginCompleteFactory)) { }
 
-            protected override bool _isMatchAsync(HttpResponseMessage response, string body) => getAccessToken(response) is not null;
+            protected override bool _isMatchAsync(HttpResponseMessage response, string body) => getAuthorizationCode(response) is not null;
 
             protected override LoginResult _createResultAsync(Authenticate authenticate, HttpResponseMessage response, string body, Dictionary<string, string> oldInputs)
             {
@@ -49,34 +49,34 @@ namespace AudibleApi.Authentication
 				var debug2 = debugLog;
 				#endregion
 
-				var accessToken = getAccessToken(response);
+				var authCode = getAuthorizationCode(response);
 
                 // authentication complete. begin authorization
-                var identity = new Identity(authenticate.Locale, accessToken, cookies);
+                var identity = new Identity(authenticate.Locale, authCode with { CodeVerifier = authenticate.CodeVerifier, DeviceSerialNumber = authenticate.DeviceSerialNumber }, cookies);
 
                 return new LoginComplete(authenticate, body, identity);
             }
 
-            private static AccessToken getAccessToken(HttpResponseMessage response)
+            private static Authorization.OAuth2 getAuthorizationCode(HttpResponseMessage response)
             {
-				if (response?.Headers?.Location is null)
-                    return null;
+				if(response?.Headers?.Location is null)
+					return null;
 
-                var location = response.Headers.Location;
-                if (!location.IsAbsoluteUri && !location.OriginalString.Contains('?'))
-                    throw new NotAuthenticatedException(
-                        response.RequestMessage?.RequestUri,
-                        new JObject
-                        {
-                            { "requestUri", response.RequestMessage?.RequestUri?.OriginalString },
-                            { "statusCode", (int)response.StatusCode },
-                            { "responseLocation", response.Headers.Location.OriginalString },
-                            { "responseHeaders", response.Headers.ToString() },
-                        },
-                        $"{nameof(LoginCompleteFactory)}.{nameof(getAccessToken)}: error parsing response location query");
-
-                return AccessToken.Parse(location);
-            }
+				var location = response.Headers.Location;
+				 if (!location.IsAbsoluteUri && !location.OriginalString.Contains('?'))
+						throw new NotAuthenticatedException(
+							response.RequestMessage?.RequestUri,
+							new JObject
+							{
+							{ "requestUri", response.RequestMessage?.RequestUri?.OriginalString },
+							{ "statusCode", (int)response.StatusCode },
+							{ "responseLocation", response.Headers.Location.OriginalString },
+							{ "responseHeaders", response.Headers.ToString() },
+							},
+							$"{nameof(LoginCompleteFactory)}.{nameof(getAuthorizationCode)}: error parsing response location query");
+				
+				return Authorization.OAuth2.Parse(location);
+			}
         }
     }
 }

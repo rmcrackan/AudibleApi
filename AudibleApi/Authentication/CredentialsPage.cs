@@ -28,7 +28,9 @@ namespace AudibleApi.Authentication
 			Inputs["password"] = password;
 			Inputs["metadata1"] = getEncryptedMetadata(Authenticate.SystemDateTime.UtcNow.ToUnixTimeStamp());
 
-			return await LoginResultRunner.GetResultsPageAsync(Authenticate, Inputs);
+			(_, var url) = GetNextAction();
+
+			return await LoginResultRunner.GetResultsPageAsync(Authenticate, Inputs, url);
 		}
 
 		private string getEncryptedMetadata(long nowUnixTimeStamp)
@@ -127,7 +129,7 @@ namespace AudibleApi.Authentication
 				{ "userAgent", Resources.USER_AGENT },
 				{ "location", locale.LoginUri() },
 				{ "webDriver", null },
-				{  "history",
+				{ "history",
 					new JObject {
 						{ "length", 1 }
 					}

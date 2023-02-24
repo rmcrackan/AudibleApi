@@ -32,10 +32,6 @@ namespace AudibleApi.Authorization
 	/// </summary>
 	public class Authorize : IAuthorize
 	{
-		private const string iosVersion = "13.5.1";
-		private const string appVersion = "3.26.1";
-		private const string appName = "Audible";
-
 		private ISystemDateTime _systemDateTime { get; }
 		private Locale _locale { get; }
 
@@ -53,14 +49,15 @@ namespace AudibleApi.Authorization
 			_locale = locale ?? throw new ArgumentNullException(nameof(locale));
 		}
 
-		public async Task<JObject> RegisterAsync(AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies)
+		public async Task<JObject> RegisterAsync(OAuth2 authorization)
 		{
-			ArgumentValidator.EnsureNotNull(accessToken, nameof(accessToken));
+			ArgumentValidator.EnsureNotNull(authorization, nameof(authorization));
 
 			try
 			{
-				var request = buildRegisterRequest(_locale, accessToken, cookies);
-				var response = await _client.SendAsync(request);
+				var regUri = new Uri(_locale.RegistrationUri(), "/auth/register");
+				var content = buildRegisterBody(_locale, authorization);
+				var response = await new HttpClient().PostAsync(regUri, content.Content);
 
 				response.EnsureSuccessStatusCode();
 
@@ -73,75 +70,34 @@ namespace AudibleApi.Authorization
 			}
 		}
 
-		private static HttpRequestMessage buildRegisterRequest(Locale locale, AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies)
+		private static HttpBody buildRegisterBody(Locale locale, OAuth2 authorization)
 		{
-			var jsonBody = buildRegisterBody(locale, accessToken, cookies);
-
-			// post directly. no redirects
-			// https://stackoverflow.com/a/10679340
-			var request = new HttpRequestMessage(HttpMethod.Post, "/auth/register");
-
-			request.AddContent(jsonBody);
-			request.Headers.Add("Host", locale.RegistrationUri().Host);
-			// https://stackoverflow.com/a/10679340
-			request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-			request.Headers.Add("Accept-Charset", "utf-8");
-			request.Headers.Add("x-amzn-identity-auth-domain", locale.RegistrationUri().Host);
-			request.Headers.Add("Accept", "application/json");
-			request.Headers.TryAddWithoutValidation("User-Agent", $"AmazonWebView/{appName}/{appVersion}/iOS/{iosVersion}/iPhone");
-			request.Headers.Add("Accept-Language", "en_US");
-
-			if (cookies is not null && cookies.Any())
-			{
-				var cookiesAggregated = cookies
-					.Select(kvp => $"{kvp.Key}={kvp.Value}")
-					.Aggregate((a, b) => $"{a}; {b}");
-				request.Headers.Add("Cookie", cookiesAggregated);
-			}
-
-			return request;
-		}
-
-		// do not use Dictionary<string, string> for cookies b/c of duplicates
-		private static JObject buildRegisterBody(Locale locale, AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies)
-		{
-			// for alt. syntax, see CredentialsPage.GenerateMetadata()
-
 			// for dynamic, add nuget ref Microsoft.CSharp
 			// https://www.newtonsoft.com/json/help/html/CreateJsonDynamic.htm
 			dynamic bodyJson = new JObject();
 			bodyJson.requested_token_type = new JArray("bearer", "mac_dms", "website_cookies", "store_authentication_cookie");
 
 			bodyJson.cookies = new JObject();
+			bodyJson.cookies.website_cookies = new JArray();
 			bodyJson.cookies.domain = locale.RegisterDomain();
-			JArray jCookies;
-			if (cookies is null || !cookies.Any())
-				jCookies = new JArray();
-			else
-			{
-				var kvpSelect = cookies.Select(kvp =>
-				{
-					dynamic obj = new JObject();
-					obj.Name = kvp.Key;
-					obj.Value = kvp.Value;
-					return obj;
-				});
-				jCookies = new JArray(kvpSelect);
-			}
-			bodyJson.cookies.website_cookies = jCookies;
 
 			bodyJson.registration_data = new JObject();
 			bodyJson.registration_data.domain = "Device";
-			bodyJson.registration_data.app_version = appVersion;
-			bodyJson.registration_data.device_serial = Resources.DeviceSerialNumber;
-			bodyJson.registration_data.device_type = Resources.DEVICE_TYPE;
-			bodyJson.registration_data.device_name = "%FIRST_NAME%%FIRST_NAME_POSSESSIVE_STRING%%DUPE_STRATEGY_1ST%Audible for iPhone";
-			bodyJson.registration_data.os_version = iosVersion;
-			bodyJson.registration_data.device_model = "iPhone";
-			bodyJson.registration_data.app_name = appName;
+			bodyJson.registration_data.app_version = Resources.AppVersion;
+			bodyJson.registration_data.device_serial = authorization.DeviceSerialNumber;
+			bodyJson.registration_data.device_type = Resources.DeviceType;
+			bodyJson.registration_data.device_name = Resources.DeviceName;
+			bodyJson.registration_data.os_version = Resources.IosVersion;
+			bodyJson.registration_data.software_version = Resources.SoftwareVersion;
+			bodyJson.registration_data.device_model = Resources.DeviceModel;
+			bodyJson.registration_data.app_name = Resources.AppName;
 
 			bodyJson.auth_data = new JObject();
-			bodyJson.auth_data.access_token = accessToken.TokenValue;
+			bodyJson.auth_data.client_id = Resources.build_client_id(authorization.DeviceSerialNumber);
+			bodyJson.auth_data.authorization_code = authorization.Code;
+			bodyJson.auth_data.code_verifier = authorization.CodeVerifier;
+			bodyJson.auth_data.code_algorithm = "SHA-256";
+			bodyJson.auth_data.client_domain = "DeviceLegacy";
 
 			bodyJson.requested_extensions = new JArray("device_info", "customer_info");
 
@@ -175,7 +131,7 @@ namespace AudibleApi.Authorization
 			request.Headers.Add("Accept-Charset", "utf-8");
 			request.Headers.Add("x-amzn-identity-auth-domain", locale.RegistrationUri().Host);
 			request.Headers.Add("Accept", "application/json");
-			request.Headers.TryAddWithoutValidation("User-Agent", $"AmazonWebView/{appName}/{appVersion}/iOS/{iosVersion}/iPhone");
+			request.Headers.TryAddWithoutValidation("User-Agent", Resources.USER_AGENT);
 			request.Headers.Add("Accept-Language", "en_US");
 			request.Headers.Add("Authorization", $"Bearer {accessToken.TokenValue}");
 
@@ -205,8 +161,8 @@ namespace AudibleApi.Authorization
 		{
 			var body = new Dictionary<string, string>
 			{
-				["app_name"] = appName,
-				["app_version"] = appVersion,
+				["app_name"] = Resources.AppName,
+				["app_version"] = Resources.AppVersion,
 				["source_token"] = refresh_token.Value,
 				["requested_token_type"] = "access_token",
 				["source_token_type"] = "refresh_token"
