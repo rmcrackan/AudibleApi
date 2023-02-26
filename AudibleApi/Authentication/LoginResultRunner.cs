@@ -9,7 +9,7 @@ using Dinah.Core.Logging;
 
 namespace AudibleApi.Authentication
 {
-    public static class LoginResultRunner
+    internal static class LoginResultRunner
 	{
 		public static async Task<LoginResult> GetResultsPageAsync(Authenticate authenticate, string url)
 		{

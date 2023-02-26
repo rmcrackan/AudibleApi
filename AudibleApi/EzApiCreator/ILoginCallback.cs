@@ -7,9 +7,10 @@ namespace AudibleApi
 	public interface ILoginCallback
 	{
 		Task<(string email, string password)> GetLoginAsync();
-		Task<string> GetCaptchaAnswerAsync(byte[] captchaImage);
+		Task<(string password, string guess)> GetCaptchaAnswerAsync(string password, byte[] captchaImage);
 		Task<(string name, string value)> GetMfaChoiceAsync(MfaConfig mfaConfig);
 		Task<string> Get2faCodeAsync();
 		Task ShowApprovalNeededAsync();
+		string DeviceName { get; }
 	}
 }

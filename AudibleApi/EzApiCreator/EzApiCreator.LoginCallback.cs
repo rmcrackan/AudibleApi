@@ -47,7 +47,7 @@ namespace AudibleApi
 
 		private static async Task<Identity> loginEmailPasswordAsync(Locale locale, ILoginCallback responder, string email, string password)
 		{
-			var loginResult = await Authenticate.SubmitCredentialsAsync(locale, email, password);
+			var loginResult = await Authenticate.SubmitCredentialsAsync(locale, responder.DeviceName, email, password);
 
 			while (true)
 			{
@@ -62,8 +62,8 @@ namespace AudibleApi
 
 					case CaptchaPage captchaResult:
 						var imageBytes = await downloadImageAsync(captchaResult.CaptchaImage);
-						var guess = await responder.GetCaptchaAnswerAsync(imageBytes);
-						loginResult = await captchaResult.SubmitAsync(guess);
+						(pwInput, var guess) = await responder.GetCaptchaAnswerAsync(captchaResult.Password, imageBytes);
+						loginResult = await captchaResult.SubmitAsync(pwInput, guess);
 						break;
 
 					case TwoFactorAuthenticationPage _2fa:

@@ -7,7 +7,7 @@ using Dinah.Core.Net.Http;
 
 namespace AudibleApi.Authentication
 {
-    public class TwoFactorAuthenticationPage : LoginResult
+    internal class TwoFactorAuthenticationPage : LoginResult
     {
         public TwoFactorAuthenticationPage(Authenticate authenticate, string responseBody) : base(authenticate, responseBody) { }
 

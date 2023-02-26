@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Formats.Asn1;
 
-namespace AudibleApi
+namespace AudibleApi.Cryptography
 {
     /// <summary>
     /// Represents an Asn.1 encoded value

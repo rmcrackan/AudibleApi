@@ -6,7 +6,7 @@ using Dinah.Core;
 
 namespace AudibleApi.Authentication
 {
-    public class ApprovalNeededPage : LoginResult
+    internal class ApprovalNeededPage : LoginResult
     {
         public ApprovalNeededPage(Authenticate authenticate, string responseBody) : base(authenticate, responseBody) { }
 

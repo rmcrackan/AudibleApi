@@ -11,31 +11,25 @@ using Newtonsoft.Json.Linq;
 
 namespace AudibleApi.Authentication
 {
-    public class Authenticate
+    internal class Authenticate
     {
         public IHttpClient LoginClient { get; }
         public ISystemDateTime SystemDateTime { get; }
         public Locale Locale { get; }
+		public RegistrationOptions RegistrationOptions { get; }
 
-		public string DeviceSerialNumber { get; }
-		public string CodeVerifier { get; }
+		public Authenticate(Locale locale, string deviceName) : this(locale, deviceName, ApiHttpClient.Create(), new SystemDateTime())
+			=> StackBlocker.ApiTestBlocker();
 
-		public CookieCollection GetCookies(Uri uri) => LoginClient.CookieJar.GetCookies(uri);
-
-        public Authenticate(Locale locale) : this(locale, ApiHttpClient.Create(), new SystemDateTime())
-            => StackBlocker.ApiTestBlocker();
-
-		public Authenticate(Locale locale, IHttpClient client, ISystemDateTime systemDateTime)
+		public Authenticate(Locale locale, string deviceName, IHttpClient client, ISystemDateTime systemDateTime)
 		{
-			LoginClient = client ?? throw new ArgumentNullException(nameof(client));
+			LoginClient = ArgumentValidator.EnsureNotNull(client, nameof(client));
 			if (LoginClient.CookieJar.ReflectOverAllCookies().Count > 0)
 				throw new ArgumentException("Cannot use a client which already has cookies");
 
-            SystemDateTime = systemDateTime ?? throw new ArgumentNullException(nameof(systemDateTime));
-            Locale = locale ?? throw new ArgumentNullException(nameof(locale));
-
-            DeviceSerialNumber = build_device_serial();
-            CodeVerifier = create_code_verifier();
+			SystemDateTime = ArgumentValidator.EnsureNotNull(systemDateTime, nameof(systemDateTime));
+			Locale = ArgumentValidator.EnsureNotNull(locale, nameof(locale));
+			RegistrationOptions = new RegistrationOptions(deviceName);
 
 			initClientState();
 		}
@@ -54,11 +48,11 @@ namespace AudibleApi.Authentication
         }
 
         /// <summary>PUBLIC ENTRY POINT</summary>
-        public static async Task<LoginResult> SubmitCredentialsAsync(Locale locale, string email, string password)
+        public static async Task<LoginResult> SubmitCredentialsAsync(Locale locale, string deviceName, string email, string password)
         {
             StackBlocker.ApiTestBlocker();
 
-            var auth = new Authenticate(locale);
+            var auth = new Authenticate(locale, deviceName);
             var loginResult = await auth.SubmitCredentialsAsync(email, password);
             return loginResult;
         }
@@ -93,7 +87,7 @@ namespace AudibleApi.Authentication
 
         private async Task<string> getInitialLoginPage()
         {
-            var response = await LoginClient.GetAsync(Locale.OAuthUrl(DeviceSerialNumber, CodeVerifier));
+            var response = await LoginClient.GetAsync(RegistrationOptions.OAuthUrl(Locale));
             response.EnsureSuccessStatusCode();
 
             var login1_body = await response.Content.ReadAsStringAsync();
@@ -138,16 +132,5 @@ namespace AudibleApi.Authentication
 
             return initCookies;
         }
-
-
-		//https://github.com/mkb79/Audible/blob/master/src/audible/login.py
-		public static string build_device_serial() => Guid.NewGuid().ToString("N").ToUpper();
-
-		public static string create_code_verifier()
-		{
-			var code_verifier = new byte[32];
-			new Random().NextBytes(code_verifier);
-            return Convert.ToBase64String(code_verifier).Replace('+', '-').Replace('/', '_').TrimEnd('=');
-		}
 	}
 }

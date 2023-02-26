@@ -84,18 +84,18 @@ namespace AudibleApi.Authorization
 			bodyJson.registration_data = new JObject();
 			bodyJson.registration_data.domain = "Device";
 			bodyJson.registration_data.app_version = Resources.AppVersion;
-			bodyJson.registration_data.device_serial = authorization.DeviceSerialNumber;
+			bodyJson.registration_data.device_serial = authorization.RegistrationOptions.DeviceSerialNumber;
 			bodyJson.registration_data.device_type = Resources.DeviceType;
-			bodyJson.registration_data.device_name = Resources.DeviceName;
+			bodyJson.registration_data.device_name = $"%FIRST_NAME%%FIRST_NAME_POSSESSIVE_STRING%%DUPE_STRATEGY_1ST%{authorization.RegistrationOptions.DeviceName}";
 			bodyJson.registration_data.os_version = Resources.IosVersion;
 			bodyJson.registration_data.software_version = Resources.SoftwareVersion;
 			bodyJson.registration_data.device_model = Resources.DeviceModel;
 			bodyJson.registration_data.app_name = Resources.AppName;
 
 			bodyJson.auth_data = new JObject();
-			bodyJson.auth_data.client_id = Resources.build_client_id(authorization.DeviceSerialNumber);
+			bodyJson.auth_data.client_id = authorization.RegistrationOptions.ClientID;
 			bodyJson.auth_data.authorization_code = authorization.Code;
-			bodyJson.auth_data.code_verifier = authorization.CodeVerifier;
+			bodyJson.auth_data.code_verifier = authorization.RegistrationOptions.CodeVerifier;
 			bodyJson.auth_data.code_algorithm = "SHA-256";
 			bodyJson.auth_data.client_domain = "DeviceLegacy";
 

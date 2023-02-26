@@ -8,7 +8,7 @@ using Dinah.Core.Net.Http;
 
 namespace AudibleApi.Authentication
 {
-    public abstract partial class ResultFactory
+	internal abstract partial class ResultFactory
     {
         private class CredentialsPageFactory : ResultFactory
         {

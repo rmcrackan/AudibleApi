@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Dinah.Core;
 using Dinah.Core.Net;
 using Dinah.Core.Net.Http;
+using HtmlAgilityPack;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AudibleApi.Authentication
 {
-	public class CredentialsPage : LoginResult
+    internal class CredentialsPage : LoginResult
 	{
 		public CredentialsPage(Authenticate authenticate, string responseBody) : base(authenticate, responseBody) { }
 
@@ -28,7 +30,7 @@ namespace AudibleApi.Authentication
 			Inputs["password"] = password;
 			Inputs["metadata1"] = getEncryptedMetadata(Authenticate.SystemDateTime.UtcNow.ToUnixTimeStamp());
 
-			(_, var url) = GetNextAction();
+			(_, var url) = getNextAction();
 
 			return await LoginResultRunner.GetResultsPageAsync(Authenticate, Inputs, url);
 		}
@@ -36,10 +38,27 @@ namespace AudibleApi.Authentication
 		private string getEncryptedMetadata(long nowUnixTimeStamp)
 		{
 			var raw_metadata = GenerateMetadata(Authenticate.Locale, nowUnixTimeStamp);
-			var metadata = Cryptography.EncryptMetadata(raw_metadata);
+			var metadata = Cryptography.Util.EncryptMetadata(raw_metadata);
 			return metadata;
 		}
 
+		public (string method, string url) getNextAction()
+		{
+			HtmlDocument htmlDocument = new();
+			htmlDocument.LoadHtml(ResponseBody);
+			HtmlNodeCollection htmlNodeCollection = htmlDocument.DocumentNode.SelectNodes(".//form");
+			if (htmlNodeCollection == null)
+				return default;
+
+			var authValidateForm = htmlNodeCollection.FirstOrDefault(f => f.Attributes.Any(a => a.Name == "name" && a.Value == "signIn"));
+
+			if (authValidateForm == null)
+				return default;
+
+			var method = authValidateForm.Attributes.FirstOrDefault(a => a.Name == "method")?.Value;
+			var url = authValidateForm.Attributes.FirstOrDefault(a => a.Name == "action")?.Value;
+			return (method, url);
+		}
 		public static string GenerateMetadata(Locale locale, long nowUnixTimeStamp)
 		{
 			var raw = new JObject {

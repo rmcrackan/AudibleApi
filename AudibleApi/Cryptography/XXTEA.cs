@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace AudibleApi
+namespace AudibleApi.Cryptography
 {
-    public static class XXTEA
+    internal static class XXTEA
     {
         //Corrected Block TEA
         //https://en.wikipedia.org/wiki/XXTEA
@@ -19,12 +19,12 @@ namespace AudibleApi
             uint z = clearText[^1], y, sum = 0, e;
             int p;
 
-            uint MX() => (((z >> 5) ^ (y << 2)) + ((y >> 3) ^ (z << 4))) ^ ((sum ^ y) + (key[(p & 3) ^ e] ^ z));
+            uint MX() => (z >> 5 ^ y << 2) + (y >> 3 ^ z << 4) ^ (sum ^ y) + (key[p & 3 ^ e] ^ z);
 
             for (int rounds = 6 + 52 / n; rounds > 0; rounds--)
             {
                 sum += DELTA;
-                e = (sum >> 2) & 3;
+                e = sum >> 2 & 3;
 
                 for (p = 0; p < n - 1; p++)
                 {

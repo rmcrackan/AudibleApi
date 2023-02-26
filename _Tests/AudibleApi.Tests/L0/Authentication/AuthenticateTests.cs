@@ -21,7 +21,7 @@ namespace LoginTests_L0
 	{
 		[TestMethod]
 		public void access_from_L0_throws()
-			=> Assert.ThrowsException<MethodAccessException>(() => new Authenticate(Locale.Empty));
+			=> Assert.ThrowsException<MethodAccessException>(() => new Authenticate(Locale.Empty, null));
 	}
 
     [TestClass]
@@ -29,23 +29,23 @@ namespace LoginTests_L0
     {
         [TestMethod]
         public void null_locale_throws()
-            => Assert.ThrowsException<ArgumentNullException>(() => new Authenticate(null, ApiHttpClient.Create(HttpMock.GetHandler()), new Mock<ISystemDateTime>().Object));
+            => Assert.ThrowsException<ArgumentNullException>(() => new Authenticate(null, null, ApiHttpClient.Create(HttpMock.GetHandler()), new Mock<ISystemDateTime>().Object));
 
         [TestMethod]
         public void null_httpClientHandler_throws()
-            => Assert.ThrowsException<ArgumentNullException>(() => new Authenticate(Locale.Empty, null, new Mock<ISystemDateTime>().Object));
+            => Assert.ThrowsException<ArgumentNullException>(() => new Authenticate(Locale.Empty, null, null, new Mock<ISystemDateTime>().Object));
 
 		[TestMethod]
 		public void has_cookies_throws()
 		{
 			var client = ApiHttpClient.Create(HttpMock.GetHandler());
 			client.CookieJar.Add(new Cookie("foo", "bar", "/", "a.com"));
-			Assert.ThrowsException<ArgumentException>(() => new Authenticate(Locale.Empty, client, new Mock<ISystemDateTime>().Object));
+			Assert.ThrowsException<ArgumentException>(() => new Authenticate(Locale.Empty, null, client, new Mock<ISystemDateTime>().Object));
 		}
 
 		[TestMethod]
 		public void null_systemDateTime_throws()
-			=> Assert.ThrowsException<ArgumentNullException>(() => new Authenticate(Locale.Empty, ApiHttpClient.Create(HttpMock.GetHandler()), null));
+			=> Assert.ThrowsException<ArgumentNullException>(() => new Authenticate(Locale.Empty, null, ApiHttpClient.Create(HttpMock.GetHandler()), null));
     }
 
     [TestClass]
@@ -56,7 +56,7 @@ namespace LoginTests_L0
         private Authenticate GetLogin(HttpClientHandler handler)
         {
 			var client = ApiHttpClient.Create(handler);
-			var login = new Authenticate(locale, client, new Mock<ISystemDateTime>().Object)
+			var login = new Authenticate(locale, null, client, new Mock<ISystemDateTime>().Object)
 			{
 				MaxLoadSessionCookiesTrips = 3
 			};
@@ -147,11 +147,11 @@ namespace LoginTests_L0
             await Assert.ThrowsExceptionAsync<TimeoutException>(() => has_session_token(login, locale));
         }
 
-        public static async Task has_session_token(Authenticate login, Locale locale)
+        internal static async Task has_session_token(Authenticate login, Locale locale)
         {
             await login.LoadSessionCookiesAsync();
 
-            var amazonCookies = login.GetCookies(locale.LoginUri()).Cast<Cookie>().ToList();
+            var amazonCookies = login.LoginClient.CookieJar.GetCookies(locale.LoginUri()).Cast<Cookie>().ToList();
             var cookieNames = amazonCookies.Select(c => c.Name);
             cookieNames.Should().Contain("session-token");
         }

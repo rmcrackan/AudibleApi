@@ -27,17 +27,6 @@ namespace Authentic.CaptchaPageTests
         public void null_img_throws()
             => Assert.ThrowsException<ArgumentNullException>(() => new CaptchaPage(AuthenticateShared.GetAuthenticate(), "body", null, "email", "pw"));
 
-        [TestMethod]
-        public void null_password_throws()
-            => Assert.ThrowsException<ArgumentNullException>(() => new CaptchaPage(AuthenticateShared.GetAuthenticate(), "body", new Uri("http://a.com"), null, null));
-
-        [TestMethod]
-        public void blank_password_throws()
-        {
-            Assert.ThrowsException<ArgumentException>(() => new CaptchaPage(AuthenticateShared.GetAuthenticate(), "body", new Uri("http://a.com"), "", ""));
-
-            Assert.ThrowsException<ArgumentException>(() => new CaptchaPage(AuthenticateShared.GetAuthenticate(), "body", new Uri("http://a.com"), "   ", "   "));
-        }
 
         [TestMethod]
         public void valid_create()
@@ -48,10 +37,10 @@ namespace Authentic.CaptchaPageTests
             page.CaptchaImage.Should().Be(uri);
 
             var inputs = page.GetInputsReadOnly();
-            inputs.Count.Should().Be(3);
+            inputs.Count.Should().Be(2);
             inputs["a"].Should().Be("z");
             inputs["email"].Should().Be("email");
-            inputs["password"].Should().Be("pw");
+			page.Password.Should().Be("pw");
         }
     }
 
@@ -62,14 +51,25 @@ namespace Authentic.CaptchaPageTests
 			=> new CaptchaPage(AuthenticateShared.GetAuthenticate(), "body", new Uri("http://a.com"), "email", "pw");
 
 		[TestMethod]
+        public async Task null_guess_throws()
+            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => getPage().SubmitAsync("pass", null));
+
+		[TestMethod]
+        public async Task null_pass_throws()
+            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => getPage().SubmitAsync(null, "guess"));
+
+		[TestMethod]
         public async Task null_param_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => getPage().SubmitAsync(null));
+            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => getPage().SubmitAsync(null, null));
 
         [TestMethod]
         public async Task blank_param_throws()
         {
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => getPage().SubmitAsync(""));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => getPage().SubmitAsync("   "));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => getPage().SubmitAsync("", ""));
+			await Assert.ThrowsExceptionAsync<ArgumentException>(() => getPage().SubmitAsync("   ", "   "));
+			await Assert.ThrowsExceptionAsync<ArgumentException>(() => getPage().SubmitAsync("", "   "));
+			await Assert.ThrowsExceptionAsync<ArgumentException>(() => getPage().SubmitAsync("", "   "));
+			await Assert.ThrowsExceptionAsync<ArgumentException>(() => getPage().SubmitAsync("   ", ""));
         }
 
         [TestMethod]
@@ -78,7 +78,7 @@ namespace Authentic.CaptchaPageTests
             var responseToCaptureRequest = new HttpResponseMessage();
 			var page = new CaptchaPage(AuthenticateShared.GetAuthenticate(responseToCaptureRequest), "body", new Uri("http://a.com"), "email", "pw");
 
-			await Assert.ThrowsExceptionAsync<LoginFailedException>(() => page.SubmitAsync("GUESS1"));
+			await Assert.ThrowsExceptionAsync<LoginFailedException>(() => page.SubmitAsync("pw", "GUESS1"));
 
             var content = await responseToCaptureRequest.RequestMessage.Content.ReadAsStringAsync();
             var split = content.Split('&');

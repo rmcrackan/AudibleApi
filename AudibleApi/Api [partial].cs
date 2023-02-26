@@ -4,16 +4,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using AudibleApi.Authorization;
+using AudibleApi.Cryptography;
 using Dinah.Core;
 using Dinah.Core.Net.Http;
 using Newtonsoft.Json.Linq;
 
 namespace AudibleApi
 {
-	// when possible:
-	// - return strongly-typed data
-	// - throw strongly typed exceptions
-	public partial class Api  : ApiUnauthenticated
+    // when possible:
+    // - return strongly-typed data
+    // - throw strongly typed exceptions
+    public partial class Api  : ApiUnauthenticated
 	{
 		public override bool IsAuthenticated => true;
 		private IIdentityMaintainer _identityMaintainer { get; }

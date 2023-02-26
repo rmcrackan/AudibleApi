@@ -33,7 +33,7 @@ namespace AudibleApi
 			Dinah.Core.ArgumentValidator.EnsureNotNull(locale, nameof(locale));
 			Dinah.Core.ArgumentValidator.EnsureNotNull(loginExternal, nameof(loginExternal));
 
-			var externalLogin = new ExternalLogin(locale);
+			var externalLogin = new ExternalLogin(locale, loginExternal.DeviceName);
 
 			var loginUrl = externalLogin.GetLoginUrl();
 			var responseUrl = loginExternal.GetResponseUrl(loginUrl);

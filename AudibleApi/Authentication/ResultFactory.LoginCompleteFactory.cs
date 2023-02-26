@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
 using AudibleApi.Authorization;
-using Dinah.Core;
 using Dinah.Core.Net;
-using Dinah.Core.Net.Http;
 using Newtonsoft.Json.Linq;
 
 namespace AudibleApi.Authentication
 {
-    public abstract partial class ResultFactory
+	internal abstract partial class ResultFactory
     {
         private class LoginCompleteFactory : ResultFactory
         {
@@ -52,12 +49,12 @@ namespace AudibleApi.Authentication
 				var authCode = getAuthorizationCode(response);
 
                 // authentication complete. begin authorization
-                var identity = new Identity(authenticate.Locale, authCode with { CodeVerifier = authenticate.CodeVerifier, DeviceSerialNumber = authenticate.DeviceSerialNumber }, cookies);
+                var identity = new Identity(authenticate.Locale, authCode with { RegistrationOptions = authenticate.RegistrationOptions }, cookies);
 
                 return new LoginComplete(authenticate, body, identity);
             }
 
-            private static Authorization.OAuth2 getAuthorizationCode(HttpResponseMessage response)
+            private static OAuth2 getAuthorizationCode(HttpResponseMessage response)
             {
 				if(response?.Headers?.Location is null)
 					return null;
@@ -75,7 +72,7 @@ namespace AudibleApi.Authentication
 							},
 							$"{nameof(LoginCompleteFactory)}.{nameof(getAuthorizationCode)}: error parsing response location query");
 				
-				return Authorization.OAuth2.Parse(location);
+				return OAuth2.Parse(location);
 			}
         }
     }

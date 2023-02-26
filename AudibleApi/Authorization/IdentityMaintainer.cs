@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using AudibleApi.Cryptography;
 using Dinah.Core;
-using Newtonsoft.Json.Linq;
 
 namespace AudibleApi.Authorization
 {
-	public class IdentityMaintainer : IIdentityMaintainer
+    public class IdentityMaintainer : IIdentityMaintainer
 	{
 		public ISystemDateTime SystemDateTime { get; }
 		public Locale Locale => _identity.Locale;
@@ -106,7 +104,7 @@ namespace AudibleApi.Authorization
 
 		protected async Task DeregisterAsync()
 		{
-			var success = await _authorize.DeregisterAsync(_identity.ExistingAccessToken, _identity.Cookies.ToKeyValuePair());
+			var success = await _authorize.DeregisterAsync(_identity.ExistingAccessToken, _identity.Cookies);
 			if (!success)
 				throw new RegistrationException("Unable to deregister");
 

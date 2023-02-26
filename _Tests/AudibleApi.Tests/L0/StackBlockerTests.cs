@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AudibleApi;
 using AudibleApi.Authorization;
+using AudibleApi.Cryptography;
 using Dinah.Core;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,7 +20,7 @@ using static AuthorizationShared.Shared;
 
 namespace StackBlockerTests
 {
-	[TestClass]
+    [TestClass]
 	public class L1Regex
 	{
 		[TestMethod]
@@ -88,7 +89,7 @@ namespace StackBlockerTests
 
 namespace StackBlockerTests_L0_Fail
 {
-	[TestClass]
+    [TestClass]
 	public class ApiTestBlocker
 	{
 		[TestMethod]
@@ -99,7 +100,7 @@ namespace StackBlockerTests_L0_Fail
 
 namespace StackBlockerTests_L1_Pass
 {
-	[TestClass]
+    [TestClass]
 	public class ApiTestBlocker
 	{
 		[TestMethod]
@@ -152,7 +153,7 @@ namespace StackBlockerTests_L1_Pass
 	{
 		[TestMethod]
 		public void access_from_L1_passes()
-			=> new AudibleApi.Authentication.Authenticate(Localization.Get("us"));
+			=> new AudibleApi.Authentication.Authenticate(Localization.Get("us"), "");
 	}
 
 	[TestClass]

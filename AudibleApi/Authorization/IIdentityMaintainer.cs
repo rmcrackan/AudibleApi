@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AudibleApi.Cryptography;
 using Dinah.Core;
 
 namespace AudibleApi.Authorization
 {
-	/// <summary>
-	/// Keeps IIdentity up to date
-	/// </summary>
-	public interface IIdentityMaintainer
+    /// <summary>
+    /// Keeps IIdentity up to date
+    /// </summary>
+    public interface IIdentityMaintainer
 	{
 		ISystemDateTime SystemDateTime { get; }
 		Locale Locale { get; }

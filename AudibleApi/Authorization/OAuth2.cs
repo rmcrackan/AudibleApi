@@ -7,10 +7,7 @@ namespace AudibleApi.Authorization
 	{
 		public static OAuth2 Empty => new(string.Empty);
 		public string Code { get; }
-		public string CodeVerifier { get; set; }
-		public string DeviceSerialNumber { get; set; }
-
-		public bool IsValid => !string.IsNullOrWhiteSpace(Code) && !string.IsNullOrWhiteSpace(CodeVerifier) && !string.IsNullOrWhiteSpace(DeviceSerialNumber);
+		public RegistrationOptions RegistrationOptions { get; set; }
 
 		private OAuth2(string authCode) => Code = authCode;
 

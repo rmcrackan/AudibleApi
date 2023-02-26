@@ -7,7 +7,7 @@ using Dinah.Core;
 
 namespace AudibleApi.Authentication
 {
-    public abstract partial class ResultFactory
+	internal abstract partial class ResultFactory
     {
         private class ApprovalNeededPageFactory : ResultFactory
         {

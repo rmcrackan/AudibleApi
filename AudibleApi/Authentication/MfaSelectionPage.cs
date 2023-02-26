@@ -7,7 +7,7 @@ using Dinah.Core.Net.Http;
 
 namespace AudibleApi.Authentication
 {
-	public class MfaSelectionPage : LoginResult
+	internal class MfaSelectionPage : LoginResult
 	{
         public MfaConfig MfaConfig { get; }
 

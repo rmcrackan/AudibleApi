@@ -1,36 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AudibleApi.Cryptography;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AudibleApi.Authorization
 {
-    /// <summary>This is the same as KeyValuePair<K, V> except that newtonsoft doesn't play nicely with that native struct</summary>
-    public class KVP<K, V>
-    {
-        public K Key { get; set; }
-        public V Value { get; set; }
-
-		public override string ToString() => $"[{Key}={Value}]";
-	}
-
-	public static class KVPExtensions
-	{
-		public static List<KeyValuePair<string, string>> ToKeyValuePair(this IEnumerable<KVP<string, string>> pairs)
-		{
-			if (pairs is null)
-				throw new ArgumentNullException(nameof(pairs));
-			return pairs
-				.Select(kvp => new KeyValuePair<string, string>(kvp.Key, kvp.Value))
-				.ToList();
-		}
-	}
-
     public partial class Identity
 	{
         [JsonConstructor]
-        protected Identity(string localeName, AccessToken existingAccessToken, PrivateKey privateKey, AdpToken adpToken, RefreshToken refreshToken, List<KVP<string, string>> cookies)
+        protected Identity(string localeName, AccessToken existingAccessToken, PrivateKey privateKey, AdpToken adpToken, RefreshToken refreshToken, List<KeyValuePair<string, string>> cookies)
 		{
 			IsValid = true;
 

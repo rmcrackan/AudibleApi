@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AudibleApi.Cryptography;
 using Dinah.Core;
 using Newtonsoft.Json.Linq;
 
