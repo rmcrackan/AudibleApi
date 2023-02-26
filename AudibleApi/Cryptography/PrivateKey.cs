@@ -18,8 +18,7 @@ namespace AudibleApi.Cryptography
 
         protected override void ValidateInput(string value)
         {
-            if (value is null)
-                throw new ArgumentNullException(nameof(value));
+            ArgumentValidator.EnsureNotNull(value, nameof(value));
 
             if (!value.Trim().StartsWith(REQUIRED_BEGINNING))
                 throw new ArgumentException("Improperly formatted RSA private key", nameof(value));

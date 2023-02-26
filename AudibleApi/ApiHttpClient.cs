@@ -49,8 +49,7 @@ namespace AudibleApi
 
 		public static ApiHttpClient Create(HttpClientHandler innerHandler)
 		{
-			if (innerHandler is null)
-				throw new ArgumentNullException(nameof(innerHandler));
+			ArgumentValidator.EnsureNotNull(innerHandler, nameof(innerHandler));
 
 			if (innerHandler.CookieContainer.ReflectOverAllCookies().Count > 0)
 				throw new ArgumentException("Cannot use a client which already has cookies");

@@ -1,4 +1,5 @@
-﻿using Dinah.Core.Net.Http;
+﻿using Dinah.Core;
+using Dinah.Core.Net.Http;
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -18,14 +19,14 @@ namespace AudibleApi
 		public ApiUnauthenticated(Locale locale)
 		{
 			StackBlocker.ApiTestBlocker();
-			Locale = locale ?? throw new ArgumentNullException(nameof(locale));
+			Locale = ArgumentValidator.EnsureNotNull(locale, nameof(locale));
 			Sharer = new HttpClientSharer();
 		}
 
 		public ApiUnauthenticated(Locale locale, IHttpClientSharer sharer)
 		{
-			Locale = locale ?? throw new ArgumentNullException(nameof(locale));
-			Sharer = sharer ?? throw new ArgumentNullException(nameof(sharer));
+			Locale = ArgumentValidator.EnsureNotNull(locale, nameof(locale));
+			Sharer = ArgumentValidator.EnsureNotNull(sharer, nameof(sharer));
 		}
 
 		public Task<HttpResponseMessage> AdHocNonAuthenticatedGetAsync(string requestUri)
@@ -33,10 +34,7 @@ namespace AudibleApi
 
 		public async Task<HttpResponseMessage> AdHocNonAuthenticatedGetAsync(string requestUri, IHttpClientActions client)
 		{
-			if (requestUri is null)
-				throw new ArgumentNullException(nameof(requestUri));
-			if (string.IsNullOrWhiteSpace(requestUri))
-				throw new ArgumentException($"{nameof(requestUri)} may not be blank");
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(requestUri, nameof(requestUri));
 
 			var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
 

@@ -41,9 +41,9 @@ namespace AudibleApi.Authorization
 
 		protected IdentityMaintainer(IIdentity identity, IAuthorize authorize, ISystemDateTime systemDateTime)
 		{
-			_identity = identity ?? throw new ArgumentNullException(nameof(identity));
-			_authorize = authorize ?? throw new ArgumentNullException(nameof(authorize));
-			SystemDateTime = systemDateTime ?? throw new ArgumentNullException(nameof(systemDateTime));
+			_identity = ArgumentValidator.EnsureNotNull(identity, nameof(identity));
+			_authorize = ArgumentValidator.EnsureNotNull(authorize, nameof(authorize));
+			SystemDateTime = ArgumentValidator.EnsureNotNull(systemDateTime, nameof(systemDateTime));
 		}
 
 		public async Task<AccessToken> GetAccessTokenAsync()

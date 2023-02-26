@@ -235,12 +235,7 @@ namespace AudibleApi
 
 		public async Task<Item> GetLibraryBookAsync(string asin, string responseGroups)
 		{
-			if (asin is null)
-				throw new ArgumentNullException(nameof(asin));
-			if (string.IsNullOrWhiteSpace(asin))
-				throw new ArgumentException("asin may not be blank", nameof(asin));
-
-			asin = asin.ToUpper().Trim();
+			asin = ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin)).ToUpper().Trim();
 
 			responseGroups = responseGroups?.Trim().Trim('?');
 

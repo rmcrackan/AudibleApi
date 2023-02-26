@@ -9,7 +9,7 @@ namespace AudibleApi
 		Task<(string email, string password)> GetLoginAsync();
 		Task<(string password, string guess)> GetCaptchaAnswerAsync(string password, byte[] captchaImage);
 		Task<(string name, string value)> GetMfaChoiceAsync(MfaConfig mfaConfig);
-		Task<string> Get2faCodeAsync();
+		Task<string> Get2faCodeAsync(string prompt);
 		Task ShowApprovalNeededAsync();
 		string DeviceName { get; }
 	}

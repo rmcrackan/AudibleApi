@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AudibleApi.Cryptography;
+using Dinah.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -17,12 +18,9 @@ namespace AudibleApi.Authorization
 			if (string.IsNullOrWhiteSpace(localeName))
 				IsValid = false;
 			else
-				LocaleName = localeName.Trim();
+				LocaleName = localeName.Trim();			
 
-			if (existingAccessToken is null)
-				throw new ArgumentNullException(nameof(existingAccessToken));
-
-			ExistingAccessToken = existingAccessToken;
+			ExistingAccessToken = ArgumentValidator.EnsureNotNull(existingAccessToken, nameof(existingAccessToken));
 
 			if (privateKey is null)
 				IsValid = false;

@@ -25,11 +25,11 @@ namespace Authentic.LoginResultRunnerTests
     {
 		[TestMethod]
         public async Task null_authenticate_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => LoginResultRunner.GetResultsPageAsync(null, new Dictionary<string, string>()));
+            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => LoginResultRunner.GetResultsPageAsync(null, new Dictionary<string, string>(), HttpMethod.Get, ""));
 
         [TestMethod]
         public async Task null_inputs_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => LoginResultRunner.GetResultsPageAsync(AuthenticateShared.GetAuthenticate(), (Dictionary<string, string>)null));
+            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => LoginResultRunner.GetResultsPageAsync(AuthenticateShared.GetAuthenticate(), null, HttpMethod.Get, ""));
 
         [TestMethod]
         public async Task returns_CredentialsPage()
@@ -38,7 +38,7 @@ namespace Authentic.LoginResultRunnerTests
                 = "<input name='email' value='e' />"
                 + "<input name='password' value='pw' />";
             var client = ApiHttpClientMock.GetClient(response);
-            var result = await LoginResultRunner.GetResultsPageAsync(AuthenticateShared.GetAuthenticate(client), new Dictionary<string, string>());
+            var result = await LoginResultRunner.GetResultsPageAsync(AuthenticateShared.GetAuthenticate(client), new Dictionary<string, string>(), HttpMethod.Get, "");
             var page = result as CredentialsPage;
             page.Should().NotBeNull();
         }
@@ -48,7 +48,7 @@ namespace Authentic.LoginResultRunnerTests
         {
             var response = "<input name='otpCode' value='2fa' />";
             var client = ApiHttpClientMock.GetClient(response);
-            var result = await LoginResultRunner.GetResultsPageAsync(AuthenticateShared.GetAuthenticate(client), new Dictionary<string, string>());
+            var result = await LoginResultRunner.GetResultsPageAsync(AuthenticateShared.GetAuthenticate(client), new Dictionary<string, string>(), HttpMethod.Get, "");
             var page = result as TwoFactorAuthenticationPage;
             page.Should().NotBeNull();
         }

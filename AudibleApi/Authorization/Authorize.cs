@@ -44,9 +44,9 @@ namespace AudibleApi.Authorization
 
 		public Authorize(Locale locale, IHttpClientSharer sharer, ISystemDateTime systemDateTime)
 		{
-			_sharer = sharer ?? throw new ArgumentNullException(nameof(sharer));
-			_systemDateTime = systemDateTime ?? throw new ArgumentNullException(nameof(systemDateTime));
-			_locale = locale ?? throw new ArgumentNullException(nameof(locale));
+			_locale = ArgumentValidator.EnsureNotNull(locale, nameof(locale));
+			_sharer = ArgumentValidator.EnsureNotNull(sharer, nameof(sharer));
+			_systemDateTime = ArgumentValidator.EnsureNotNull(systemDateTime, nameof(systemDateTime));
 		}
 
 		public async Task<JObject> RegisterAsync(OAuth2 authorization)
@@ -56,7 +56,7 @@ namespace AudibleApi.Authorization
 			try
 			{
 				var regUri = new Uri(_locale.RegistrationUri(), "/auth/register");
-				var content = buildRegisterBody(_locale, authorization);
+				HttpBody content = authorization.GetRegistrationBody(_locale);
 				var response = await new HttpClient().PostAsync(regUri, content.Content);
 
 				response.EnsureSuccessStatusCode();
@@ -68,40 +68,6 @@ namespace AudibleApi.Authorization
 			{
 				throw new RegistrationException("Could not register", ex);
 			}
-		}
-
-		private static HttpBody buildRegisterBody(Locale locale, OAuth2 authorization)
-		{
-			// for dynamic, add nuget ref Microsoft.CSharp
-			// https://www.newtonsoft.com/json/help/html/CreateJsonDynamic.htm
-			dynamic bodyJson = new JObject();
-			bodyJson.requested_token_type = new JArray("bearer", "mac_dms", "website_cookies", "store_authentication_cookie");
-
-			bodyJson.cookies = new JObject();
-			bodyJson.cookies.website_cookies = new JArray();
-			bodyJson.cookies.domain = locale.RegisterDomain();
-
-			bodyJson.registration_data = new JObject();
-			bodyJson.registration_data.domain = "Device";
-			bodyJson.registration_data.app_version = Resources.AppVersion;
-			bodyJson.registration_data.device_serial = authorization.RegistrationOptions.DeviceSerialNumber;
-			bodyJson.registration_data.device_type = Resources.DeviceType;
-			bodyJson.registration_data.device_name = $"%FIRST_NAME%%FIRST_NAME_POSSESSIVE_STRING%%DUPE_STRATEGY_1ST%{authorization.RegistrationOptions.DeviceName}";
-			bodyJson.registration_data.os_version = Resources.IosVersion;
-			bodyJson.registration_data.software_version = Resources.SoftwareVersion;
-			bodyJson.registration_data.device_model = Resources.DeviceModel;
-			bodyJson.registration_data.app_name = Resources.AppName;
-
-			bodyJson.auth_data = new JObject();
-			bodyJson.auth_data.client_id = authorization.RegistrationOptions.ClientID;
-			bodyJson.auth_data.authorization_code = authorization.Code;
-			bodyJson.auth_data.code_verifier = authorization.RegistrationOptions.CodeVerifier;
-			bodyJson.auth_data.code_algorithm = "SHA-256";
-			bodyJson.auth_data.client_domain = "DeviceLegacy";
-
-			bodyJson.requested_extensions = new JArray("device_info", "customer_info");
-
-			return bodyJson;
 		}
 
 		public async Task<bool> DeregisterAsync(AccessToken accessToken, IEnumerable<KeyValuePair<string, string>> cookies)
@@ -149,8 +115,7 @@ namespace AudibleApi.Authorization
 		/// <summary>Refresh access token. Access tokens are valid for 60 min</summary>
 		public async Task<AccessToken> RefreshAccessTokenAsync(RefreshToken refresh_token)
 		{
-			if (refresh_token is null)
-				throw new ArgumentNullException(nameof(refresh_token));
+			ArgumentValidator.EnsureNotNull(refresh_token, nameof(refresh_token));
 
 			var response = await requestTokenRefreshAsync(refresh_token);
 			var accessToken = await ExtractAccessTokenAsync(response);
@@ -177,8 +142,7 @@ namespace AudibleApi.Authorization
 
 		public async Task<AccessToken> ExtractAccessTokenAsync(HttpResponseMessage response)
 		{
-			if (response is null)
-				throw new ArgumentNullException(nameof(response));
+			ArgumentValidator.EnsureNotNull(response, nameof(response));
 
 			var responseBody = await response.Content.ReadAsStringAsync();
 

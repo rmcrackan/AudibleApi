@@ -1,7 +1,5 @@
 ﻿using System;
-using System.IO;
 using System.Net.Http;
-using System.Security.Cryptography;
 using System.Text;
 using AudibleApi.Authorization;
 using Dinah.Core;
@@ -14,8 +12,7 @@ namespace AudibleApi.Cryptography
 
         public static string EncryptMetadata(string metadata)
         {
-            if (metadata is null)
-                throw new ArgumentNullException(nameof(metadata));
+            ArgumentValidator.EnsureNotNull(metadata, nameof(metadata));
 
             var metadataBts = Encoding.ASCII.GetBytes(metadata);
 
@@ -45,13 +42,10 @@ namespace AudibleApi.Cryptography
         }
 
         private static void validate(HttpRequestMessage request, AdpToken adpToken, PrivateKey privateKey)
-        {
-            if (request is null)
-                throw new ArgumentNullException(nameof(request));
-            if (adpToken is null)
-                throw new ArgumentNullException(nameof(adpToken));
-            if (privateKey is null)
-                throw new ArgumentNullException(nameof(privateKey));
+		{
+			ArgumentValidator.EnsureNotNull(request, nameof(request));
+			ArgumentValidator.EnsureNotNull(adpToken, nameof(adpToken));
+			ArgumentValidator.EnsureNotNull(privateKey, nameof(privateKey));
         }
 
         public static string CalculateSignature(this HttpRequestMessage request, DateTime dateTime, AdpToken adpToken, PrivateKey privateKey)

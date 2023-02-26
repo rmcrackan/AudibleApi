@@ -11,8 +11,7 @@ namespace AudibleApi.Authorization
 
 		protected override void ValidateInput(string value)
 		{
-			if (value is null)
-				throw new ArgumentNullException(nameof(value));
+			ArgumentValidator.EnsureNotNull(value, nameof(value));
 
 			if (!value.StartsWith(REQUIRED_BEGINNING))
 				throw new ArgumentException("Improperly formatted refresh token", nameof(value));

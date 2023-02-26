@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dinah.Core;
+using System;
 using System.Threading.Tasks;
 
 namespace AudibleApi.Authentication
@@ -10,8 +11,8 @@ namespace AudibleApi.Authentication
 
         public CaptchaPage(Authenticate authenticate, string responseBody, Uri img, string email, string password) : base(authenticate, responseBody)
         {
-            if (img is null)
-                throw new ArgumentNullException(nameof(img));
+			ArgumentValidator.EnsureNotNull(img, nameof(img));
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(email, nameof(email));
 
 			Inputs["email"] = email;
 
@@ -21,14 +22,8 @@ namespace AudibleApi.Authentication
 
         public async Task<LoginResult> SubmitAsync(string password, string guess)
         {
-            if (guess is null)
-                throw new ArgumentNullException(nameof(guess));
-            if (string.IsNullOrWhiteSpace(guess))
-                throw new ArgumentException("Guess may not be blank", nameof(guess));
-			if (password is null)
-				throw new ArgumentNullException(nameof(password));
-			if (string.IsNullOrWhiteSpace(password))
-				throw new ArgumentException("Password may not be blank", nameof(password));
+            ArgumentValidator.EnsureNotNullOrWhiteSpace(password, nameof(password));
+            ArgumentValidator.EnsureNotNullOrWhiteSpace(guess, nameof(guess));
 
 			Inputs["guess"] = guess.Trim().ToLower();
 			Inputs["password"] = password;
@@ -37,7 +32,7 @@ namespace AudibleApi.Authentication
             Inputs["use_audio_captcha"] = "false";
             Inputs["showPasswordChecked"] = "false";
 
-            return await LoginResultRunner.GetResultsPageAsync(Authenticate, Inputs);
-        }
+			return await LoginResultRunner.GetResultsPageAsync(Authenticate, Inputs, Method, Action);
+		}
     }
 }

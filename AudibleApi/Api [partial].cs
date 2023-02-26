@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using AudibleApi.Authorization;
 using AudibleApi.Cryptography;
 using Dinah.Core;
 using Dinah.Core.Net.Http;
-using Newtonsoft.Json.Linq;
 
 namespace AudibleApi
 {
@@ -22,13 +19,13 @@ namespace AudibleApi
 		public Api(IIdentityMaintainer identityMaintainer) 
 			: base(identityMaintainer?.Locale)
 		{
-			_identityMaintainer = identityMaintainer ?? throw new ArgumentNullException(nameof(identityMaintainer));
+			_identityMaintainer = ArgumentValidator.EnsureNotNull(identityMaintainer, nameof(identityMaintainer));
 		}
 
 		public Api(IIdentityMaintainer identityMaintainer, IHttpClientSharer sharer) 
 			: base(identityMaintainer?.Locale, sharer)
 		{
-			_identityMaintainer = identityMaintainer ?? throw new ArgumentNullException(nameof(identityMaintainer));
+			_identityMaintainer = ArgumentValidator.EnsureNotNull(identityMaintainer, nameof(identityMaintainer));
 		}
 
 		public Task<HttpResponseMessage> AdHocAuthenticatedGetAsync(string requestUri)

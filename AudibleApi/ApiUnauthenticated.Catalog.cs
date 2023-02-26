@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using AudibleApi.Common;
+using Dinah.Core;
 
 namespace AudibleApi
 {
@@ -105,10 +106,7 @@ namespace AudibleApi
 
 		public async Task<List<Item>> GetCatalogProductsAsync(CatalogOptions catalogOptions)
 		{
-			if (catalogOptions is null)
-				throw new ArgumentNullException(nameof(catalogOptions));
-
-			var options = catalogOptions.ToQueryString();
+			var options = ArgumentValidator.EnsureNotNull(catalogOptions, nameof(catalogOptions)).ToQueryString();
 			options = options?.Trim().Trim('?');
 
 			var url = $"{CATALOG_PATH}/products/";

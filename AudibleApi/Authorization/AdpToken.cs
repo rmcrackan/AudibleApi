@@ -12,8 +12,7 @@ namespace AudibleApi.Authorization
 
 		protected override void ValidateInput(string value)
 		{
-			if (value is null)
-				throw new ArgumentNullException(nameof(value));
+			ArgumentValidator.EnsureNotNull(value, "value");
 
 			var ex = new ArgumentException("Improperly formatted ADP token");
 

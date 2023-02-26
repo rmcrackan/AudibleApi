@@ -67,8 +67,9 @@ namespace AudibleApi
 						break;
 
 					case TwoFactorAuthenticationPage _2fa:
-						var _2faCode = await responder.Get2faCodeAsync();
-						loginResult = await _2fa.SubmitAsync(_2faCode);
+						var _2faCode = await responder.Get2faCodeAsync(_2fa.Prompt);
+						//If 2fa guess is empty, get all MFA options
+						loginResult = string.IsNullOrEmpty(_2faCode)? await _2fa.GetMfaPage() : await _2fa.SubmitAsync(_2faCode);
 						break;
 
 					case ApprovalNeededPage approvalNeeded:

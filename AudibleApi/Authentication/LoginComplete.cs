@@ -1,5 +1,6 @@
 ﻿using System;
 using AudibleApi.Authorization;
+using Dinah.Core;
 
 namespace AudibleApi.Authentication
 {
@@ -8,6 +9,6 @@ namespace AudibleApi.Authentication
         public Identity Identity { get; }
 
         public LoginComplete(Authenticate authenticate, string responseBody, Identity identity) : base(authenticate, responseBody)
-            => Identity = identity ?? throw new ArgumentNullException(nameof(identity));
+            => Identity = ArgumentValidator.EnsureNotNull(identity, nameof(identity));
     }
 }

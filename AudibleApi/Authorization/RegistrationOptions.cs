@@ -78,7 +78,7 @@ namespace AudibleApi.Authorization
 		private static string build_client_id(string deviceSerialNumber)
 		{
 			var client_id_bytes = Encoding.UTF8.GetBytes($"{deviceSerialNumber}#{Resources.DeviceType}");
-			return urlsafe_b64encode(client_id_bytes);
+			return BitConverter.ToString(client_id_bytes).Replace("-", "").ToLower(); ;
 		}
 
 		private static string create_s256_code_challenge(string code_verifier)
@@ -86,7 +86,7 @@ namespace AudibleApi.Authorization
 			using var sha256 = SHA256.Create();
 
 			sha256.ComputeHash(Encoding.ASCII.GetBytes(code_verifier));
-			return Convert.ToBase64String(sha256.Hash).Replace('+', '-').Replace('/', '_').TrimEnd('=');
+			return urlsafe_b64encode(sha256.Hash);
 		}
 
 		private static string urlsafe_b64encode(byte[] bytes)

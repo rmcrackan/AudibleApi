@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Dinah.Core;
-using Dinah.Core.Net;
-using Dinah.Core.Net.Http;
-using HtmlAgilityPack;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -16,23 +12,14 @@ namespace AudibleApi.Authentication
 
 		public async Task<LoginResult> SubmitAsync(string email, string password)
 		{
-			if (email is null)
-				throw new ArgumentNullException(nameof(email));
-			if (string.IsNullOrWhiteSpace(email))
-				throw new ArgumentException("Password may not be blank", nameof(email));
-
-			if (password is null)
-				throw new ArgumentNullException(nameof(password));
-			if (string.IsNullOrWhiteSpace(password))
-				throw new ArgumentException("Password may not be blank", nameof(password));
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(email, nameof(email));
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(password, nameof(password));
 
 			Inputs["email"] = email;
 			Inputs["password"] = password;
 			Inputs["metadata1"] = getEncryptedMetadata(Authenticate.SystemDateTime.UtcNow.ToUnixTimeStamp());
 
-			(_, var url) = getNextAction();
-
-			return await LoginResultRunner.GetResultsPageAsync(Authenticate, Inputs, url);
+			return await LoginResultRunner.GetResultsPageAsync(Authenticate, Inputs, Method, Action);
 		}
 
 		private string getEncryptedMetadata(long nowUnixTimeStamp)
@@ -42,23 +29,6 @@ namespace AudibleApi.Authentication
 			return metadata;
 		}
 
-		public (string method, string url) getNextAction()
-		{
-			HtmlDocument htmlDocument = new();
-			htmlDocument.LoadHtml(ResponseBody);
-			HtmlNodeCollection htmlNodeCollection = htmlDocument.DocumentNode.SelectNodes(".//form");
-			if (htmlNodeCollection == null)
-				return default;
-
-			var authValidateForm = htmlNodeCollection.FirstOrDefault(f => f.Attributes.Any(a => a.Name == "name" && a.Value == "signIn"));
-
-			if (authValidateForm == null)
-				return default;
-
-			var method = authValidateForm.Attributes.FirstOrDefault(a => a.Name == "method")?.Value;
-			var url = authValidateForm.Attributes.FirstOrDefault(a => a.Name == "action")?.Value;
-			return (method, url);
-		}
 		public static string GenerateMetadata(Locale locale, long nowUnixTimeStamp)
 		{
 			var raw = new JObject {
