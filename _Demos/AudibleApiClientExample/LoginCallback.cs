@@ -7,14 +7,16 @@ namespace AudibleApiClientExample
 {
 	public class LoginCallback : ILoginCallback
 	{
-		public Task<string> Get2faCodeAsync()
-		{
-			Console.WriteLine("Two-Step Verification code:");
+        public string DeviceName => "My Fake iPhone";
+
+        public Task<string> Get2faCodeAsync(string prompt)
+        {
+			Console.WriteLine($"Two-Step Verification code. Prompt {prompt}:");
 			var _2faCode = Console.ReadLine();
 			return Task.FromResult(_2faCode);
-		}
+        }
 
-		public Task<string> GetCaptchaAnswerAsync(byte[] captchaImage)
+        public Task<(string password, string guess)> GetCaptchaAnswerAsync(string password, byte[] captchaImage)
 		{
 			var tempFileName = Path.Combine(Path.GetTempPath(), "audible_api_captcha_" + Guid.NewGuid() + ".jpg");
 
@@ -33,7 +35,7 @@ namespace AudibleApiClientExample
 
 				Console.WriteLine("CAPTCHA answer: ");
 				var guess = Console.ReadLine();
-				return Task.FromResult(guess);
+				return Task.FromResult((password, guess));
 			}
 			finally
 			{
@@ -42,7 +44,7 @@ namespace AudibleApiClientExample
 			}
 		}
 
-		public Task<(string email, string password)> GetLoginAsync()
+        public Task<(string email, string password)> GetLoginAsync()
 		{
 			var secrets = Program.GetSecrets();
 			if (secrets is not null)
