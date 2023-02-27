@@ -20,20 +20,20 @@ using TestAudibleApiCommon;
 
 namespace Authentic
 {
-	public class AuthenticateShared
+	internal class AuthenticateShared
 	{
 		public static Authenticate GetAuthenticate(ApiHttpClient client)
-			=> new Authenticate(Locales.Us, client, StaticSystemDateTime.Past)
+			=> new Authenticate(Locales.Us, "", client, StaticSystemDateTime.Past)
 			{
 				MaxLoadSessionCookiesTrips = 3
 			};
 		public static Authenticate GetAuthenticate(string handlerReturnString = null, HttpStatusCode statusCode = HttpStatusCode.OK)
-			=> new Authenticate(Locales.Us, ApiHttpClientMock.GetClient(handlerReturnString, statusCode), StaticSystemDateTime.Past)
+			=> new Authenticate(Locales.Us, "", ApiHttpClientMock.GetClient(handlerReturnString, statusCode), StaticSystemDateTime.Past)
 			{
 				MaxLoadSessionCookiesTrips = 3
 			};
 		public static Authenticate GetAuthenticate(HttpResponseMessage response)
-			=> new Authenticate(Locales.Us, ApiHttpClientMock.GetClient(response), StaticSystemDateTime.Past)
+			=> new Authenticate(Locales.Us, "", ApiHttpClientMock.GetClient(response), StaticSystemDateTime.Past)
 			{
 				MaxLoadSessionCookiesTrips = 3
 			};

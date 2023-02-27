@@ -1,42 +1,31 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Dinah.Core;
-using Dinah.Core.Net;
-using Dinah.Core.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AudibleApi.Authentication
 {
-	public class CredentialsPage : LoginResult
+    internal class CredentialsPage : LoginResult
 	{
 		public CredentialsPage(Authenticate authenticate, string responseBody) : base(authenticate, responseBody) { }
 
 		public async Task<LoginResult> SubmitAsync(string email, string password)
 		{
-			if (email is null)
-				throw new ArgumentNullException(nameof(email));
-			if (string.IsNullOrWhiteSpace(email))
-				throw new ArgumentException("Password may not be blank", nameof(email));
-
-			if (password is null)
-				throw new ArgumentNullException(nameof(password));
-			if (string.IsNullOrWhiteSpace(password))
-				throw new ArgumentException("Password may not be blank", nameof(password));
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(email, nameof(email));
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(password, nameof(password));
 
 			Inputs["email"] = email;
 			Inputs["password"] = password;
 			Inputs["metadata1"] = getEncryptedMetadata(Authenticate.SystemDateTime.UtcNow.ToUnixTimeStamp());
 
-			(_, var url) = GetNextAction();
-
-			return await LoginResultRunner.GetResultsPageAsync(Authenticate, Inputs, url);
+			return await LoginResultRunner.GetResultsPageAsync(Authenticate, Inputs, Method, Action);
 		}
 
 		private string getEncryptedMetadata(long nowUnixTimeStamp)
 		{
 			var raw_metadata = GenerateMetadata(Authenticate.Locale, nowUnixTimeStamp);
-			var metadata = Cryptography.EncryptMetadata(raw_metadata);
+			var metadata = Cryptography.Util.EncryptMetadata(raw_metadata);
 			return metadata;
 		}
 

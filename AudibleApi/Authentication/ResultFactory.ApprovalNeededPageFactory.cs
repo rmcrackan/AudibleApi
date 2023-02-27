@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Dinah.Core;
 
 namespace AudibleApi.Authentication
 {
-    public abstract partial class ResultFactory
+	internal abstract partial class ResultFactory
     {
         private class ApprovalNeededPageFactory : ResultFactory
         {

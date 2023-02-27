@@ -47,7 +47,7 @@ namespace AudibleApi
 
 		private static async Task<Identity> loginEmailPasswordAsync(Locale locale, ILoginCallback responder, string email, string password)
 		{
-			var loginResult = await Authenticate.SubmitCredentialsAsync(locale, email, password);
+			var loginResult = await Authenticate.SubmitCredentialsAsync(locale, responder.DeviceName, email, password);
 
 			while (true)
 			{
@@ -62,13 +62,14 @@ namespace AudibleApi
 
 					case CaptchaPage captchaResult:
 						var imageBytes = await downloadImageAsync(captchaResult.CaptchaImage);
-						var guess = await responder.GetCaptchaAnswerAsync(imageBytes);
-						loginResult = await captchaResult.SubmitAsync(guess);
+						(pwInput, var guess) = await responder.GetCaptchaAnswerAsync(captchaResult.Password, imageBytes);
+						loginResult = await captchaResult.SubmitAsync(pwInput, guess);
 						break;
 
 					case TwoFactorAuthenticationPage _2fa:
-						var _2faCode = await responder.Get2faCodeAsync();
-						loginResult = await _2fa.SubmitAsync(_2faCode);
+						var _2faCode = await responder.Get2faCodeAsync(_2fa.Prompt);
+						//If 2fa guess is empty, get all MFA options
+						loginResult = string.IsNullOrEmpty(_2faCode)? await _2fa.GetMfaPage() : await _2fa.SubmitAsync(_2faCode);
 						break;
 
 					case ApprovalNeededPage approvalNeeded:

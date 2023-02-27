@@ -8,5 +8,7 @@ namespace AudibleApi
 		/// <param name="loginUrl">Page to begin login</param>
 		/// <returns>URL or response page after login is successful</returns>
 		string GetResponseUrl(string loginUrl);
+
+		string DeviceName { get; }
 	}
 }

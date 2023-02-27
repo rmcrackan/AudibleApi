@@ -32,9 +32,15 @@
       <DependentUpon>ApiUnauthenticated [partial].cs</DependentUpon>
     </Compile>
   </ItemGroup>
+	
+  <ItemGroup>
+    <Compile Update="Authorization\Identity.*.cs">
+      <DependentUpon>Identity [partial].cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="EzApiCreator.*.cs">
+    <Compile Update="EzApiCreator\EzApiCreator.*.cs">
       <DependentUpon>EzApiCreator [partial].cs</DependentUpon>
     </Compile>
   </ItemGroup>

@@ -9,44 +9,17 @@ using Dinah.Core.Logging;
 
 namespace AudibleApi.Authentication
 {
-    public static class LoginResultRunner
+    internal static class LoginResultRunner
 	{
-		public static async Task<LoginResult> GetResultsPageAsync(Authenticate authenticate, string url)
+		public static async Task<LoginResult> GetResultsPageAsync(Authenticate authenticate, Dictionary<string, string> inputs, HttpMethod method, string url)
 		{
-			if (authenticate is null)
-				throw new ArgumentNullException(nameof(authenticate));
-			if (url is null)
-				throw new ArgumentNullException(nameof(url));
-
-			var response = await makeRequestAsync(authenticate, HttpMethod.Get, new Uri(url));
-
-			return await getResultsPageAsync(authenticate, new Dictionary<string, string>(), response);
-		}
-
-		public enum SignInPage { Signin , MFA }
-		public static async Task<LoginResult> GetResultsPageAsync(Authenticate authenticate, Dictionary<string, string> inputs, SignInPage signInPage = SignInPage.Signin)
-		{
-			var url = signInPage switch
-			{
-				SignInPage.Signin => "/ap/signin",
-				SignInPage.MFA => "/ap/mfa",
-				_ => throw new ArgumentException(message: "Invalid signInPage value", paramName: nameof(signInPage)),
-			};
-
-			return await GetResultsPageAsync(authenticate, inputs, url);
-		}
-
-		public static async Task<LoginResult> GetResultsPageAsync(Authenticate authenticate, Dictionary<string, string> inputs, string url)
-		{
-			if (authenticate is null)
-				throw new ArgumentNullException(nameof(authenticate));
-			if (inputs is null)
-				throw new ArgumentNullException(nameof(inputs));
+			ArgumentValidator.EnsureNotNull(authenticate, nameof(authenticate));
+			ArgumentValidator.EnsureNotNull(inputs, nameof(inputs));
 
 			// uses client to make the POST request
 			var response = await makeRequestAsync(
 				authenticate,
-				HttpMethod.Post,
+				method,
 				new Uri(authenticate.Locale.LoginUri(), url),
 				new FormUrlEncodedContent(inputs));
 

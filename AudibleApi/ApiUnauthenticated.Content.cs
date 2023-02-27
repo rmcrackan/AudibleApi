@@ -1,4 +1,5 @@
 ﻿using AudibleApi.Common;
+using Dinah.Core;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,12 +11,7 @@ namespace AudibleApi
         protected const string CONTENT_PATH = "/1.0/content";
 		public async Task<ContentMetadata> GetContentMetadataAsync(string asin)
 		{
-			if (asin is null)
-				throw new ArgumentNullException(nameof(asin));
-			if (string.IsNullOrWhiteSpace(asin))
-				throw new ArgumentException("asin may not be blank", nameof(asin));
-
-			asin = asin.ToUpper().Trim();
+			asin = ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin)).ToUpper().Trim();
 
 			var url = $"{CONTENT_PATH}/{asin}/metadata?response_groups=chapter_info,content_reference";
 

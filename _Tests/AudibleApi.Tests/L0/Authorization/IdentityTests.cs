@@ -20,15 +20,6 @@ using static AuthorizationShared.Shared.AccessTokenTemporality;
 
 namespace Authoriz.IdentityTests
 {
-	[TestClass]
-	public class KVP_class
-	{
-		[TestMethod]
-		public void KvpToString()
-			=> new KVP<string, string> { Key = "k", Value = "val" }
-			.ToString()
-			.Should().Be("[k=val]");
-	}
 
 	[TestClass]
 	public class ctor_locale

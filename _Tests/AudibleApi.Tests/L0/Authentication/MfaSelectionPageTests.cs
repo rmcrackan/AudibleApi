@@ -51,7 +51,7 @@ namespace Authentic.MfaSelectionPageTests
         [TestMethod]
 		public void parse_sample()
 		{
-            var mfa = new MfaSelectionPage(AuthenticateShared.GetAuthenticate(), SAMPLE);
+            var mfa = new MfaSelectionPage(AuthenticateShared.GetAuthenticate(), new Uri("https://www.amazon.com/"), SAMPLE);
 
             var mfaConfig = new MfaConfig { Title = "My title" };
             mfaConfig.Buttons.Add(new() { Text = "Enter the OTP from the authenticator app", Name = "otpDeviceContext", Value = "aAbBcC=, TOTP" });

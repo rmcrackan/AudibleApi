@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Dinah.Core;
 using Dinah.Core.Net.Http;
 using Newtonsoft.Json.Linq;
 
@@ -14,10 +15,7 @@ namespace AudibleApi
 
 		public async Task<bool> IsInWishListAsync(string asin)
 		{
-			if (asin is null)
-				throw new ArgumentNullException(nameof(asin));
-			if (string.IsNullOrWhiteSpace(asin))
-				throw new ArgumentException();
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
 
 			// test with page results = 10. for production => 50
 			var num_results = 50;
@@ -50,10 +48,7 @@ namespace AudibleApi
 
 		public async Task AddToWishListAsync(string asin)
 		{
-			if (asin is null)
-				throw new ArgumentNullException(nameof(asin));
-			if (string.IsNullOrWhiteSpace(asin))
-				throw new ArgumentException();
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
 
 			var body = JObject.Parse($@"{{""asin"":""{asin}""}}");
 
@@ -79,10 +74,7 @@ namespace AudibleApi
 
 		public async Task DeleteFromWishListAsync(string asin)
 		{
-			if (asin is null)
-				throw new ArgumentNullException(nameof(asin));
-			if (string.IsNullOrWhiteSpace(asin))
-				throw new ArgumentException();
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
 
 			var requestUri = $"{WISHLIST_PATH}/{asin}";
 

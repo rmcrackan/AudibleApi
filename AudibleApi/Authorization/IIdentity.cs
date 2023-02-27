@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using AudibleApi.Cryptography;
 using Dinah.Core;
+using Newtonsoft.Json;
 
 namespace AudibleApi.Authorization
 {
@@ -22,7 +24,7 @@ namespace AudibleApi.Authorization
 
         RefreshToken RefreshToken { get; }
 
-        IEnumerable<KVP<string, string>> Cookies { get; }
+        IEnumerable<KeyValuePair<string, string>> Cookies { get; }
 
         string DeviceSerialNumber { get; }
 

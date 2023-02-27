@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Linq;
+using System.Net;
 
 namespace AudibleApi.Authorization
 {
@@ -7,10 +9,7 @@ namespace AudibleApi.Authorization
 	{
 		public static OAuth2 Empty => new(string.Empty);
 		public string Code { get; }
-		public string CodeVerifier { get; set; }
-		public string DeviceSerialNumber { get; set; }
-
-		public bool IsValid => !string.IsNullOrWhiteSpace(Code) && !string.IsNullOrWhiteSpace(CodeVerifier) && !string.IsNullOrWhiteSpace(DeviceSerialNumber);
+		public RegistrationOptions RegistrationOptions { get; set; }
 
 		private OAuth2(string authCode) => Code = authCode;
 
@@ -35,6 +34,55 @@ namespace AudibleApi.Authorization
 				return null;
 
 			return string.IsNullOrWhiteSpace(parameters[tokenKey]) ? null : new OAuth2(parameters[tokenKey]);
+		}
+
+		public JObject GetRegistrationBody(Locale locale)
+		{
+			return new JObject
+			{
+				{ "requested_token_type", new JArray
+					{
+						"bearer",
+						"mac_dms",
+						"website_cookies",
+						"store_authentication_cookie"
+					}
+				},
+				{ "cookies", new JObject
+					{
+						{ "website_cookies", new JArray() },
+						{ "domain", locale.RegisterDomain() },
+					}
+				},
+				{ "registration_data", new JObject
+					{
+						{ "domain", "Device" },
+						{ "app_version", Resources.AppVersion },
+						{ "device_serial", RegistrationOptions.DeviceSerialNumber },
+						{ "device_type", Resources.DeviceType },
+						{ "device_name",  $"%FIRST_NAME%%FIRST_NAME_POSSESSIVE_STRING%%DUPE_STRATEGY_1ST%{RegistrationOptions.DeviceName}" },
+						{ "os_version",  Resources.IosVersion },
+						{ "software_version",  Resources.SoftwareVersion },
+						{ "device_model",  Resources.DeviceModel },
+						{ "app_name",  Resources.AppName },
+					}
+				},
+				{ "auth_data", new JObject
+					{
+						{ "client_id", RegistrationOptions.ClientID },
+						{ "authorization_code", Code },
+						{ "code_verifier", RegistrationOptions.CodeVerifier },
+						{ "code_algorithm", "SHA-256" },
+						{ "client_domain", "DeviceLegacy" },
+					}
+				},
+				{ "requested_extensions", new JArray
+					{
+						"device_info",
+						"customer_info"
+					}
+				}
+			};
 		}
 	}
 }

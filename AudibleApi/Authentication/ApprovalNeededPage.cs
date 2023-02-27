@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Dinah.Core;
 
 namespace AudibleApi.Authentication
 {
-    public class ApprovalNeededPage : LoginResult
+    internal class ApprovalNeededPage : LoginResult
     {
         public ApprovalNeededPage(Authenticate authenticate, string responseBody) : base(authenticate, responseBody) { }
 
@@ -22,7 +23,7 @@ namespace AudibleApi.Authentication
             var link = links.FirstOrDefault(l => l is not null && l.Trim().Length > 1);
 
             Serilog.Log.Logger.Debug("Page info {@DebugInfo}", new { link, debugInfo });
-            return LoginResultRunner.GetResultsPageAsync(Authenticate, link);
+            return LoginResultRunner.GetResultsPageAsync(Authenticate, new(), HttpMethod.Get, link);
         }
     }
 }

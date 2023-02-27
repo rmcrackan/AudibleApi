@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AudibleApi.Cryptography;
 using Dinah.Core;
 using Newtonsoft.Json;
 
@@ -33,8 +34,8 @@ namespace AudibleApi.Authorization
         public RefreshToken RefreshToken { get; private set; }
         
         // cookies are a list instead of Dictionary<string, string> b/c of duplicates
-        protected List<KVP<string, string>> _cookies { private get; set; }
-        public IEnumerable<KVP<string, string>> Cookies => _cookies.AsReadOnly();
+        protected List<KeyValuePair<string, string>> _cookies { private get; set; }
+        public IEnumerable<KeyValuePair<string, string>> Cookies => _cookies.AsReadOnly();
 
 		[JsonProperty]
 		public string DeviceSerialNumber { get; private set; }
@@ -60,7 +61,7 @@ namespace AudibleApi.Authorization
 		{
 			LocaleName = ArgumentValidator.EnsureNotNull(locale, nameof(locale)).Name;
 			ExistingAccessToken = AccessToken.Empty;
-			_cookies = new List<KVP<string, string>>();
+			_cookies = new();
 		}
 
 		public Identity(Locale locale, OAuth2 authorization, IEnumerable<KeyValuePair<string, string>> cookies)
@@ -68,9 +69,7 @@ namespace AudibleApi.Authorization
 			LocaleName = ArgumentValidator.EnsureNotNull(locale, nameof(locale)).Name;
 			Authorization = ArgumentValidator.EnsureNotNull(authorization, nameof(authorization));
 			ExistingAccessToken = AccessToken.Empty;
-			_cookies = ArgumentValidator.EnsureNotNull(cookies, nameof(cookies))
-						.Select(kvp => new KVP<string, string> { Key = kvp.Key, Value = kvp.Value })
-						.ToList();
+			_cookies = ArgumentValidator.EnsureNotNull(cookies, nameof(cookies)).ToList();
 		}
 
 		public void Update(AccessToken accessToken)
@@ -86,9 +85,7 @@ namespace AudibleApi.Authorization
 			ExistingAccessToken = ArgumentValidator.EnsureNotNull(accessToken, nameof(accessToken));
 			RefreshToken = ArgumentValidator.EnsureNotNull(refreshToken, nameof(refreshToken));
 
-			// only overwrite if non-empty collection
-			if (cookies is not null && cookies.Any())
-				_cookies = cookies.Select(kvp => new KVP<string, string> { Key = kvp.Key, Value = kvp.Value }).ToList();
+			_cookies = cookies?.ToList();
 
 			DeviceSerialNumber = deviceSerialNumber ?? string.Empty;
 			DeviceType = deviceType ?? string.Empty;

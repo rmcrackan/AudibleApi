@@ -1,6 +1,6 @@
-﻿namespace AudibleApi
+﻿namespace AudibleApi.Cryptography
 {
-    public static class Crc32
+    internal static class Crc32
     {
         private const uint polynomial = 3988292384;
         private static readonly uint[] table = new uint[256];
@@ -15,7 +15,7 @@
                 {
                     if (((value ^ temp) & 0x1) != 0)
                     {
-                        value = (value >> 1) ^ polynomial;
+                        value = value >> 1 ^ polynomial;
                     }
                     else
                     {
@@ -34,7 +34,7 @@
             for (int i = 0; i < bytes.Length; ++i)
             {
                 byte index = (byte)(crc ^ bytes[i]);
-                crc = (crc >> 8) ^ table[index];
+                crc = crc >> 8 ^ table[index];
             }
             crc ^= uint.MaxValue;
             return crc;

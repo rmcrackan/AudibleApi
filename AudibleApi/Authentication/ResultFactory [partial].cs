@@ -9,7 +9,7 @@ namespace AudibleApi.Authentication
     /// <summary>
     /// rules for IsMatch and CreateResult
     /// </summary>
-    public abstract partial class ResultFactory : Enumeration<ResultFactory>
+    internal abstract partial class ResultFactory : Enumeration<ResultFactory>
     {
         #region enumeration single instances
         // MANDATORY to include here so that ResultFactory.GetAll() can find them.
@@ -31,7 +31,7 @@ namespace AudibleApi.Authentication
         /// <summary>
         /// If true, the body sent to the IsMatch check may be blank
         /// </summary>
-        protected virtual bool AllowBlankBodyIn_IsMatch => true;
+        protected virtual bool AllowBlankBodyIn_IsMatch => false;
 
         public static Task<bool> IsCompleteAsync(HttpResponseMessage response)
             => new LoginCompleteFactory().IsMatchAsync(response);

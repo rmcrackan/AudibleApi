@@ -20,8 +20,8 @@ using TestAudibleApiCommon;
 
 namespace Authentic.ResultFactoryTests
 {
-    public class FakeLoginResult : LoginResult { public FakeLoginResult() : base(AuthenticateShared.GetAuthenticate(), "body") { } }
-    public class ConcreteResultFactory : ResultFactory
+    internal class FakeLoginResult : LoginResult { public FakeLoginResult() : base(AuthenticateShared.GetAuthenticate(), "body") { } }
+    internal class ConcreteResultFactory : ResultFactory
     {
         public ConcreteResultFactory() : base(nameof(ConcreteResultFactory)) { }
 

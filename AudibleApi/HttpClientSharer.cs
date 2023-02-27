@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using Dinah.Core;
 using Dinah.Core.Net.Http;
 
 namespace AudibleApi
@@ -26,15 +27,14 @@ namespace AudibleApi
 		}
 		public HttpClientSharer(HttpMessageHandler sharedMessageHandler)
 		{
-			_sharedMessageHandler = sharedMessageHandler ?? throw new ArgumentNullException(nameof(sharedMessageHandler));
+			_sharedMessageHandler = ArgumentValidator.EnsureNotNull(sharedMessageHandler, nameof(sharedMessageHandler));
 		}
 
 		private Dictionary<Uri, IHttpClientActions> _sharedUrls { get; } = new Dictionary<Uri, IHttpClientActions>();
 		public IHttpClientActions GetSharedHttpClient(string uri) => GetSharedHttpClient(new Uri(uri));
 		public IHttpClientActions GetSharedHttpClient(Uri uri)
 		{
-			if (uri is null)
-				throw new ArgumentNullException(nameof(uri));
+			ArgumentValidator.EnsureNotNull(uri, nameof(uri));
 
 			if (!_sharedUrls.ContainsKey(uri))
 			{

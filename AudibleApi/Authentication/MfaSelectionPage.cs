@@ -2,16 +2,14 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Dinah.Core;
-using Dinah.Core.Net;
-using Dinah.Core.Net.Http;
 
 namespace AudibleApi.Authentication
 {
-	public class MfaSelectionPage : LoginResult
+	internal class MfaSelectionPage : LoginResult
 	{
         public MfaConfig MfaConfig { get; }
 
-        public MfaSelectionPage(Authenticate authenticate, string responseBody) : base(authenticate, responseBody)
+        public MfaSelectionPage(Authenticate authenticate, Uri uri, string responseBody) : base(authenticate, responseBody)
         {
             // see: HtmlHelperTests.GetElements.parse_sample()
 
@@ -46,7 +44,8 @@ namespace AudibleApi.Authentication
             var title = HtmlHelper.GetElements(ResponseBody, "title").FirstOrDefault()?.InnerText.Trim();
             Serilog.Log.Logger.Information("Page info {@DebugInfo}", new { divs.Count, title });
 
-            MfaConfig = new MfaConfig
+			Action = uri.ToString();
+			MfaConfig = new MfaConfig
             {
                 // optional
                 Title = title
@@ -69,7 +68,7 @@ namespace AudibleApi.Authentication
 
             Inputs[name] = value;
 
-            return await LoginResultRunner.GetResultsPageAsync(Authenticate, Inputs, LoginResultRunner.SignInPage.MFA);
+            return await LoginResultRunner.GetResultsPageAsync(Authenticate, Inputs, Method, Action);
         }
     }
 }
