@@ -18,6 +18,7 @@
 // class Serialize: add partial
 // manually edited lots of enum stuff
 
+using Dinah.Core;
 using System;
 using System.Linq;
 
@@ -80,6 +81,37 @@ namespace AudibleApi.Common
 	public partial class Plan
 	{
 		public override string ToString() => $"{PlanName}";
+
+		/// <summary>
+		/// If a Book was added to the library as an Audible Plus book, <see cref="Item.IsAyce"/> is true regardless of whether
+		/// that title is still available for listening. To listen to it, you need rights under an Audible Plus or
+		/// Free Plan. If you don't have either of those plans, then the title will show as "Unavailable" in the
+		/// Audible library.
+		/// 
+		/// <para>Audible Plus Plan Names:</para>
+		/// <list type="bullet">
+		///		<item>
+		///			<term>US Minerva</term>
+		///			<description>US-only name</description>
+		///		</item>
+		///		<item>
+		///			<term>Audible-AYCL</term>
+		///			<description>Known to work for Italy, and India's Plan name contains "AYCL"</description>
+		///		</item>
+		/// </list>
+		/// <para>Other AYCE Plans:</para>
+		/// <list type="bullet">
+		///		<item>
+		///			<term>Free Tier</term>
+		///		</item>
+		///		<item>
+		///			<term>Ad Enabled Free Tier</term>
+		///		</item>
+		/// </list>
+		/// </summary>
+		public bool IsAyce => PlanName.ContainsInsensitive("Minerva") ||
+				PlanName.ContainsInsensitive("AYCL") ||
+				PlanName.ContainsInsensitive("Free");
 	}
 	public partial class Price
 	{
