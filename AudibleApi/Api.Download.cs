@@ -14,7 +14,14 @@ namespace AudibleApi
         High,
         Normal
     }
-    public partial class Api
+
+    public enum ChapterTitlesType
+    {
+        Flat,
+        Tree
+    }
+
+	public partial class Api
     {
 		#region Download License
 
@@ -28,7 +35,7 @@ namespace AudibleApi
 		/// <exception cref="InvalidResponseException">Thrown when the Api did not return a proper <see cref="ContentLicense"/>.</exception>
 		/// <exception cref="InvalidValueException">Thrown when <see cref="ContentLicense.StatusCode"/> is not "Granted" or "Denied".</exception>
 		/// <exception cref="ContentLicenseDeniedException">Thrown when <see cref="ContentLicense.StatusCode"/> is "Denied".</exception>
-		public async Task<ContentLicense> GetDownloadLicenseAsync(string asin, DownloadQuality quality = DownloadQuality.High)
+		public async Task<ContentLicense> GetDownloadLicenseAsync(string asin, DownloadQuality quality = DownloadQuality.High, ChapterTitlesType chapterTitlesType = ChapterTitlesType.Tree)
         {
             ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
 
@@ -37,6 +44,7 @@ namespace AudibleApi
                 { "consumption_type", "Download" },
                 { "supported_drm_types", new JArray{ "Adrm", "Mpeg" } },
                 { "quality", quality.ToString() },
+                { "chapter_titles_type", chapterTitlesType.ToString() },
                 { "response_groups", "last_position_heard,pdf_url,content_reference,chapter_info"}
             };
 
