@@ -2,6 +2,7 @@
 using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 
 namespace AudibleApi.Common
 {
@@ -24,6 +25,7 @@ namespace AudibleApi.Common
 
 		/// <summary>json => object using AudibleApi.Common serializers</summary>
 		public static T FromJson<T>(string json) => JsonConvert.DeserializeObject<T>(json, Settings);
+		public static T FromJson<T>(JObject json) => json.ToObject<T>(JsonSerializer.Create(Settings));
 
 		/// <summary>object => json using AudibleApi.Common serializers</summary>
 		public static string ToJson(object self) => JsonConvert.SerializeObject(self, Formatting.Indented, Settings);
