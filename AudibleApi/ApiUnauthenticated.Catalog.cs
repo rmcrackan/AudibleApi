@@ -113,19 +113,7 @@ namespace AudibleApi
 			if (!string.IsNullOrWhiteSpace(options))
 				url += "?" + options;
 			var response = await AdHocNonAuthenticatedGetAsync(url);
-			var objStr = await response.Content.ReadAsStringAsync();
-
-			ProductsDtoV10 dto;
-			try
-			{
-				// important! use this convert/deser method
-				dto = ProductsDtoV10.FromJson(objStr);
-			}
-			catch (Exception ex)
-			{
-				Serilog.Log.Logger.Error(ex, "Error converting catalog product. Full json:\r\n" + objStr);
-				throw;
-			}
+			var dto = await response.Content.ReadAsDtoAsync<ProductsDtoV10>();			
 
 			return dto.Products.ToList();
 		}

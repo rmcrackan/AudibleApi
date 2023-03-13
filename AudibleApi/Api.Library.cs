@@ -244,20 +244,8 @@ namespace AudibleApi
 			if (!string.IsNullOrWhiteSpace(responseGroups))
 				url += "?" + responseGroups;
 			var response = await AdHocAuthenticatedGetAsync(url);
-			var obj = await response.Content.ReadAsJObjectAsync();
-			var objStr = obj.ToString();
 
-			BookDtoV10 dto;
-			try
-			{
-				// important! use this convert/deser method
-				dto = BookDtoV10.FromJson(objStr);
-			}
-			catch (Exception ex)
-			{
-				Serilog.Log.Logger.Error(ex, "Error converting catalog product. Full json:\r\n" + objStr);
-				throw;
-			}
+			BookDtoV10 dto = await response.Content.ReadAsDtoAsync<BookDtoV10>();
 
 			return dto.Item;
 		}
@@ -359,19 +347,8 @@ namespace AudibleApi
 			try
 			{
 				var response = await getLibraryResponseAsync(queryString);
-				var page = await response.Content.ReadAsJObjectAsync();
 
-				LibraryDtoV10 libResult;
-				try
-				{
-					// important! use this convert/deser method
-					libResult = LibraryDtoV10.FromJson(page);
-				}
-				catch (Exception ex)
-				{
-					Serilog.Log.Logger.Error(ex, "Error converting library for importing use. Full library:\r\n" + page.ToString(Newtonsoft.Json.Formatting.None));
-					throw;
-				}
+				var	libResult = await response.Content.ReadAsDtoAsync<LibraryDtoV10>();
 
 				Serilog.Log.Logger.Information($"Page {pageNumber}: {libResult.Items.Length} results");
 				return libResult;

@@ -16,18 +16,8 @@ namespace AudibleApi
 			var url = $"{CONTENT_PATH}/{asin}/metadata?response_groups=chapter_info,content_reference&chapter_titles_type={chapterTitlesType}";
 
 			var response = await AdHocNonAuthenticatedGetAsync(url);
-			var metadataJson = await response.Content.ReadAsStringAsync();
-
-			MetadataDtoV10 contentMetadata;
-			try
-			{
-				contentMetadata = MetadataDtoV10.FromJson(metadataJson);
-			}
-			catch (Exception ex)
-			{
-				Serilog.Log.Logger.Error(ex, $"Error retrieving content metadata for asin: {asin}");
-				throw;
-			}
+			var contentMetadata = await response.Content.ReadAsDtoAsync<MetadataDtoV10>();
+			
 			return contentMetadata?.ContentMetadata;
 		}
 	}
