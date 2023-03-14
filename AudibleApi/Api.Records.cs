@@ -106,10 +106,14 @@ namespace AudibleApi
 			{
 				var client = Sharer.GetSharedHttpClient(FIONA_DOMAIN);
 				var response = await AdHocAuthenticatedGetAsync(requestUri, client);
-				var responseContent = await response.Content.ReadAsStringAsync();
+				if (response.IsSuccessStatusCode)
+				{
+					var recordDto = await response.Content.ReadAsDtoAsync<RecordDto>();
+					return recordDto?.Payload?.Records;
 
-				//Response is 404 if book has no records
-				return response.IsSuccessStatusCode ? RecordDto.FromJson(responseContent)?.Payload?.Records ?? new() : new();
+				}
+				else
+					return new(); //Response is 404 if book has no records				
 			}
 			catch (Exception ex)
 			{

@@ -13,14 +13,14 @@ namespace AudibleApi
 {
 	public class LibraryOptions
 	{
-		public const int NUMBER_OF_RESULTS_PER_PAGE_MIN = 0;
+		public const int NUMBER_OF_RESULTS_PER_PAGE_MIN = 1;
 		public const int NUMBER_OF_RESULTS_PER_PAGE_MAX = 1000;
 
 		private int? _numResults;
 		public int? NumberOfResultPerPage
 		{
 			get => _numResults;
-            set => _numResults
+			set => _numResults
 				= value is null
 				? null
 				: ArgumentValidator.EnsureBetweenInclusive(value.Value, nameof(value), NUMBER_OF_RESULTS_PER_PAGE_MIN, NUMBER_OF_RESULTS_PER_PAGE_MAX);
@@ -182,6 +182,7 @@ namespace AudibleApi
 	{
 		const string LIBRARY_PATH = "/1.0/library";
 
+
 		#region GetLibraryAsync
 		public Task<JObject> GetLibraryAsync()
 			=> getLibraryAsync(new LibraryOptions { PurchasedAfter = new DateTime(1970, 1, 1) }.ToQueryString());
@@ -243,20 +244,8 @@ namespace AudibleApi
 			if (!string.IsNullOrWhiteSpace(responseGroups))
 				url += "?" + responseGroups;
 			var response = await AdHocAuthenticatedGetAsync(url);
-			var obj = await response.Content.ReadAsJObjectAsync();
-			var objStr = obj.ToString();
 
-			BookDtoV10 dto;
-			try
-			{
-				// important! use this convert/deser method
-				dto = BookDtoV10.FromJson(objStr);
-			}
-			catch (Exception ex)
-			{
-				Serilog.Log.Logger.Error(ex, "Error converting catalog product. Full json:\r\n" + objStr);
-				throw;
-			}
+			BookDtoV10 dto = await response.Content.ReadAsDtoAsync<BookDtoV10>();
 
 			return dto.Item;
 		}
@@ -271,74 +260,104 @@ namespace AudibleApi
 					ImageSizes = LibraryOptions.ImageSizeOptions._500 | LibraryOptions.ImageSizeOptions._1215
 				});
 
-		public async Task<List<Item>> GetAllLibraryItemsAsync(LibraryOptions.ResponseGroupOptions responseGroups)
-			=> await getAllLibraryItemsAsync_gated(new LibraryOptions { ResponseGroups = responseGroups });
-
-		public async Task<List<Item>> GetAllLibraryItemsAsync(LibraryOptions libraryOptions)
-			=> await getAllLibraryItemsAsync_gated(libraryOptions);
+		public Task<List<Item>> GetAllLibraryItemsAsync(LibraryOptions.ResponseGroupOptions responseGroups, int numItemsPerRequest = 50, int maxConcurrentRequests = 10)
+			=> GetAllLibraryItemsAsync(new LibraryOptions { ResponseGroups = responseGroups }, numItemsPerRequest, maxConcurrentRequests);
 		
+		public Task<List<Item>> GetAllLibraryItemsAsync(LibraryOptions.ResponseGroupOptions responseGroups, int numItemsPerRequest, SemaphoreSlim semaphore)
+			=> GetAllLibraryItemsAsync(new LibraryOptions { ResponseGroups = responseGroups }, numItemsPerRequest, semaphore);
+
+		public async Task<List<Item>> GetAllLibraryItemsAsync(LibraryOptions libraryOptions, int numItemsPerRequest = 50, int maxConcurrentRequests = 10)
+		{
+			using var semaphoreSlim = new SemaphoreSlim(maxConcurrentRequests);
+
+			return await GetAllLibraryItemsAsync(libraryOptions, numItemsPerRequest, semaphoreSlim);
+		}
+
+		public async Task<List<Item>> GetAllLibraryItemsAsync(LibraryOptions libraryOptions, int numItemsPerRequest, SemaphoreSlim semaphore)
+		{
+			var allItems = new List<Item>();
+
+			await foreach (var items in GetLibraryItemsPagesAsync(libraryOptions, numItemsPerRequest, semaphore))
+				allItems.AddRange(items);
+
+			return allItems;
+		}
+
 		public async IAsyncEnumerable<Item> GetLibraryItemAsyncEnumerable(LibraryOptions libraryOptions, int numItemsPerRequest = 50, int maxConcurrentRequests = 10)
+		{
+			await foreach (var page in GetLibraryItemsPagesAsync(libraryOptions, numItemsPerRequest, maxConcurrentRequests))
+				foreach (var item in page)
+					yield return item;
+		}
+
+		public async IAsyncEnumerable<Item> GetLibraryItemAsyncEnumerable(LibraryOptions libraryOptions, int numItemsPerRequest, SemaphoreSlim semaphore)
+		{
+			await foreach (var page in GetLibraryItemsPagesAsync(libraryOptions, numItemsPerRequest, semaphore))
+				foreach (var item in page)
+					yield return item;
+		}
+
+		public async IAsyncEnumerable<Item[]> GetLibraryItemsPagesAsync(LibraryOptions libraryOptions, int numItemsPerRequest = 50, int maxConcurrentRequests = 10)
+		{
+			using var semaphore = new SemaphoreSlim(maxConcurrentRequests);
+
+			await foreach (var item in GetLibraryItemsPagesAsync(libraryOptions, numItemsPerRequest, semaphore))
+				yield return item;
+		}
+
+		public async IAsyncEnumerable<Item[]> GetLibraryItemsPagesAsync(LibraryOptions libraryOptions, int numItemsPerRequest, SemaphoreSlim semaphore)
 		{
 			if (!libraryOptions.PurchasedAfter.HasValue || libraryOptions.PurchasedAfter.Value < new DateTime(1970, 1, 1))
 				libraryOptions.PurchasedAfter = new DateTime(1970, 1, 1);
-			
+
 			libraryOptions.NumberOfResultPerPage = numItemsPerRequest;
-			
-			int totalCount = await GetItemsCountAsync(libraryOptions);
-			
-			int numPages = totalCount / libraryOptions.NumberOfResultPerPage.Value;
-			if (numPages * libraryOptions.NumberOfResultPerPage.Value < totalCount)
-				numPages++;
 
-			List<Task<Item[]>> allDlTasks = new();
-			using SemaphoreSlim concurrencySemaphore = new(maxConcurrentRequests);
+			List<Task<LibraryDtoV10>> pageDlTasks = new();
 
-			for (int page = 1; page <= numPages; page++)
+			int page = 0;
+			int totalItems = await GetItemsCountAsync(libraryOptions);
+			int totalPages = totalItems / numItemsPerRequest;
+			if (totalPages * numItemsPerRequest < totalItems) totalPages++;
+
+			//Spin up as many concurrent downloads as we can/need
+			while (semaphore.CurrentCount > 0 && page < totalPages)
+				spinupPageRequest();
+
+			while (pageDlTasks.Count > 0)
 			{
-				libraryOptions.PageNumber = page;
-				var queryString = libraryOptions.ToQueryString();
+				var completed = await Task.WhenAny(pageDlTasks);
+				pageDlTasks.Remove(completed);
 
-				allDlTasks.Add(downloadItemPage(concurrencySemaphore, queryString, page));
+				//Request a new page.
+				if (page < totalPages) spinupPageRequest();
+
+				yield return completed.Result.Items;
 			}
 
-			while (allDlTasks.Count > 0)
+			async void spinupPageRequest()
 			{
-				var completed = await Task.WhenAny(allDlTasks);
-				allDlTasks.Remove(completed);
-				foreach (var item in completed.Result)
-					yield return item;
+				libraryOptions.PageNumber = ++page;
+				await semaphore.WaitAsync();
+				pageDlTasks.Add(downloadItemPage(semaphore, libraryOptions.ToQueryString(), page));
 			}
 		}
 
-		private async Task<Item[]> downloadItemPage(SemaphoreSlim concurrencySemaphore, string queryString, int pageNumber)
+		private async Task<LibraryDtoV10> downloadItemPage(SemaphoreSlim semaphore, string queryString, int pageNumber)
 		{
-			await concurrencySemaphore.WaitAsync();
 			try
 			{
-				var response = await getLibraryResponseAsync($"{queryString}");
+				var response = await getLibraryResponseAsync(queryString);
 
-				var page = await response.Content.ReadAsStringAsync();
-				LibraryDtoV10 libResult;
-				try
-				{
-					// important! use this convert/deser method
-					libResult = LibraryDtoV10.FromJson(page);
-				}
-				catch (Exception ex)
-				{
-					Serilog.Log.Logger.Error(ex, "Error converting library for importing use. Full library:\r\n" + page);
-					throw;
-				}
+				var	libResult = await response.Content.ReadAsDtoAsync<LibraryDtoV10>();
 
 				Serilog.Log.Logger.Information($"Page {pageNumber}: {libResult.Items.Length} results");
-				return libResult.Items;
+				return libResult;
 			}
-			finally
-			{
-				concurrencySemaphore.Release();
-			}
+			finally { semaphore.Release(); }
 		}
 
+
+		/// <summary>Gets the total number of Items in the account's library</summary>
 		public async Task<int> GetItemsCountAsync(LibraryOptions libraryOptions)
 		{
 			var orig = libraryOptions.NumberOfResultPerPage;
@@ -358,80 +377,6 @@ namespace AudibleApi
 			{
 				libraryOptions.NumberOfResultPerPage = orig;
 			}
-		}
-
-		private async Task<List<Item>> getAllLibraryItemsAsync_gated(LibraryOptions libraryOptions)
-        {
-			if (!libraryOptions.PurchasedAfter.HasValue || libraryOptions.PurchasedAfter.Value < new DateTime(1970, 1, 1))
-				libraryOptions.PurchasedAfter = new DateTime(1970, 1, 1);
-
-			try
-            {
-                // max 1000 however with higher numbers it stops returning 'provided_review' and 'reviews' groups.
-                // Sometimes this threshold is as high as 900, sometimes as low as 400.
-                // I've never had problems at 300. Another user had nearly constant problems at 300.
-                libraryOptions.NumberOfResultPerPage = 250;
-                return await getAllLibraryItemsAsync_internal(libraryOptions);
-            }
-            catch (Exception ex) when (ex is TaskCanceledException || ex is TimeoutException)
-            {
-                // if it times out with 250, try 50. This takes about 5 seconds longer for a library of 1,100
-                //
-                // For each batch size, I ran 3 tests. Results in milliseconds
-                //   1000    19389 , 17760 , 19256
-                //    500    19099 , 19905 , 18553
-                //    250    20288 , 19163 , 19605
-                //    100    22156 , 22058 , 22438
-                //     50    25017 , 24292 , 24491
-                //     25    28627 , 30006 , 31201
-                //     10    45006 , 46717 , 44924
-                libraryOptions.NumberOfResultPerPage = 50;
-                return await getAllLibraryItemsAsync_internal(libraryOptions);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-		private async Task<List<Item>> getAllLibraryItemsAsync_internal(LibraryOptions libraryOptions)
-		{
-			var allItems = new List<Item>();
-
-			for (var pageNumber = 1; ; pageNumber++)
-			{
-				// if attempting to paginate more than 10,000 titles : {"error_code":null,"message":"Implied library size is unsupported"}"
-				if (pageNumber * libraryOptions.NumberOfResultPerPage > 10000)
-				{
-					Serilog.Log.Logger.Information($"Maximum reached. Cannot retrieve more than 10,000 titles");
-					break;
-				}
-
-				libraryOptions.PageNumber = pageNumber;
-				var page = await GetLibraryAsync(libraryOptions);
-
-				var pageStr = page.ToString();
-
-				LibraryDtoV10 libResult;
-				try
-				{
-					// important! use this convert/deser method
-					libResult = LibraryDtoV10.FromJson(pageStr);
-				}
-				catch (Exception ex)
-				{
-					Serilog.Log.Logger.Error(ex, "Error converting library for importing use. Full library:\r\n" + pageStr);
-					throw;
-				}
-
-				if (!libResult.Items.Any())
-					break;
-
-				Serilog.Log.Logger.Information($"Page {pageNumber}: {libResult.Items.Length} results");
-				allItems.AddRange(libResult.Items);
-			}
-
-			return allItems;
 		}
 		#endregion
 	}
