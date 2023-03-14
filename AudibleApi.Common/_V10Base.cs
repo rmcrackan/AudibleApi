@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace AudibleApi.Common
 {
-	public abstract class V10Base<T> : DtoBase<T> where T : DtoBase<T>
+	public abstract class V10Base<T> : DtoBase<T>
 	{
         [JsonProperty("response_groups")]
         public string[] ResponseGroups { get; set; }

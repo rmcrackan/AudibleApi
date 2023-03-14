@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 
 namespace AudibleApi.Common
@@ -9,7 +8,7 @@ namespace AudibleApi.Common
 		public JObject SourceJson { get; set; }
 	}
 
-	public abstract class DtoBase<T> : DtoBase where T : DtoBase<T>
+	public abstract class DtoBase<T> : DtoBase
 	{
 		public static T FromJson(string json) => FromJson(JObject.Parse(json));
 		public static T FromJson(JObject json) => Converter.FromJson<T>(json);
