@@ -319,22 +319,24 @@ namespace AudibleApi
 			int totalPages = totalItems / numItemsPerRequest;
 			if (totalPages * numItemsPerRequest < totalItems) totalPages++;
 
-			//Spin up as many concurrent downloads as we can/need
-			while (semaphore.CurrentCount > 0 && page < totalPages)
-				spinupPageRequest();
+			//Spin up as many concurrent downloads as we can/need. Minimum 1.
+			do
+				await spinupPageRequestAsync();
+			while (semaphore.CurrentCount > 0 && page < totalPages);
 
 			while (pageDlTasks.Count > 0)
 			{
 				var completed = await Task.WhenAny(pageDlTasks);
 				pageDlTasks.Remove(completed);
 
-				//Request a new page.
-				if (page < totalPages) spinupPageRequest();
+				//Request new page(s)
+				while (semaphore.CurrentCount > 0 && page < totalPages)
+					await spinupPageRequestAsync();
 
 				yield return completed.Result.Items;
 			}
 
-			async void spinupPageRequest()
+			async Task spinupPageRequestAsync()
 			{
 				libraryOptions.PageNumber = ++page;
 				await semaphore.WaitAsync();
