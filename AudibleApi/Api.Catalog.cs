@@ -1,10 +1,12 @@
-﻿using Dinah.Core;
+﻿using AudibleApi.Common;
+using Dinah.Core;
 using Dinah.Core.Net.Http;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AudibleApi
@@ -67,6 +69,25 @@ namespace AudibleApi
 				Serilog.Log.Error(ex, "Error encountered while trying to set user rating.");
 				return false;
 			}
+		}
+
+		protected override async Task<ProductsDtoV10> getCatalogPageAsync(SemaphoreSlim semaphore, CatalogOptions catalogOptions)
+		{
+			try
+			{
+				ArgumentValidator.EnsureBetweenInclusive(catalogOptions.Asins.Count, $"{nameof(catalogOptions)}.Asins.Count", 1, MaxAsinsPerRequest);
+				var options = ArgumentValidator.EnsureNotNull(catalogOptions, nameof(catalogOptions)).ToQueryString();
+				options = options?.Trim().Trim('?');
+
+				var url = $"{CATALOG_PATH}/products/";
+				if (!string.IsNullOrWhiteSpace(options))
+					url += "?" + options;
+				var response = await AdHocAuthenticatedGetAsync(url);
+				var dto = await response.Content.ReadAsDtoAsync<ProductsDtoV10>();
+
+				return dto;
+			}
+			finally { semaphore?.Release(); }
 		}
 	}
 }
