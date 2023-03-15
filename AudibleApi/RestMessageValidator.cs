@@ -49,7 +49,7 @@ namespace AudibleApi
                 throw new ApiErrorException(requestUri, jObject, error);
             }
 
-            if (jObject.TryGetValue("error_code", out JToken errorCodeToken))
+            if (jObject.TryGetValue("error_code", out JToken errorCodeToken) && errorCodeToken.Type is not JTokenType.Null)
             {
                 var error = errorCodeToken.ToString();
                 throw new ApiErrorException(requestUri, jObject, error);

@@ -69,7 +69,7 @@ namespace AudibleApi.Authorization
 			LocaleName = ArgumentValidator.EnsureNotNull(locale, nameof(locale)).Name;
 			Authorization = ArgumentValidator.EnsureNotNull(authorization, nameof(authorization));
 			ExistingAccessToken = AccessToken.Empty;
-			_cookies = ArgumentValidator.EnsureNotNull(cookies, nameof(cookies)).ToList();
+			_cookies = cookies?.ToList() ?? new();
 		}
 
 		public void Update(AccessToken accessToken)
@@ -85,7 +85,7 @@ namespace AudibleApi.Authorization
 			ExistingAccessToken = ArgumentValidator.EnsureNotNull(accessToken, nameof(accessToken));
 			RefreshToken = ArgumentValidator.EnsureNotNull(refreshToken, nameof(refreshToken));
 
-			_cookies = cookies?.ToList();
+			_cookies = cookies?.ToList() ?? new();
 
 			DeviceSerialNumber = deviceSerialNumber ?? string.Empty;
 			DeviceType = deviceType ?? string.Empty;

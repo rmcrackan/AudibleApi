@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using AudibleApi.Common;
@@ -182,6 +183,62 @@ namespace AudibleApi
 	{
 		const string LIBRARY_PATH = "/1.0/library";
 
+		#region Add Item to Library
+
+		public async Task<bool> AddItemToLibraryAsync(string asin)
+		{
+			const string itemUrl = LIBRARY_PATH + "/item";
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
+
+			var requestBody = new JObject
+			{
+				{ "asin", asin }
+			};
+
+			try
+			{
+				var response = await AdHocAuthenticatedRequestAsync(itemUrl, HttpMethod.Put, Client, requestBody);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var message = await response.Content.ReadAsJObjectAsync();
+
+					return message.TryGetValue("error_code", out var token) && token.Type is JTokenType.Null;
+				}
+				return false;
+			}
+			catch (Exception ex)
+			{
+				Serilog.Log.Logger.Error(ex, "Error adding item [{asin}] from library to library", asin);
+				return false;
+			}
+		}
+
+		public async Task<bool> RemoveItemFromLibraryAsync(string asin)
+		{
+			const string itemUrl = LIBRARY_PATH + "/item/{0}/default_iphone_loan_id";
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
+
+			try
+			{
+				var response = await AdHocAuthenticatedRequestAsync(string.Format(itemUrl, asin), HttpMethod.Delete, Client);
+
+				if (response.IsSuccessStatusCode)
+				{
+					var message = await response.Content.ReadAsJObjectAsync();
+
+					return message.TryGetValue("error_code", out var token) && token.Type is JTokenType.Null;
+				}
+				return false;
+			}
+			catch (Exception ex)
+			{
+				Serilog.Log.Logger.Error(ex, "Error deleting item [{asin}] from library", asin);
+				return false;
+			}
+		}
+
+		#endregion
 
 		#region GetLibraryAsync
 		public Task<JObject> GetLibraryAsync()
