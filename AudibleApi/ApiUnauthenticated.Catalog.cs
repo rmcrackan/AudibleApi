@@ -170,7 +170,7 @@ namespace AudibleApi
 
 			//Spin up as many concurrent downloads as we can/need. Minimum 1.
 			do
-				await spinupPageRequest();
+				await spinupPageRequestAsync();
 			while (semaphore.CurrentCount > 0 && page < totalPages);
 
 			while (pageDlTasks.Count > 0)
@@ -180,12 +180,12 @@ namespace AudibleApi
 
 				//Request new page(s).
 				while (semaphore.CurrentCount > 0 && page < totalPages)
-					await spinupPageRequest();
+					await spinupPageRequestAsync();
 
 				yield return completed.Result.Products;
 			}
 
-			async Task spinupPageRequest()
+			async Task spinupPageRequestAsync()
 			{
 				var options = new CatalogOptions
 				{
