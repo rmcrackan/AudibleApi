@@ -30,6 +30,8 @@ namespace AudibleApi.Common
 		public int MyUserRating_Performance => Convert.ToInt32(ProvidedReview?.Ratings?.PerformanceRating ?? 0L);
 		public int MyUserRating_Story => Convert.ToInt32(ProvidedReview?.Ratings?.StoryRating ?? 0L);
 
+		/// <summary>Indicates if this item may be added to the user's library.</summary>
+		public bool CanAddToLibrary => Price is not null;
 		public bool IsAbridged => FormatType == AudibleApi.Common.FormatType.Abridged;
 		public DateTime? DatePublished => IssueDate?.UtcDateTime; // item.IssueDate == item.ReleaseDate
 		public string Publisher => PublisherName;
