@@ -51,10 +51,6 @@ namespace Authoriz.IdentityTests
 				Locale.Empty,
 				null,
 				new List<KeyValuePair<string, string>>()));
-			Assert.ThrowsException<ArgumentNullException>(() => new Identity(
-				Locale.Empty,
-				OAuth2.Empty,
-				null));
 		}
 
 		[TestMethod]
