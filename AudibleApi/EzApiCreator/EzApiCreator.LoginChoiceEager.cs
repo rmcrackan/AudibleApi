@@ -44,7 +44,7 @@ namespace AudibleApi
 			if (choiceOut is null)
 			{
 				// TODO: exceptions should not be used for control flow. fix this
-				throw new Exception("Login attempt cancelled by user");
+				throw new OperationCanceledException("Login attempt cancelled by user");
 			}
 
 			return choiceOut.LoginMethod switch
