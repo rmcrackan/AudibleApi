@@ -177,7 +177,9 @@ namespace AudibleApi.Authentication
 
 						// save page content
 						var filename = $"Verbose_ResponseBody_{DateTime.Now.Ticks}.tmp";
-						var path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Libation", "Verbose", filename);
+						var tempDir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Libation", "Verbose");
+						System.IO.Directory.CreateDirectory(tempDir);
+						var path = System.IO.Path.Combine(tempDir, filename);
 						System.IO.File.WriteAllText(path, body);
 					}
 				}
