@@ -19,7 +19,7 @@ namespace AudibleApi.Authentication
 		public IDictionary<string, string> GetInputsReadOnly()
             => new Dictionary<string, string>(Inputs);
 
-        protected string ResponseBody { get; }
+        public string ResponseBody { get; }
 
         protected LoginResult(Authenticate authenticate, string responseBody)
         {
