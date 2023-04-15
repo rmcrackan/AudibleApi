@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AudibleApi.Authentication;
 using AudibleApi.Authorization;
+using Dinah.Core;
 
 namespace AudibleApi
 {
@@ -51,7 +52,19 @@ namespace AudibleApi
 
 			while (true)
 			{
-				Serilog.Log.Logger.Information("Login result: {@DebugInfo}", loginResult.GetType());
+				{
+					//log the response body
+					var resultType = loginResult.GetType();
+
+					Serilog.Log.Logger.Information("Login result: {@DebugInfo}", resultType);
+					Serilog.Log.Logger.Information("{@logfile}",
+						new
+						{
+							filename = $"{resultType}.html",
+							System.IO.Compression.CompressionLevel.Fastest,
+							filedata = System.Text.Encoding.UTF8.GetBytes(loginResult.ResponseBody.Replace(email, email.ToMask()))
+						});
+				}
 
 				switch (loginResult)
 				{

@@ -176,9 +176,7 @@ namespace AudibleApi.Authentication
 						Serilog.Log.Logger.Verbose("ResponseInputFields: {@DebugInfo}", responseInputs);
 
 						// save page content
-						var filename = $"Verbose_ResponseBody_{DateTime.Now.Ticks}.tmp";
-						var path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Libation", "Verbose", filename);
-						System.IO.File.WriteAllText(path, body);
+						Serilog.Log.Logger.Verbose("{@responsebody}", new { filename = "Verbose_ResponseBody.html", filedata = System.Text.Encoding.UTF8.GetBytes(body) });
 					}
 				}
 				catch (Exception ex)
