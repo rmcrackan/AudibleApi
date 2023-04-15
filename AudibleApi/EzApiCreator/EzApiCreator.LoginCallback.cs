@@ -52,18 +52,18 @@ namespace AudibleApi
 
 			while (true)
 			{
-				Serilog.Log.Logger.Information("Login result: {@DebugInfo}", loginResult.GetType());
-
 				{
-					//Compress and log the response body
-					var utf8Bts = System.Text.Encoding.UTF8.GetBytes(loginResult.ResponseBody.Replace(email, email.ToMask()));
-					var compressSz = System.IO.Compression.BrotliEncoder.GetMaxCompressedLength(utf8Bts.Length);
-					var compressedBts = new byte[compressSz];
+					//log the response body
+					var resultType = loginResult.GetType();
 
-					if (System.IO.Compression.BrotliEncoder.TryCompress(utf8Bts, compressedBts, out compressSz, 11, 24))
-						Serilog.Log.Logger.Information("ResponseBody: {content}", Convert.ToBase64String(compressedBts, 0, compressSz));
-					else
-						Serilog.Log.Logger.Error("Failed to compress response body");
+					Serilog.Log.Logger.Information("Login result: {@DebugInfo}", resultType);
+					Serilog.Log.Logger.Information("{@logfile}",
+						new
+						{
+							filename = $"{resultType}.html",
+							System.IO.Compression.CompressionLevel.Fastest,
+							filedata = System.Text.Encoding.UTF8.GetBytes(loginResult.ResponseBody.Replace(email, email.ToMask()))
+						});
 				}
 
 				switch (loginResult)
