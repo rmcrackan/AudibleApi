@@ -44,36 +44,37 @@ namespace AudibleApi.Authorization
 					{
 						"bearer",
 						"mac_dms",
-						"website_cookies",
-						"store_authentication_cookie"
+						"store_authentication_cookie",
+						"website_cookies"
 					}
 				},
 				{ "cookies", new JObject
 					{
-						{ "website_cookies", new JArray() },
 						{ "domain", locale.RegisterDomain() },
+						{ "website_cookies", new JArray() }
 					}
 				},
 				{ "registration_data", new JObject
 					{
-						{ "domain", "Device" },
-						{ "app_version", Resources.AppVersion },
-						{ "device_serial", RegistrationOptions.DeviceSerialNumber },
+						{ "domain", "DeviceLegacy" },
 						{ "device_type", Resources.DeviceType },
+						{ "device_serial", RegistrationOptions.DeviceSerialNumber },
+						{ "app_name",  Resources.AppName },
+						{ "app_version", Resources.AppVersion },
 						{ "device_name",  $"%FIRST_NAME%%FIRST_NAME_POSSESSIVE_STRING%%DUPE_STRATEGY_1ST%{RegistrationOptions.DeviceName}" },
 						{ "os_version",  Resources.IosVersion },
 						{ "software_version",  Resources.SoftwareVersion },
 						{ "device_model",  Resources.DeviceModel },
-						{ "app_name",  Resources.AppName },
 					}
 				},
 				{ "auth_data", new JObject
 					{
-						{ "client_id", RegistrationOptions.ClientID },
+						{ "use_global_authentication", "true" },
 						{ "authorization_code", Code },
 						{ "code_verifier", RegistrationOptions.CodeVerifier },
 						{ "code_algorithm", "SHA-256" },
 						{ "client_domain", "DeviceLegacy" },
+						{ "client_id", RegistrationOptions.ClientID },
 					}
 				},
 				{ "requested_extensions", new JArray
