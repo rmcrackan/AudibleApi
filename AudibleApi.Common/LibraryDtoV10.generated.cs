@@ -87,6 +87,12 @@ namespace AudibleApi.Common
 		[JsonProperty("extended_product_description")]
 		public object ExtendedProductDescription { get; set; }
 
+		[JsonProperty("episode_number")]
+		public int? EpisodeNumber { get; set; }
+
+		[JsonProperty("episode_type")]
+		public string EpisodeType { get; set; }
+
 		[JsonProperty("format_type")]
 		public string FormatType { get; set; }
 
@@ -233,6 +239,9 @@ namespace AudibleApi.Common
 
 		[JsonProperty("provided_review")]
 		public Review ProvidedReview { get; set; }
+
+		[JsonProperty("publication_datetime")]
+		public DateTimeOffset? PublicationDateTime { get; set; }
 
 		[JsonProperty("publication_name")]
 		public string PublicationName { get; set; }

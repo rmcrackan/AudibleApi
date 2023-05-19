@@ -33,7 +33,7 @@ namespace AudibleApi.Common
 		/// <summary>Indicates if this item may be added to the user's library.</summary>
 		public bool CanAddToLibrary => Price is not null;
 		public bool IsAbridged => FormatType == AudibleApi.Common.FormatType.Abridged;
-		public DateTime? DatePublished => IssueDate?.UtcDateTime; // item.IssueDate == item.ReleaseDate
+		public DateTime? DatePublished => PublicationDateTime?.UtcDateTime ?? IssueDate?.UtcDateTime; // item.IssueDate == item.ReleaseDate
 		public string Publisher => PublisherName;
 
 		// these category properties assume:
