@@ -19,7 +19,7 @@ namespace AudibleApi.Cryptography
 
         protected override void ValidateInput(string value)
         {
-            ArgumentValidator.EnsureNotNull(value, nameof(value));
+            ArgumentValidator.EnsureNotNullOrWhiteSpace(value, nameof(value));
 
             if (Convert.TryFromBase64String(value.Trim(), new byte[value.Length], out _))
                 return;
