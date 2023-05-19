@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Formats.Asn1;
 using System.Security.Cryptography;
 using System.Text;
 using Dinah.Core;
@@ -19,6 +20,9 @@ namespace AudibleApi.Cryptography
         protected override void ValidateInput(string value)
         {
             ArgumentValidator.EnsureNotNull(value, nameof(value));
+
+            if (Convert.TryFromBase64String(value.Trim(), new byte[value.Length], out _))
+                return;
 
             if (!value.Trim().StartsWith(REQUIRED_BEGINNING))
                 throw new ArgumentException("Improperly formatted RSA private key", nameof(value));
@@ -42,13 +46,16 @@ namespace AudibleApi.Cryptography
         private static RSACryptoServiceProvider CreateRsaProviderFromPrivateKey(string privateKey)
         {
             privateKey = privateKey
-                .Replace("-----BEGIN RSA PRIVATE KEY-----", "")
-                .Replace("-----END RSA PRIVATE KEY-----", "")
+                .Replace(REQUIRED_BEGINNING, "")
+                .Replace(REQUIRED_ENDING, "")
                 .Replace("\\n", "")
                 .Trim();
 
             var asn1EncodedPrivateKey = Convert.FromBase64String(privateKey);
             var keySequence = Asn1Value.Parse(asn1EncodedPrivateKey);
+
+            if (keySequence.Children.Count >= 3 && keySequence.Children[2].Type == Asn1Tag.PrimitiveOctetString)
+                keySequence = Asn1Value.Parse(keySequence.Children[2].Value);
 
             var RSA = new RSACryptoServiceProvider();
             var RSAparams = new RSAParameters();

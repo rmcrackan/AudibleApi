@@ -1,44 +1,96 @@
-﻿using System;
+﻿using Dinah.Core;
+using System;
+using System.Runtime.InteropServices;
 
 namespace AudibleApi.Cryptography
 {
-    internal static class XXTEA
-    {
-        //Corrected Block TEA
-        //https://en.wikipedia.org/wiki/XXTEA
-
-        private const uint DELTA = 0x9e3779b9;
-
-        public static byte[] Encrypt(byte[] clearBytes, uint[] key)
+	/// <summary>
+	/// Corrected Block TEA 
+	/// </summary>
+	/// <remarks>https://en.wikipedia.org/wiki/XXTEA#Reference_code</remarks>
+	public static class XXTEA
+	{
+		public static byte[] Encrypt(ReadOnlySpan<byte> clearBytes, uint[] key)
         {
+			ArgumentValidator.EnsureNotNull(key, nameof(key));
+			ArgumentValidator.EnsureBetweenInclusive(key.Length, nameof(key), 4, 4);
+
             int n = (int)Math.Ceiling(clearBytes.Length / 4d);
 
-            uint[] clearText = new uint[n];
-            Buffer.BlockCopy(clearBytes, 0, clearText, 0, clearBytes.Length);
+            byte[] cipherBytes = new byte[n * sizeof(uint)];
+            Span<uint> transformBuffer = MemoryMarshal.Cast<byte, uint>(cipherBytes);
+            clearBytes.CopyTo(cipherBytes);
 
-            uint z = clearText[^1], y, sum = 0, e;
-            int p;
+			Transform(transformBuffer, key, encrypting: true);
+
+			return cipherBytes;
+		}
+
+        public static byte[] Decrypt(ReadOnlySpan<byte> cipherBytes, uint[] key)
+		{
+			ArgumentValidator.EnsureNotNull(key, nameof(key));
+			ArgumentValidator.EnsureBetweenInclusive(key.Length, nameof(key), 4, 4);
+
+			int n = (int)Math.Ceiling(cipherBytes.Length / 4d);
+
+			byte[] clearBytes = new byte[n * sizeof(uint)];
+			Span<uint> transformBuffer = MemoryMarshal.Cast<byte, uint>(clearBytes);
+			cipherBytes.CopyTo(clearBytes);
+
+			Transform(transformBuffer, key, encrypting: false);
+
+            return clearBytes;
+		}
+
+		private static void Transform(Span<uint> v, uint[] key, bool encrypting)
+        {
+			const uint DELTA = 0x9e3779b9;
+			int p, n = v.Length, rounds = 6 + 52 / n;
+            uint z, y, sum, e;
 
             uint MX() => (z >> 5 ^ y << 2) + (y >> 3 ^ z << 4) ^ (sum ^ y) + (key[p & 3 ^ e] ^ z);
 
-            for (int rounds = 6 + 52 / n; rounds > 0; rounds--)
+            if (encrypting)
             {
-                sum += DELTA;
-                e = sum >> 2 & 3;
+				sum = 0;
+				z = v[n - 1];
 
-                for (p = 0; p < n - 1; p++)
-                {
-                    y = clearText[p + 1];
-                    z = clearText[p] += MX();
-                }
+				for (; rounds > 0; rounds--)
+				{
+					sum += DELTA;
+					e = sum >> 2 & 3;
 
-                y = clearText[0];
-                z = clearText[^1] += MX();
-            }
+					for (p = 0; p < n - 1; p++)
+					{
+						y = v[p + 1];
+						z = v[p] += MX();
+					}
 
-            byte[] cipherBytes = new byte[n * sizeof(uint)];
-            Buffer.BlockCopy(clearText, 0, cipherBytes, 0, cipherBytes.Length);
-            return cipherBytes;
+					y = v[0];
+					z = v[^1] += MX();
+				}
+			}
+            else
+            {
+				sum = (uint)rounds * DELTA;
+				y = v[0];
+
+				for (; rounds > 0; rounds--)
+				{
+					e = sum >> 2 & 3;
+
+					for (p = n - 1; p > 0; p--)
+					{
+						z = v[p - 1];
+						y = v[p] -= MX();
+					}
+
+					z = v[^1];
+					y = v[0] -= MX();
+
+					sum -= DELTA;
+				}
+			}
         }
     }
 }
