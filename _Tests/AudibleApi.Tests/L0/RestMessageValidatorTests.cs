@@ -76,7 +76,7 @@ namespace RestMessageValidatorTests
         {
             var msg = new JObject
             {
-                { "error_code", null },
+                { "error_code", "000307" },
                 { "message", "No response groups populated." }
             };
             var ex = Assert.ThrowsException<ApiErrorException>(() => test(msg));
