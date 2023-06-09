@@ -83,10 +83,11 @@ namespace Authoriz.AccessTokenTests
 		[TestMethod]
 		public void print()
 		{
-			new AccessToken("Atna|foo", DateTime.MaxValue)
+			var dateTime = DateTime.MaxValue;
+			new AccessToken("Atna|foo", dateTime)
 				.ToString()
 				.Should().Be(
-				"AccessToken. Value=Atna|foo. Expires=12/31/9999 11:59:59 PM"
+				$"AccessToken. Value=Atna|foo. Expires={dateTime}"
 				);
 		}
 	}
