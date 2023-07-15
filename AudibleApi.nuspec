@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<metadata>
+		<id>AudibleApi</id>
+		<version>0.0.0</version>
+		<description>Audible API in C# </description>
+		<authors>rmcrackan</authors>
+		<repository type="git" url="https://github.com/rmcrackan/AudibleApi.git" branch="master" />
+		<projectUrl>https://github.com/rmcrackan/AudibleApi</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<Tags>Audible AAC AAXC m4b audiobook</Tags>
+        <language>en-US</language>
+		<readme>docs\README.md</readme>	
+		<license type="file">lic</license>
+		<dependencies>
+			<group targetFramework="net7.0">
+				<dependency id="Dinah.Core" version="7.2.2.1" />
+			</group>
+		</dependencies>
+	</metadata>
+	<dependencies>
+		<group targetFramework="net7.0">
+			<dependency id="AudibleApi.Common" />
+		</group>
+	</dependencies>
+	<files>
+		<file src="AudibleApi\bin\Release\net7.0\AudibleApi.dll" target="lib\net7.0\" />
+		<file src="AudibleApi\bin\Release\net7.0\AudibleApi.Common.dll" target="lib\net7.0\" />
+		
+		<file src="README.md" target="docs\" />
+		<file src="LICENSE" target="lic" />
+	</files>
+</Project>
