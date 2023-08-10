@@ -11,8 +11,6 @@ using AudibleApi.Cryptography;
 using Dinah.Core;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using Moq.Protected;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TestAudibleApiCommon;
@@ -114,17 +112,12 @@ namespace StackBlockerTests_L1_Pass
 		[TestMethod]
 		public async Task access_from_L1_passes()
 		{
-			var identity = new Mock<IIdentity>();
-			identity
-				.Setup(a => a.ExistingAccessToken)
-				.Returns(AccessToken.EmptyFuture);
-			identity
-				.Setup(a => a.IsValid)
-				.Returns(true);
-			identity
-				.Setup(a => a.Locale)
-				.Returns(Locale.Empty);
-			await IdentityMaintainer.CreateAsync(identity.Object);
+			var identity = Substitute.For<IIdentity>();
+			identity.ExistingAccessToken.Returns(AccessToken.EmptyFuture);
+			identity.IsValid.Returns(true);
+			identity.Locale.Returns(Locale.Empty);
+
+			await IdentityMaintainer.CreateAsync(identity);
 		}
 
 		[TestMethod]

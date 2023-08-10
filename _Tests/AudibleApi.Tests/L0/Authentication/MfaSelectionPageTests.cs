@@ -1,26 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using AudibleApi;
-using AudibleApi.Authentication;
-using AudibleApi.Authorization;
-using Dinah.Core;
-using Dinah.Core.Net;
-using Dinah.Core.Net.Http;
-using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using Moq.Protected;
-using Newtonsoft.Json.Linq;
-using TestAudibleApiCommon;
-
-namespace Authentic.MfaSelectionPageTests
+﻿namespace Authentic.MfaSelectionPageTests
 {
-	[TestClass]
+    [TestClass]
 	public class ctor
     {
         const string SAMPLE = @"

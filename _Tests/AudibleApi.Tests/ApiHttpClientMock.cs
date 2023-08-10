@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using AudibleApi;
-using AudibleApi.Authorization;
-using Moq;
-using static AuthorizationShared.Shared;
-using static AuthorizationShared.Shared.AccessTokenTemporality;
-
-namespace TestAudibleApiCommon
+﻿namespace TestAudibleApiCommon
 {
 	public static class ApiHttpClientMock
 	{

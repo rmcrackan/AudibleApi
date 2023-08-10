@@ -1,22 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading;
-using System.Threading.Tasks;
-using AudibleApi;
-using Dinah.Core;
-using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using Moq.Protected;
-using Newtonsoft.Json;
-using TestAudibleApiCommon;
-
-namespace ApiMessageHandlerTests
+﻿namespace ApiMessageHandlerTests
 {
     [TestClass]
     public class ProcessResponse
@@ -29,7 +11,7 @@ namespace ApiMessageHandlerTests
             var _200 = HttpStatusCode.OK;
             var message = "{'foo':'bar'}";
             var request = new HttpRequestMessage(HttpMethod.Get, "http://test.com");
-            var innerHandler = HttpMock.CreateMockHttpClientHandler(message, _200).Object;
+            var innerHandler = HttpMock.CreateMockHttpClientHandler(message, _200);
 
             var apiMessageHandler = new ApiMessageHandler(innerHandler);
             var client = new HttpClient(apiMessageHandler);
@@ -46,7 +28,7 @@ namespace ApiMessageHandlerTests
             var _401 = HttpStatusCode.Unauthorized;
             var message = "{'message':'Message could not be authenticated'}";
             var request = new HttpRequestMessage(HttpMethod.Get, "http://test.com");
-            var innerHandler = HttpMock.CreateMockHttpClientHandler(message, _401).Object;
+            var innerHandler = HttpMock.CreateMockHttpClientHandler(message, _401);
 
             var apiMessageHandler = new ApiMessageHandler(innerHandler);
             var client = new HttpClient(apiMessageHandler);

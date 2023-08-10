@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -15,12 +16,7 @@ namespace TestAudibleApiCommon
     //
     public static class HttpMock
     {
-        // see:
-        //   MoqExamples.complex_sequence
-        // for
-        //   Protected SetupSequence 
-
-        public static Mock<HttpClientHandler> CreateMockHttpClientHandler(string returnContent, HttpStatusCode statusCode = HttpStatusCode.OK)
+        public static HttpClientHandler CreateMockHttpClientHandler(string returnContent, HttpStatusCode statusCode = HttpStatusCode.OK)
         {
             var response = new HttpResponseMessage
             {
@@ -30,7 +26,7 @@ namespace TestAudibleApiCommon
             return CreateMockHttpClientHandler(response);
         }
 
-        public static Mock<HttpClientHandler> CreateMockHttpClientHandler(HttpResponseMessage response)
+        public static HttpClientHandler CreateMockHttpClientHandler(HttpResponseMessage response)
         {
             var handlerMock = new Mock<HttpClientHandler>(MockBehavior.Strict);
             handlerMock
@@ -54,7 +50,7 @@ namespace TestAudibleApiCommon
                )
                .Verifiable();
 
-            return handlerMock;
+            return handlerMock.Object;
         }
 
         public static Mock<HttpClientHandler> CreateMockHttpClientHandler(Action action)
@@ -89,9 +85,9 @@ namespace TestAudibleApiCommon
                 (
                 handlerReturnString ?? "foo",
                 statusCode
-                ).Object;
+                );
 
         public static HttpClientHandler GetHandler(HttpResponseMessage response)
-            => CreateMockHttpClientHandler(response).Object;
+            => CreateMockHttpClientHandler(response);
     }
 }

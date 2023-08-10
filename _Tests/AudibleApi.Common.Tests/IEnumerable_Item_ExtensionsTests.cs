@@ -1,11 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using AudibleApi.Common;
-using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace IEnumerable_Item_ExtensionsTests
+﻿namespace IEnumerable_Item_ExtensionsTests
 {
 	[TestClass]
 	public class GetAuthorsDistinct

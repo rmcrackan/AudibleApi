@@ -1,25 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using AudibleApi;
-using AudibleApi.Authorization;
-using Dinah.Core;
-using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using Moq.Protected;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using TestAudibleApiCommon;
-using static AuthorizationShared.Shared;
-
-namespace HttpClientSharerTests
+﻿namespace HttpClientSharerTests
 {
-	[TestClass]
+    [TestClass]
 	public class ctor
 	{
 		[TestMethod]

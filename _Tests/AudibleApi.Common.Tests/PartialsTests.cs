@@ -1,11 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using AudibleApi.Common;
-using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace PartialsTests
+﻿namespace PartialsTests
 {
 	[TestClass]
 	public class LibraryDtoV10_ToString
