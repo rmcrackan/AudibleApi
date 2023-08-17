@@ -20,7 +20,7 @@
 	public class GetSharedHttpClient
 	{
 		public static HttpMessageHandler newHandler(Action action)
-			=> HttpMock.CreateMockHttpClientHandler(action).Object;
+			=> HttpMock.CreateMockHttpClientHandler(action);
 
 		[TestMethod]
 		public void null_param_throws()

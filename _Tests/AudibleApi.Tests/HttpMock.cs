@@ -1,13 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using Moq.Protected;
+﻿using System.Reflection;
 
 namespace TestAudibleApiCommon
 {
@@ -28,55 +19,33 @@ namespace TestAudibleApiCommon
 
         public static HttpClientHandler CreateMockHttpClientHandler(HttpResponseMessage response)
         {
-            var handlerMock = new Mock<HttpClientHandler>(MockBehavior.Strict);
+            var handlerMock = Substitute.For<HttpClientHandler>();
             handlerMock
-               .Protected()
-               .Setup<Task<HttpResponseMessage>>(
-                  "SendAsync",
-                  ItExpr.IsAny<HttpRequestMessage>(),
-                  ItExpr.IsAny<CancellationToken>()
-               )
-               .ReturnsAsync((HttpRequestMessage request, CancellationToken token) =>
-               {
-                   response.RequestMessage = request;
-                   return response;
-               })
-               .Verifiable();
-            handlerMock
-               .Protected()
-               .Setup(
-                  "Dispose",
-                  ItExpr.IsAny<bool>()
-               )
-               .Verifiable();
-
-            return handlerMock.Object;
+                .GetType()
+                .GetMethod("SendAsync", BindingFlags.NonPublic | BindingFlags.Instance)
+                .Invoke(handlerMock, new object[] { Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>() })
+                .Returns(x =>
+                {
+                    HttpRequestMessage request = (HttpRequestMessage)x[0];
+                    CancellationToken token = (CancellationToken)x[1];
+                    response.RequestMessage = request;
+                    return Task.FromResult(response);
+                });
+            return handlerMock;
         }
 
-        public static Mock<HttpClientHandler> CreateMockHttpClientHandler(Action action)
+        public static HttpClientHandler CreateMockHttpClientHandler(Action action)
         {
-            var handlerMock = new Mock<HttpClientHandler>(MockBehavior.Strict);
+            var handlerMock = Substitute.For<HttpClientHandler>();
             handlerMock
-               .Protected()
-               .Setup<Task<HttpResponseMessage>>(
-                  "SendAsync",
-                  ItExpr.IsAny<HttpRequestMessage>(),
-                  ItExpr.IsAny<CancellationToken>()
-               )
-               .ReturnsAsync((HttpRequestMessage request, CancellationToken token) =>
-               {
-                   action();
-                   return new HttpResponseMessage();
-               })
-               .Verifiable();
-            handlerMock
-               .Protected()
-               .Setup(
-                  "Dispose",
-                  ItExpr.IsAny<bool>()
-               )
-               .Verifiable();
-
+                .GetType()
+                .GetMethod("SendAsync", BindingFlags.NonPublic | BindingFlags.Instance)
+                .Invoke(handlerMock, new object[] { Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>() })
+                .Returns(x =>
+                {
+                    action();
+                    return Task.FromResult(new HttpResponseMessage());
+                });
             return handlerMock;
         }
 
