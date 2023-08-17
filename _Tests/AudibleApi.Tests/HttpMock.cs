@@ -2,9 +2,26 @@
 
 namespace TestAudibleApiCommon
 {
-    //
-    // from: https://gingter.org/2018/07/26/how-to-mock-httpclient-in-your-net-c-unit-tests/
-    //
+    public static class NSubstituteExtensions
+    {
+        public static object ProtectedMethod<T>(this T value, string methodName, params object[] parameters)
+            => value
+            .GetType()
+            .GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance)
+            .Invoke(value, parameters);
+
+        /*
+        protected property:
+
+        var mock = Substitute.For<MyExampleClass>();
+        mock
+            .GetType()
+            .GetProperty("Property1", BindingFlags.NonPublic | BindingFlags.Instance)
+            .GetValue(mock, null)
+            .Returns("Hello World");
+         */
+    }
+
     public static class HttpMock
     {
         public static HttpClientHandler CreateMockHttpClientHandler(string returnContent, HttpStatusCode statusCode = HttpStatusCode.OK)
@@ -16,31 +33,25 @@ namespace TestAudibleApiCommon
             };
             return CreateMockHttpClientHandler(response);
         }
-
+        
         public static HttpClientHandler CreateMockHttpClientHandler(HttpResponseMessage response)
         {
             var handlerMock = Substitute.For<HttpClientHandler>();
             handlerMock
-                .GetType()
-                .GetMethod("SendAsync", BindingFlags.NonPublic | BindingFlags.Instance)
-                .Invoke(handlerMock, new object[] { Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>() })
+                .ProtectedMethod("SendAsync", Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>())
                 .Returns(x =>
                 {
-                    HttpRequestMessage request = (HttpRequestMessage)x[0];
-                    CancellationToken token = (CancellationToken)x[1];
-                    response.RequestMessage = request;
+                    response.RequestMessage = (HttpRequestMessage)x[0];
                     return Task.FromResult(response);
                 });
             return handlerMock;
         }
-
+        
         public static HttpClientHandler CreateMockHttpClientHandler(Action action)
         {
             var handlerMock = Substitute.For<HttpClientHandler>();
             handlerMock
-                .GetType()
-                .GetMethod("SendAsync", BindingFlags.NonPublic | BindingFlags.Instance)
-                .Invoke(handlerMock, new object[] { Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>() })
+                .ProtectedMethod("SendAsync", Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>())
                 .Returns(x =>
                 {
                     action();
@@ -50,11 +61,7 @@ namespace TestAudibleApiCommon
         }
 
         public static HttpClientHandler GetHandler(string handlerReturnString = null, HttpStatusCode statusCode = HttpStatusCode.OK)
-             => CreateMockHttpClientHandler
-                (
-                handlerReturnString ?? "foo",
-                statusCode
-                );
+            => CreateMockHttpClientHandler(handlerReturnString ?? "foo", statusCode);
 
         public static HttpClientHandler GetHandler(HttpResponseMessage response)
             => CreateMockHttpClientHandler(response);
