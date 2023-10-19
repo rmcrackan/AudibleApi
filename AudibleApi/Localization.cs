@@ -39,7 +39,15 @@ namespace AudibleApi
 					{"marketPlaceId", "AN7EY7DTAW63G"},
 					{"language", "en-AU"}
 				},
-				new JObject
+                new JObject
+                {
+                    {"name", "brazil"},
+                    {"countryCode", "br"},
+                    {"topDomain", "com.br"},
+                    {"marketPlaceId", "A10J1VAYUDTYRN"},
+                    {"language", "pt-BR"}
+                },
+                new JObject
 				{
 					{"name", "canada"},
 					{"countryCode", "ca"},
@@ -95,7 +103,7 @@ namespace AudibleApi
 					{"marketPlaceId", "ALMIKO4SZCSAR"},
 					{"language", "es"}
 				},
-				new JObject
+                new JObject
 				{
 					{"name", "pre-amazon - germany"},
 					{"countryCode", "de"},
