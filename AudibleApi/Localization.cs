@@ -1,17 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 
 namespace AudibleApi
 {
-	public static class Localization
+    public static class Localization
 	{
 		public static Locale Get(string localeName) => Locales.SingleOrDefault(l => l.Name == localeName) ?? Locale.Empty;
 
 		public static ReadOnlyCollection<Locale> Locales { get; }
 
-		static Localization()
+        // official locales are here: https://www.audible.com/ep/country-selector
+        static Localization()
 		{
 			var locales = new JArray
 			{
