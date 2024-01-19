@@ -39,21 +39,11 @@ namespace AudibleApi
 				if (ex.CancellationToken == cancellationToken)
 					throw;
 
-				throw new ApiErrorException(request.RequestUri, new Newtonsoft.Json.Linq.JObject
-				{
-					{ "http_error", "The request failed due to timeout." },
-                    { "http_error_details", ex.Message },
-                    { "http_stack_trace", ex.StackTrace }
-				});
+				throw new ApiErrorException(request.RequestUri, ex.ToJson("The request failed due to timeout."));
 			}
 			catch (HttpRequestException ex)
 			{
-				throw new ApiErrorException(request.RequestUri, new Newtonsoft.Json.Linq.JObject
-				{
-					{ "http_error", "The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout." },
-                    { "http_error_details", ex.Message },
-                    { "http_stack_trace", ex.StackTrace }
-				});
+				throw new ApiErrorException(request.RequestUri, ex.ToJson("The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout."));
 			}
 		}
 

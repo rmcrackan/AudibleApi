@@ -33,6 +33,7 @@ namespace ExceptionTests
             Assert.AreEqual(exception.InnerException, null);
         }
     }
+
     [TestClass]
     public class ctor3params
     {
@@ -51,6 +52,7 @@ namespace ExceptionTests
             Assert.AreEqual(exception.InnerException, null);
         }
     }
+
     [TestClass]
     public class ctor4params
     {
