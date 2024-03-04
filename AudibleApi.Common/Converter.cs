@@ -6,7 +6,6 @@ using Dinah.Core.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using System.Linq;
 
 namespace AudibleApi.Common
 {
@@ -26,6 +25,11 @@ namespace AudibleApi.Common
 				new RecordConverter(),
 				new DtoConverter()
 			},
+			Error = (sender, args) =>
+			{
+				Serilog.Log.Logger.Error(args.ErrorContext.Error, $"Deserialization error|Message: {args?.ErrorContext?.Error?.Message}|args:{args}");
+				args.ErrorContext.Handled = true;
+			}
 		};
 
 		private static JsonSerializerSettings WriteSettings { get; } = new()
@@ -46,7 +50,7 @@ namespace AudibleApi.Common
 			{
 				return DtoBase<T>.FromJson(jobj);
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				Serilog.Log.Logger.Error(ex, $"Error converting {typeof(T).Name}. Full json:\r\n" + jobj.ToString(Formatting.None));
 				throw;
