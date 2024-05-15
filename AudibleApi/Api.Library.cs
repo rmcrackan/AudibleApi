@@ -412,7 +412,7 @@ namespace AudibleApi
 				Serilog.Log.Logger.Information($"Page {pageNumber}: {libResult.Items.Length} results");
 				return libResult;
 			}
-			finally { semaphore.Release(); }
+			finally { semaphore?.Release(); }
 		}
 
 
