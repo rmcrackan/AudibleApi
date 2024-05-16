@@ -279,7 +279,7 @@ namespace AudibleApi
 			return obj;
 		}
 
-		internal async Task<System.Net.Http.HttpResponseMessage> getLibraryResponseAsync(string parameters)
+		internal async Task<HttpResponseMessage> getLibraryResponseAsync(string parameters)
 		{
 			var url = $"{LIBRARY_PATH}?{parameters}";
 			var response = await AdHocAuthenticatedGetAsync(url);
@@ -374,7 +374,8 @@ namespace AudibleApi
 			int page = 0;
 			int totalItems = await GetItemsCountAsync(libraryOptions);
 			int totalPages = totalItems / numItemsPerRequest;
-			if (totalPages * numItemsPerRequest < totalItems) totalPages++;
+			if (totalPages * numItemsPerRequest < totalItems)
+				totalPages++;
 
 			//Spin up as many concurrent downloads as we can/need. Minimum 1.
 			do
@@ -397,7 +398,9 @@ namespace AudibleApi
 			{
 				libraryOptions.PageNumber = ++page;
 				await semaphore.WaitAsync();
-				pageDlTasks.Add(downloadItemPage(semaphore, libraryOptions.ToQueryString(), page));
+				var pageItemTask = downloadItemPage(semaphore, libraryOptions.ToQueryString(), page);
+				if (pageItemTask is not null)
+                    pageDlTasks.Add(pageItemTask);
 			}
 		}
 
@@ -406,8 +409,14 @@ namespace AudibleApi
 			try
 			{
 				var response = await getLibraryResponseAsync(queryString);
-
 				var	libResult = await response.Content.ReadAsDtoAsync<LibraryDtoV10>();
+
+				// Per audible's api, this shouldn't be possible. However when page number reaches ~400, their api acts weird
+				if (libResult?.Items is null)
+				{
+                    Serilog.Log.Logger.Information($"Page {pageNumber}: 0 results");
+					return null;
+                }
 
 				Serilog.Log.Logger.Information($"Page {pageNumber}: {libResult.Items.Length} results");
 				return libResult;
