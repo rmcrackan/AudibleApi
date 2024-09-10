@@ -125,7 +125,7 @@ namespace AudibleApi
             ProductDetails = (ulong)1 << 36,
             [Description("ws4v")]
             WS4V = (ulong)1 << 37,
-            ALL_OPTIONS = (1 << 38) - 1
+            ALL_OPTIONS = ((ulong)1 << 38) - 1
 		}
 		public ResponseGroupOptions ResponseGroups { get; set; }
 
