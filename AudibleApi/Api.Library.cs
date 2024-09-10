@@ -10,6 +10,11 @@ using Dinah.Core;
 using Dinah.Core.Net.Http;
 using Newtonsoft.Json.Linq;
 
+//
+// REFERENCE: https://audible.readthedocs.io/en/latest/misc/external_api.html
+// not fully implemented
+//
+
 namespace AudibleApi
 {
 	public class LibraryOptions
@@ -39,8 +44,8 @@ namespace AudibleApi
 
 		public DateTime? PurchasedAfter { get; set; }
 
-		[Flags]
-		public enum ResponseGroupOptions
+        [Flags]
+		public enum ResponseGroupOptions : ulong
 		{
 			None = 0,
 			[Description("badge_types")]
@@ -92,7 +97,35 @@ namespace AudibleApi
 			Series = 1 << 22,
 			[Description("sku")]
 			Sku = 1 << 23,
-			ALL_OPTIONS = (1 << 24) - 1
+			[Description("categories")]
+            Categories = 1 << 24,
+			[Description("customer_rights")]
+            CustomerRights = 1 << 25,
+            [Description("in_wishlist")]
+            InWishlist = 1 << 26,
+            [Description("is_archived")]
+            IsArchived = 1 << 27,
+            [Description("is_finished")]
+            IsFinished = 1 << 28,
+            [Description("is_playable")]
+            IsPlayable = 1 << 29,
+            [Description("is_removable")]
+            IsRemovable = 1 << 30,
+            [Description("is_visible")]
+            IsVisible = (ulong)1 << 31,
+            [Description("listening_status")]
+            ListeningStatus = (ulong)1 << 32,
+            [Description("order_details")]
+            OrderDetails = (ulong)1 << 33,
+            [Description("origin")]
+            Origin = (ulong)1 << 34,
+            [Description("periodicals")]
+            Periodicals = (ulong)1 << 35,
+            [Description("product_details")]
+            ProductDetails = (ulong)1 << 36,
+            [Description("ws4v")]
+            WS4V = (ulong)1 << 37,
+            ALL_OPTIONS = (1 << 38) - 1
 		}
 		public ResponseGroupOptions ResponseGroups { get; set; }
 

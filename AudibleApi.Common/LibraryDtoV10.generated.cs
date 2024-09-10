@@ -115,43 +115,43 @@ namespace AudibleApi.Common
 		public bool? IsAyce { get; set; }
 
 		[JsonProperty("is_buyable")]
-		public object IsBuyable { get; set; }
+		public bool? IsBuyable { get; set; }
 
 		[JsonProperty("is_downloaded")]
 		public bool? IsDownloaded { get; set; }
 
 		[JsonProperty("is_finished")]
-		public object IsFinished { get; set; }
+		public bool? IsFinished { get; set; }
 
 		[JsonProperty("is_in_wishlist")]
-		public object IsInWishlist { get; set; }
+		public bool? IsInWishlist { get; set; }
 
 		[JsonProperty("is_listenable")]
 		public bool? IsListenable { get; set; }
 
 		[JsonProperty("is_pdf_url_available")]
-		public object IsPdfUrlAvailable { get; set; }
+		public bool? IsPdfUrlAvailable { get; set; }
 
 		[JsonProperty("is_playable")]
-		public object IsPlayable { get; set; }
+		public bool? IsPlayable { get; set; }
 
 		[JsonProperty("is_preorderable")]
-		public object IsPreorderable { get; set; }
+		public bool? IsPreorderable { get; set; }
 
 		[JsonProperty("is_returnable")]
 		public bool? IsReturnable { get; set; }
 
 		[JsonProperty("is_searchable")]
-		public object IsSearchable { get; set; }
+		public bool? IsSearchable { get; set; }
 
 		[JsonProperty("is_visible")]
-		public object IsVisible { get; set; }
+		public bool? IsVisible { get; set; }
 
 		[JsonProperty("is_ws4v_companion_asin_owned")]
-		public object IsWs4VCompanionAsinOwned { get; set; }
+		public bool? IsWs4VCompanionAsinOwned { get; set; }
 
 		[JsonProperty("is_ws4v_enabled")]
-		public object IsWs4VEnabled { get; set; }
+		public bool? IsWs4VEnabled { get; set; }
 
 		[JsonProperty("isbn")]
 		public object Isbn { get; set; }
