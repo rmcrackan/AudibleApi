@@ -12,19 +12,19 @@
 		<readme>docs\README.md</readme>	
 		<license type="file">lic</license>
 		<dependencies>
-			<group targetFramework="net8.0">
-				<dependency id="Dinah.Core" version="8.0.0.1" />
+			<group targetFramework="net9.0">
+				<dependency id="Dinah.Core" version="9.0.0.1" />
 			</group>
 		</dependencies>
 	</metadata>
 	<dependencies>
-		<group targetFramework="net8.0">
+		<group targetFramework="net9.0">
 			<dependency id="AudibleApi.Common" />
 		</group>
 	</dependencies>
 	<files>
-		<file src="AudibleApi\bin\Release\net8.0\AudibleApi.dll" target="lib\net8.0\" />
-		<file src="AudibleApi\bin\Release\net8.0\AudibleApi.Common.dll" target="lib\net8.0\" />
+		<file src="AudibleApi\bin\Release\net9.0\AudibleApi.dll" target="lib\net9.0\" />
+		<file src="AudibleApi\bin\Release\net9.0\AudibleApi.Common.dll" target="lib\net9.0\" />
 		
 		<file src="README.md" target="docs\" />
 		<file src="LICENSE" target="lic" />
