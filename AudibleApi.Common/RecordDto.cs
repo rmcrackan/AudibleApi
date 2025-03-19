@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace AudibleApi.Common
 {
-	public partial class RecordDto : DtoBase<RecordDto>
+	public class RecordDto : DtoBase<RecordDto>
 	{
 		[JsonProperty("md5")]
 		public string Md5 { get; set; }
@@ -15,7 +15,7 @@ namespace AudibleApi.Common
 		public Payload Payload { get; set; }
 	}
 
-	public partial class Payload
+	public class Payload
 	{
 		[JsonProperty("acr")]
 		public string Acr { get; set; }
@@ -34,24 +34,26 @@ namespace AudibleApi.Common
 		public string Type { get; set; }
 	}
 
+#nullable enable
+
 	internal class RecordConverter : JsonConverter
 	{
 		public override bool CanConvert(Type typeToConvert) => false;
 
-		public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+		public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
 		{
-			static IRecord createRecord(JObject jObj)
+			static IRecord? createRecord(JObject jObj)
 			{
 				var type = jObj.Value<string>("type");
 
 				//creationTime and lastModificationTime are UTC strings with no time zone.
-				var creationTime = DateTime.Parse(jObj.Value<string>("creationTime")).ToLocalTime();
+				var creationTime = jObj.Value<string>("creationTime") is string ct ? DateTime.Parse(ct).ToLocalTime() : default;
 				var startPosition = TimeSpan.FromMilliseconds(jObj.Value<long>("startPosition"));
 
 				if (type == RecordType.LastHeard)
 					return new LastHeard(creationTime, startPosition);
 
-				var lastModificationTime = DateTime.Parse(jObj.Value<string>("lastModificationTime")).ToLocalTime(); 
+				var lastModificationTime = jObj.Value<string>("lastModificationTime") is string lct ? DateTime.Parse(lct).ToLocalTime() : default; 
 				var annotationId = jObj.Value<string>("annotationId");
 
 				if (type == RecordType.Bookmark)
@@ -68,8 +70,8 @@ namespace AudibleApi.Common
 				if (type == RecordType.Clip)
 				{
 					var metadata = jObj.GetValue("metadata") as JObject;
-					var text = metadata.Value<string>("note");
-					var title = metadata.Value<string>("title");
+					var text = metadata?.Value<string>("note");
+					var title = metadata?.Value<string>("title");
 					return new Clip(creationTime, startPosition, annotationId, lastModificationTime, endPosition, text, title);
 				}
 
@@ -83,7 +85,7 @@ namespace AudibleApi.Common
 				.ToList();
 		}
 
-		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+		public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
 			=> throw new InvalidOperationException();
 	}
 
@@ -96,12 +98,12 @@ namespace AudibleApi.Common
 	public interface IAnnotation : IRecord
 	{
 		DateTimeOffset LastModified { get; }
-		string AnnotationId { get; }
+		string? AnnotationId { get; }
 	}
 	public interface IRangeAnnotation : IAnnotation
 	{
 		TimeSpan End { get; }
-		string Text { get; }
+		string? Text { get; }
 	}
 
 	public record LastHeard(DateTimeOffset Created, TimeSpan Start)
@@ -110,19 +112,19 @@ namespace AudibleApi.Common
 		public const string Name = "last_heard";
 		public string RecordType => Name;
 	}
-	public record Bookmark(DateTimeOffset Created, TimeSpan Start, string AnnotationId, DateTimeOffset LastModified)
+	public record Bookmark(DateTimeOffset Created, TimeSpan Start, string? AnnotationId, DateTimeOffset LastModified)
 		: IAnnotation
 	{
 		public const string Name = "bookmark";
 		public string RecordType => Name;
 	}
-	public record Note(DateTimeOffset Created, TimeSpan Start, string AnnotationId, DateTimeOffset LastModified, TimeSpan End, string Text)
+	public record Note(DateTimeOffset Created, TimeSpan Start, string? AnnotationId, DateTimeOffset LastModified, TimeSpan End, string? Text)
 		: IRangeAnnotation
 	{
 		public const string Name = "note";
 		public string RecordType => Name;
 	}
-	public record Clip(DateTimeOffset Created, TimeSpan Start, string AnnotationId, DateTimeOffset LastModified, TimeSpan End, string Text, string Title)
+	public record Clip(DateTimeOffset Created, TimeSpan Start, string? AnnotationId, DateTimeOffset LastModified, TimeSpan End, string? Text, string? Title)
 		: IRangeAnnotation
 	{
 		public const string Name = "clip";
