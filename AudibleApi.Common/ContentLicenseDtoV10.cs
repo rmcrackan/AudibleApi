@@ -10,7 +10,7 @@ namespace AudibleApi.Common
         {
             var license = json.ToObject<ContentLicenseDtoV10>();
 
-            if (license.ContentLicense?.LicenseResponse is not null)
+            if (license.ContentLicense.DrmType == DrmType.Adrm && license.ContentLicense?.LicenseResponse is not null)
                 license.ContentLicense.Voucher = DecryptLicenseResponse(license, deviceType, deviceSerialNumber, amazonAccountId);
 
             return license;
@@ -31,26 +31,17 @@ namespace AudibleApi.Common
             byte[] key = new byte[16];
             byte[] iv = new byte[16];
 
-            using var sha256 = System.Security.Cryptography.SHA256.Create();
-            sha256.ComputeHash(keyComponents);
-            Array.Copy(sha256.Hash, 0, key, 0, 16);
-            Array.Copy(sha256.Hash, 16, iv, 0, 16);
+            var hash = System.Security.Cryptography.SHA256.HashData(keyComponents);
+            Array.Copy(hash, 0, key, 0, 16);
+            Array.Copy(hash, 16, iv, 0, 16);
 
             var cipherText = Convert.FromBase64String(contentLicense.ContentLicense.LicenseResponse);
 
-            string plainText;
-
             using var aes = System.Security.Cryptography.Aes.Create();
-            aes.Mode = System.Security.Cryptography.CipherMode.CBC;
-            aes.Padding = System.Security.Cryptography.PaddingMode.None;
+            aes.Key = key;
 
-            using var decryptor = aes.CreateDecryptor(key, iv);
-
-            using var csDecrypt = new System.Security.Cryptography.CryptoStream(new System.IO.MemoryStream(cipherText), decryptor, System.Security.Cryptography.CryptoStreamMode.Read);
-
-            csDecrypt.Read(cipherText, 0, cipherText.Length & 0x7ffffff0);
-
-            plainText = System.Text.Encoding.ASCII.GetString(cipherText.TakeWhile(b => b != 0).ToArray());
+            var plainTextBts = aes.DecryptCbc(cipherText, iv, System.Security.Cryptography.PaddingMode.None);
+            var plainText = System.Text.Encoding.ASCII.GetString(plainTextBts.TakeWhile(b => b != 0).ToArray());
 
             return VoucherDtoV10.FromJson(plainText);
         }
