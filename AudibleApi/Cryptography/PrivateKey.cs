@@ -34,8 +34,7 @@ namespace AudibleApi.Cryptography
         {
 			var dataBytes = Encoding.UTF8.GetBytes(message);
 
-			using var sha256 = SHA256.Create();
-			var digestion = sha256.ComputeHash(dataBytes);
+			var digestion = SHA256.HashData(dataBytes);
 			var signedBytes = RSACryptoService.SignHash(digestion, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
             return Convert.ToBase64String(signedBytes);
 		}

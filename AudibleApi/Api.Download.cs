@@ -124,7 +124,7 @@ namespace AudibleApi
         /// <exception cref="InvalidResponseException">Thrown when the Api did not return a proper <see cref="ContentLicense"/>.</exception>
         /// <exception cref="InvalidValueException">Thrown when <see cref="ContentLicense.StatusCode"/> is not "Granted" or "Denied".</exception>
         /// <exception cref="ContentLicenseDeniedException">Thrown when <see cref="ContentLicense.StatusCode"/> is "Denied".</exception>
-        public async Task<ContentLicense> GetDownloadLicenseAsync(string asin, DownloadQuality quality = DownloadQuality.High, ChapterTitlesType chapterTitlesType = ChapterTitlesType.Tree, DrmType drmType = DrmType.Adrm, bool spatial = false, params string[] accitionalCodecs)
+        public async Task<ContentLicense> GetDownloadLicenseAsync(string asin, DownloadQuality quality = DownloadQuality.High, ChapterTitlesType chapterTitlesType = ChapterTitlesType.Tree, DrmType drmType = DrmType.Adrm, bool spatial = false, params string[] additionalCodecs)
 		{
 			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
 
@@ -133,16 +133,16 @@ namespace AudibleApi
 				drmType = DrmType.Adrm;
 
             //Always request AAC codecs
-            Array.Resize(ref accitionalCodecs, accitionalCodecs.Length + 2);
-            accitionalCodecs[^2] = "mp4a.40.2"; //AAC-LC
-            accitionalCodecs[^1] = "mp4a.40.42"; //xHE-AAC
+            Array.Resize(ref additionalCodecs, additionalCodecs.Length + 2);
+            additionalCodecs[^2] = "mp4a.40.2"; //AAC-LC
+            additionalCodecs[^1] = "mp4a.40.42"; //xHE-AAC
 
 			var body = new JObject
             {
                 { "supported_media_features", new JObject
                     {
                     { "drm_types", new JArray { drmType.ToString(), "Mpeg" } },
-                    { "codecs", new JArray(accitionalCodecs) },
+                    { "codecs", new JArray(additionalCodecs) },
                     { "chapter_titles_type", chapterTitlesType.ToString() },
                     { "previews", false },
                     { "catalog_samples", false }
@@ -343,7 +343,7 @@ namespace AudibleApi
 				if (codecs is not null && codecs.Any())
 					return codecs;
 
-				// if no codec, try once more with all options enbled
+				// if no codec, try once more with all options enabled
 				libraryOptions = LibraryOptions.ResponseGroupOptions.ALL_OPTIONS;
 			}
 			while (currAttempt < maxAttempts);
