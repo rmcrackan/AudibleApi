@@ -90,5 +90,7 @@ namespace AudibleApi.Common
 
         [JsonProperty("version")]
         public string Version { get; set; }
+
+        public bool IsSpatial => Codec is "ec+3" or "ac-4";
     }
 }

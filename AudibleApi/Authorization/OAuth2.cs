@@ -50,7 +50,7 @@ namespace AudibleApi.Authorization
 				},
 				{ "cookies", new JObject
 					{
-						{ "domain", locale.RegisterDomain() },
+						{ "domain", locale.AudibleLoginUri() },
 						{ "website_cookies", new JArray() }
 					}
 				},
@@ -62,9 +62,20 @@ namespace AudibleApi.Authorization
 						{ "app_name",  Resources.AppName },
 						{ "app_version", Resources.AppVersion },
 						{ "device_name",  $"%FIRST_NAME%%FIRST_NAME_POSSESSIVE_STRING%%DUPE_STRATEGY_1ST%{RegistrationOptions.DeviceName}" },
-						{ "os_version",  Resources.IosVersion },
+						{ "os_version",  Resources.OsVersion },
 						{ "software_version",  Resources.SoftwareVersion },
 						{ "device_model",  Resources.DeviceModel },
+					}
+				},
+				{ "device_metadata", new JObject
+					{
+						{ "device_os_family", Resources.OsFamily },
+						{ "device_type", Resources.DeviceType },
+						{ "device_serial", RegistrationOptions.DeviceSerialNumber },
+						{ "manufacturer", "unknown" },
+						{ "model", Resources.DeviceModel },
+						{ "os_version", Resources.OsVersionNumber },
+						{ "product", Resources.OsVersionNumber },
 					}
 				},
 				{ "auth_data", new JObject

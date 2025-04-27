@@ -25,28 +25,133 @@ namespace AudibleApi
 
 	public partial class Api
     {
-		#region Download License
+        #region DrmLicense
 
-		/// <summary>
-		/// Requests a license to download Audible content.
-		/// </summary>
-		/// <param name="asin">Audible Asin of book</param>
-		/// <param name="quality">Desired audio Quality</param>
-		/// <returns>a valid <see cref="ContentLicense"/> containing content_reference, chapter_info, and pdf_url.</returns>
-		/// <exception cref="ApiErrorException">Thrown when the Api request failed.</exception>
-		/// <exception cref="InvalidResponseException">Thrown when the Api did not return a proper <see cref="ContentLicense"/>.</exception>
-		/// <exception cref="InvalidValueException">Thrown when <see cref="ContentLicense.StatusCode"/> is not "Granted" or "Denied".</exception>
-		/// <exception cref="ContentLicenseDeniedException">Thrown when <see cref="ContentLicense.StatusCode"/> is "Denied".</exception>
-		public async Task<ContentLicense> GetDownloadLicenseAsync(string asin, DownloadQuality quality = DownloadQuality.High, ChapterTitlesType chapterTitlesType = ChapterTitlesType.Tree)
+        public async Task<string> WidevineDrmLicense(string asin, string licenseChallenge)
         {
             ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
-
+            string requestUri = $"{CONTENT_PATH}/{asin}/drmlicense";
             var body = new JObject
             {
+                { "consumption_type",  "Download" },
+                { "drm_type", "Widevine" },
+                { "tenant_id", "Audible" },
+                { "licenseChallenge", licenseChallenge }
+            };
+            HttpResponseMessage response;
+            try
+            {
+                response = await AdHocAuthenticatedRequestAsync(requestUri, HttpMethod.Post, Client, body);
+            }
+            catch (ApiErrorException ex)
+            {
+                Serilog.Log.Logger.Error(ex, "Error getting DRM license");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                var apiExp = new ApiErrorException(
+                    requestUri,
+                    body,
+                    $"Error requesting DRM license for asin: [{asin}]",
+                    ex);
+                Serilog.Log.Logger.Error(apiExp, "Error requesting DRM license");
+                throw apiExp;
+            }
+
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                var ex = new ApiErrorException(
+                    response.RequestMessage.RequestUri,
+                    //Assume this response does not contain PII.
+                    new JObject { { "http_response_code", response.StatusCode.ToString() }, { "response", await response.Content.ReadAsStringAsync() } },
+                    $"DRM license response not \"OK\" for asin: [{asin}]");
+                Serilog.Log.Logger.Error(ex, "DRM license response does not contain a valid status code");
+                throw ex;
+            }
+
+            var responseJobj = await response.Content.ReadAsJObjectAsync();
+            DrmLicenseDtov10 drmLicenseDtoV10;
+            try
+            {
+                drmLicenseDtoV10 = DrmLicenseDtov10.FromJson(responseJobj);
+            }
+            catch (Exception ex)
+            {
+                var apiExp = new InvalidResponseException(
+                    response.RequestMessage.RequestUri,
+                    responseJobj, //Even if the object doesn't parse, it may contain PII.
+                    $"DRM license response could not be parsed for asin: [{asin}]",
+                    ex);
+                Serilog.Log.Logger.Verbose(apiExp, "DRM license response could not be parsed");
+                throw apiExp;
+            }
+
+            if (drmLicenseDtoV10?.Message is not null)
+            {
+                var ex = new InvalidResponseException(
+                    response.RequestMessage.RequestUri,
+                    new JObject { { "message", drmLicenseDtoV10.Message }, { "reason", drmLicenseDtoV10.Reason } },
+                    $"DRM license response returned error for asin: [{asin}]");
+                Serilog.Log.Logger.Error(ex, "DRM license response returned error");
+                throw ex;
+            }
+
+            if (drmLicenseDtoV10?.License is null)
+            {
+                var ex = new InvalidValueException(
+                    response.RequestMessage.RequestUri,
+                    responseJobj, //This error shouldn't happen, so log the entire response which contains PII.
+                    $"DRM license response does not contain a valid license for asin: [{asin}]");
+                Serilog.Log.Logger.Verbose(ex, "DRM license response does not contain a valid status code");
+                throw ex;
+            }
+
+            return drmLicenseDtoV10.License;
+        }
+
+        #endregion
+
+        #region Download License
+
+        /// <summary>
+        /// Requests a license to download Audible content.
+        /// </summary>
+        /// <param name="asin">Audible Asin of book</param>
+        /// <param name="quality">Desired audio Quality</param>
+        /// <returns>a valid <see cref="ContentLicense"/> containing content_reference, chapter_info, and pdf_url.</returns>
+        /// <exception cref="ApiErrorException">Thrown when the Api request failed.</exception>
+        /// <exception cref="InvalidResponseException">Thrown when the Api did not return a proper <see cref="ContentLicense"/>.</exception>
+        /// <exception cref="InvalidValueException">Thrown when <see cref="ContentLicense.StatusCode"/> is not "Granted" or "Denied".</exception>
+        /// <exception cref="ContentLicenseDeniedException">Thrown when <see cref="ContentLicense.StatusCode"/> is "Denied".</exception>
+        public async Task<ContentLicense> GetDownloadLicenseAsync(string asin, DownloadQuality quality = DownloadQuality.High, ChapterTitlesType chapterTitlesType = ChapterTitlesType.Tree, DrmType drmType = DrmType.Adrm, bool spatial = false, params string[] additionalCodecs)
+		{
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(asin, nameof(asin));
+
+			//Widevine content will only be delivered to Android devices
+			if (drmType == DrmType.Widevine && _identityMaintainer.DeviceType != Resources.DeviceType)
+				drmType = DrmType.Adrm;
+
+            //Always request AAC codecs
+            Array.Resize(ref additionalCodecs, additionalCodecs.Length + 2);
+            additionalCodecs[^2] = "mp4a.40.2"; //AAC-LC
+            additionalCodecs[^1] = "mp4a.40.42"; //xHE-AAC
+
+			var body = new JObject
+            {
+                { "supported_media_features", new JObject
+                    {
+                    { "drm_types", new JArray { drmType.ToString(), "Mpeg" } },
+                    { "codecs", new JArray(additionalCodecs) },
+                    { "chapter_titles_type", chapterTitlesType.ToString() },
+                    { "previews", false },
+                    { "catalog_samples", false }
+                    }
+                },
+                { "spatial", spatial },
                 { "consumption_type", "Download" },
-                { "supported_drm_types", new JArray{ "Adrm", "Mpeg" } },
+                { "tenant_id", "Audible" },
                 { "quality", quality.ToString() },
-                { "chapter_titles_type", chapterTitlesType.ToString() },
                 { "response_groups", "last_position_heard,pdf_url,content_reference,chapter_info"}
             };
 
@@ -238,7 +343,7 @@ namespace AudibleApi
 				if (codecs is not null && codecs.Any())
 					return codecs;
 
-				// if no codec, try once more with all options enbled
+				// if no codec, try once more with all options enabled
 				libraryOptions = LibraryOptions.ResponseGroupOptions.ALL_OPTIONS;
 			}
 			while (currAttempt < maxAttempts);
