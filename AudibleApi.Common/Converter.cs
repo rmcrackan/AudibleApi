@@ -45,14 +45,15 @@ namespace AudibleApi.Common
 
 		public static async Task<T> ReadAsDtoAsync<T>(this HttpContent content) where T : DtoBase<T>
 		{
-			var jobj = await content.ReadAsJObjectAsync();
+			var contentStr = await content.ReadAsStringAsync();
 			try
 			{
+				var jobj = JObject.Parse(contentStr);
 				return DtoBase<T>.FromJson(jobj);
 			}
 			catch (Exception ex)
 			{
-				Serilog.Log.Logger.Error(ex, $"Error converting {typeof(T).Name}. Full json:\r\n" + jobj.ToString(Formatting.None));
+				Serilog.Log.Logger.Error(ex, $"Error converting {typeof(T).Name}. Full body:\r\n" + contentStr);
 				throw;
 			}
 		}
