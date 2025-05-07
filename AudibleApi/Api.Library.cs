@@ -442,7 +442,7 @@ namespace AudibleApi
 			try
 			{
 				var response = await getLibraryResponseAsync(queryString);
-				var	libResult = await response.Content.ReadAsDtoAsync<LibraryDtoV10>();
+				var libResult = await response.Content.ReadAsDtoAsync<LibraryDtoV10>();
 
 				// Per audible's api, this shouldn't be possible. However when page number reaches ~400, their api acts weird
 				if (libResult?.Items is null)
