@@ -24,6 +24,9 @@ namespace AudibleApi.Common
         [JsonProperty("asin")]
         public string Asin { get; set; }
 
+        [JsonProperty("asset_details")]
+        public AssetDetail[] AssetDetails { get; set; }
+
         [JsonProperty("audible_editors_summary")]
         public string AudibleEditorsSummary { get; set; }
 
@@ -305,6 +308,15 @@ namespace AudibleApi.Common
 
 		[JsonProperty("ws4v_companion_asin")]
 		public object Ws4VCompanionAsin { get; set; }
+	}
+
+	public partial class AssetDetail
+	{
+		[JsonProperty("is_spatial")]
+		public bool IsSpatial { get; set; }
+
+		[JsonProperty("name")]
+		public string Name { get; set; }
 	}
 
 	public partial class Person
