@@ -32,6 +32,11 @@ namespace AudibleApi.Common
 		public override string ToString() => $"{Items?.Length ?? 0} {nameof(Items)}, {ResponseGroups?.Length ?? 0} {nameof(ResponseGroups)}";
 	}
 
+	public partial class AssetDetail
+	{
+		public override string ToString() => IsSpatial ? $"{Name} (spatial)" : $"{Name}";
+	}
+
 	public partial class Person
 	{
 		public override string ToString() => $"{Name}";
