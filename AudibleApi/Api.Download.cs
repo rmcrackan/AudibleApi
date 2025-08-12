@@ -21,7 +21,15 @@ namespace AudibleApi
     {
         Flat,
         Tree
-    }
+	}
+
+	public class Codecs
+	{
+		public const string AAC_LC = "mp4a.40.2";
+		public const string xHE_AAC = "mp4a.40.42";
+		public const string EC_3 = "ec+3";
+		public const string AC_4 = "ac-4";
+	}
 
 	public partial class Api
     {
@@ -132,10 +140,12 @@ namespace AudibleApi
 			if (drmType == DrmType.Widevine && _identityMaintainer.DeviceType != Resources.DeviceType)
 				drmType = DrmType.Adrm;
 
-            //Always request AAC codecs
-            Array.Resize(ref additionalCodecs, additionalCodecs.Length + 2);
-            additionalCodecs[^2] = "mp4a.40.2"; //AAC-LC
-            additionalCodecs[^1] = "mp4a.40.42"; //xHE-AAC
+			//Always request the AAC-LC codec
+			if (Array.IndexOf(additionalCodecs, Codecs.AAC_LC) < 0)
+			{
+				Array.Resize(ref additionalCodecs, additionalCodecs.Length + 1);
+				additionalCodecs[^1] = Codecs.AAC_LC;
+			}
 
 			var body = new JObject
             {
