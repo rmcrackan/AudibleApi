@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <Version>9.4.4.1</Version>
+    <Version>9.4.5.1</Version>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>
       $(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb
     </AllowedOutputExtensionsInPackageBuildOutputFolder>
@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dinah.Core" Version="9.0.2.1" />
+    <PackageReference Include="Dinah.Core" Version="9.0.3.1" />
 	<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
   </ItemGroup>
 
