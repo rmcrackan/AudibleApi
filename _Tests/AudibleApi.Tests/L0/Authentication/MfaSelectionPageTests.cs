@@ -38,10 +38,10 @@
             mfaConfig.Buttons.Add(new() { Text = "Send an SMS to my number ending with 123", Name = "otpDeviceContext", Value = "dDeEfE=, SMS" });
             mfaConfig.Buttons.Add(new() { Text = "Call me on my number ending with 123", Name = "otpDeviceContext", Value = "dDeEfE=, VOICE" });
 
-            mfa.MfaConfig.Title.Should().Be(mfaConfig.Title);
-            mfa.MfaConfig.Buttons.Count.Should().Be(mfaConfig.Buttons.Count);
+            mfa.MfaConfig.Title.ShouldBe(mfaConfig.Title);
+            mfa.MfaConfig.Buttons.Count.ShouldBe(mfaConfig.Buttons.Count);
             for (var i = 0; i < mfa.MfaConfig.Buttons.Count; i++)
-                mfa.MfaConfig.Buttons[i].Should().Be(mfaConfig.Buttons[i]);
+                mfa.MfaConfig.Buttons[i].ShouldBe(mfaConfig.Buttons[i]);
         }
     }
 }

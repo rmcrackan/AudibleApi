@@ -35,11 +35,11 @@
 			var client = settings.GetSharedHttpClient(locale.AmazonApiUri());
 
 			var httpClient = client as HttpClient;
-			httpClient.BaseAddress.AbsoluteUri.Should().Be("https://api.amazon.com/");
+			httpClient.BaseAddress.AbsoluteUri.ShouldBe("https://api.amazon.com/");
 
 			await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, new Uri("http://test.com")));
 
-			log.Should().Equal("send");
+			log.ShouldBe(["send"]);
 		}
 
 		[TestMethod]
@@ -51,7 +51,7 @@
 			var client1 = settings.GetSharedHttpClient(locale.AmazonApiUri());
 			var client2 = settings.GetSharedHttpClient(locale.AmazonApiUri());
 
-			client1.Should().Be(client2);
+			client1.ShouldBe(client2);
 		}
 	}
 }

@@ -12,7 +12,7 @@
                 + "<input name='use_image_captcha' />";
             var response = new HttpResponseMessage { Content = new StringContent(body) };
             var result = await ResultFactory.CaptchaPage.IsMatchAsync(response);
-            result.Should().BeTrue();
+            result.ShouldBeTrue();
         }
 
         [TestMethod]
@@ -23,7 +23,7 @@
                 + "<input name='password' />";
             var response = new HttpResponseMessage { Content = new StringContent(body) };
             var result = await ResultFactory.CaptchaPage.IsMatchAsync(response);
-            result.Should().BeFalse();
+            result.ShouldBeFalse();
         }
     }
 

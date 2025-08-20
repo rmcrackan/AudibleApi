@@ -31,7 +31,7 @@
 			=> ApiHttpClient
 				.Create(HttpMock.GetHandler())
 				.CookieJar
-				.Should().NotBeNull();
+				.ShouldNotBeNull();
 
 		[TestMethod]
 		public async Task throw_api_error()

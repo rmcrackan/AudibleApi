@@ -14,13 +14,13 @@
 			var uri = new Uri("http://a.com");
 			var page = new CaptchaPage(AuthenticateShared.GetAuthenticate(), "<input name='a' value='z'>", uri, "email", "pw");
 
-            page.CaptchaImage.Should().Be(uri);
+            page.CaptchaImage.ShouldBe(uri);
 
             var inputs = page.GetInputsReadOnly();
-            inputs.Count.Should().Be(2);
-            inputs["a"].Should().Be("z");
-            inputs["email"].Should().Be("email");
-			page.Password.Should().Be("pw");
+            inputs.Count.ShouldBe(2);
+            inputs["a"].ShouldBe("z");
+            inputs["email"].ShouldBe("email");
+			page.Password.ShouldBe("pw");
         }
     }
 
@@ -63,13 +63,13 @@
             var content = await responseToCaptureRequest.RequestMessage.Content.ReadAsStringAsync();
             var split = content.Split('&');
             var dic = split.Select(s => s.Split('=')).ToDictionary(key => key[0], value => value[1]);
-            dic.Count.Should().Be(7);
-            dic["email"].Should().Be("email");
-            dic["password"].Should().Be("pw");
-            dic["guess"].Should().Be("guess1");
-            dic["rememberMe"].Should().Be("true");
-            dic["use_image_captcha"].Should().Be("true");
-            dic["use_audio_captcha"].Should().Be("false");
+            dic.Count.ShouldBe(7);
+            dic["email"].ShouldBe("email");
+            dic["password"].ShouldBe("pw");
+            dic["guess"].ShouldBe("guess1");
+            dic["rememberMe"].ShouldBe("true");
+            dic["use_image_captcha"].ShouldBe("true");
+            dic["use_audio_captcha"].ShouldBe("false");
         }
     }
 }

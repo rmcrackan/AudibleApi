@@ -25,11 +25,11 @@
 		{
 			var justBeginning = "Atnr|";
 			new RefreshToken(justBeginning)
-				.Value.Should().Be(justBeginning);
+				.Value.ShouldBe(justBeginning);
 
 			var full = "Atnr|foo";
 			new RefreshToken(full)
-				.Value.Should().Be(full);
+				.Value.ShouldBe(full);
 		}
 	}
 }

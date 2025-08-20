@@ -24,9 +24,9 @@
                 + "<input name='y' value='z' />";
             var result = new ValidateLoginResult(AuthenticateShared.GetAuthenticate(), body);
             var inputs = result.GetInputsReadOnly();
-            inputs.Count.Should().Be(2);
-            inputs["a"].Should().Be("b");
-            inputs["y"].Should().Be("z");
+            inputs.Count.ShouldBe(2);
+            inputs["a"].ShouldBe("b");
+            inputs["y"].ShouldBe("z");
         }
     }
 }

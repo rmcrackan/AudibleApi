@@ -9,10 +9,10 @@ using AudibleApi;
 using AudibleApi.Authorization;
 using AudibleApi.Cryptography;
 using Dinah.Core;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Shouldly;
 using TestAudibleApiCommon;
 using static AuthorizationShared.Shared;
 

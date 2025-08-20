@@ -5,11 +5,11 @@
 	{
 		[TestMethod]
 		public void null_list()
-			=> ((List<Item>)null).GetAuthorsDistinct().Should().BeNull();
+			=> ((List<Item>)null).GetAuthorsDistinct().ShouldBeNull();
 
 		[TestMethod]
 		public void empty_list()
-			=> new List<Item>().GetAuthorsDistinct().Count().Should().Be(0);
+			=> new List<Item>().GetAuthorsDistinct().Count().ShouldBe(0);
 
 		[TestMethod]
 		public void authors_null()
@@ -21,7 +21,7 @@
 					Authors = null
 				}
 			};
-			items.GetAuthorsDistinct().Count().Should().Be(0);
+			items.GetAuthorsDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -34,7 +34,7 @@
 					Authors = new Person[] { }
 				}
 			};
-			items.GetAuthorsDistinct().Count().Should().Be(0);
+			items.GetAuthorsDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -51,8 +51,8 @@
 				}
 			};
 			var d = items.GetAuthorsDistinct().ToList();
-			d.Count.Should().Be(1);
-			d[0].Name.Should().Be("abc");
+			d.Count.ShouldBe(1);
+			d[0].Name.ShouldBe("abc");
 		}
 
 		[TestMethod]
@@ -71,10 +71,10 @@
 				}
 			};
 			var d = items.GetAuthorsDistinct().ToList();
-			d.Count.Should().Be(3);
-			d[0].Name.Should().Be("abc");
-			d[1].Name.Should().Be("xyz");
-			d[2].Name.Should().Be("foo");
+			d.Count.ShouldBe(3);
+			d[0].Name.ShouldBe("abc");
+			d[1].Name.ShouldBe("xyz");
+			d[2].Name.ShouldBe("foo");
 		}
 
 		[TestMethod]
@@ -99,10 +99,10 @@
 				},
 			};
 			var d = items.GetAuthorsDistinct().ToList();
-			d.Count.Should().Be(3);
-			d[0].Name.Should().Be("abc");
-			d[1].Name.Should().Be("xyz");
-			d[2].Name.Should().Be("foo");
+			d.Count.ShouldBe(3);
+			d[0].Name.ShouldBe("abc");
+			d[1].Name.ShouldBe("xyz");
+			d[2].Name.ShouldBe("foo");
 		}
 
 		[TestMethod]
@@ -127,9 +127,9 @@
 				},
 			};
 			var d = items.GetAuthorsDistinct().ToList();
-			d.Count.Should().Be(2);
-			d[0].Name.Should().Be("abc");
-			d[1].Name.Should().Be("xyz");
+			d.Count.ShouldBe(2);
+			d[0].Name.ShouldBe("abc");
+			d[1].Name.ShouldBe("xyz");
 		}
 
 		[TestMethod]
@@ -154,11 +154,11 @@
 				},
 			};
 			var d = items.GetAuthorsDistinct().ToList();
-			d.Count.Should().Be(2);
-			d[0].Name.Should().Be("abc");
-			d[0].Asin.Should().Be("asin1");
-			d[1].Name.Should().Be("xyz");
-			d[1].Asin.Should().Be("2");
+			d.Count.ShouldBe(2);
+			d[0].Name.ShouldBe("abc");
+			d[0].Asin.ShouldBe("asin1");
+			d[1].Name.ShouldBe("xyz");
+			d[1].Asin.ShouldBe("2");
 		}
 	}
 
@@ -167,11 +167,11 @@
 	{
 		[TestMethod]
 		public void null_list()
-			=> ((List<Item>)null).GetNarratorsDistinct().Should().BeNull();
+			=> ((List<Item>)null).GetNarratorsDistinct().ShouldBeNull();
 
 		[TestMethod]
 		public void empty_list()
-			=> new List<Item>().GetNarratorsDistinct().Count().Should().Be(0);
+			=> new List<Item>().GetNarratorsDistinct().Count().ShouldBe(0);
 
 		[TestMethod]
 		public void narrators_null()
@@ -183,7 +183,7 @@
 					Narrators = null
 				}
 			};
-			items.GetNarratorsDistinct().Count().Should().Be(0);
+			items.GetNarratorsDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -196,7 +196,7 @@
 					Narrators = new Person[] { }
 				}
 			};
-			items.GetNarratorsDistinct().Count().Should().Be(0);
+			items.GetNarratorsDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -213,8 +213,8 @@
 				}
 			};
 			var d = items.GetNarratorsDistinct().ToList();
-			d.Count.Should().Be(1);
-			d[0].Name.Should().Be("abc");
+			d.Count.ShouldBe(1);
+			d[0].Name.ShouldBe("abc");
 		}
 
 		[TestMethod]
@@ -233,10 +233,10 @@
 				}
 			};
 			var d = items.GetNarratorsDistinct().ToList();
-			d.Count.Should().Be(3);
-			d[0].Name.Should().Be("abc");
-			d[1].Name.Should().Be("xyz");
-			d[2].Name.Should().Be("foo");
+			d.Count.ShouldBe(3);
+			d[0].Name.ShouldBe("abc");
+			d[1].Name.ShouldBe("xyz");
+			d[2].Name.ShouldBe("foo");
 		}
 
 		[TestMethod]
@@ -261,10 +261,10 @@
 				},
 			};
 			var d = items.GetNarratorsDistinct().ToList();
-			d.Count.Should().Be(3);
-			d[0].Name.Should().Be("abc");
-			d[1].Name.Should().Be("xyz");
-			d[2].Name.Should().Be("foo");
+			d.Count.ShouldBe(3);
+			d[0].Name.ShouldBe("abc");
+			d[1].Name.ShouldBe("xyz");
+			d[2].Name.ShouldBe("foo");
 		}
 
 		[TestMethod]
@@ -289,9 +289,9 @@
 				},
 			};
 			var d = items.GetNarratorsDistinct().ToList();
-			d.Count.Should().Be(2);
-			d[0].Name.Should().Be("abc");
-			d[1].Name.Should().Be("xyz");
+			d.Count.ShouldBe(2);
+			d[0].Name.ShouldBe("abc");
+			d[1].Name.ShouldBe("xyz");
 		}
 
 		[TestMethod]
@@ -316,11 +316,11 @@
 				},
 			};
 			var d = items.GetNarratorsDistinct().ToList();
-			d.Count.Should().Be(2);
-			d[0].Name.Should().Be("abc");
-			d[0].Asin.Should().Be("asin1");
-			d[1].Name.Should().Be("xyz");
-			d[1].Asin.Should().Be("2");
+			d.Count.ShouldBe(2);
+			d[0].Name.ShouldBe("abc");
+			d[0].Asin.ShouldBe("asin1");
+			d[1].Name.ShouldBe("xyz");
+			d[1].Asin.ShouldBe("2");
 		}
 	}
 
@@ -329,11 +329,11 @@
 	{
 		[TestMethod]
 		public void null_list()
-			=> ((List<Item>)null).GetNarratorNamesDistinct().Should().BeNull();
+			=> ((List<Item>)null).GetNarratorNamesDistinct().ShouldBeNull();
 
 		[TestMethod]
 		public void empty_list()
-			=> new List<Item>().GetNarratorNamesDistinct().Count().Should().Be(0);
+			=> new List<Item>().GetNarratorNamesDistinct().Count().ShouldBe(0);
 
 		[TestMethod]
 		public void narrators_null()
@@ -345,7 +345,7 @@
 					Narrators = null
 				}
 			};
-			items.GetNarratorNamesDistinct().Count().Should().Be(0);
+			items.GetNarratorNamesDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -358,7 +358,7 @@
 					Narrators = new Person[] { }
 				}
 			};
-			items.GetNarratorNamesDistinct().Count().Should().Be(0);
+			items.GetNarratorNamesDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -375,8 +375,8 @@
 				}
 			};
 			var d = items.GetNarratorNamesDistinct().ToList();
-			d.Count.Should().Be(1);
-			d[0].Should().Be("abc");
+			d.Count.ShouldBe(1);
+			d[0].ShouldBe("abc");
 		}
 
 		[TestMethod]
@@ -395,10 +395,10 @@
 				}
 			};
 			var d = items.GetNarratorNamesDistinct().ToList();
-			d.Count.Should().Be(3);
-			d[0].Should().Be("abc");
-			d[1].Should().Be("xyz");
-			d[2].Should().Be("foo");
+			d.Count.ShouldBe(3);
+			d[0].ShouldBe("abc");
+			d[1].ShouldBe("xyz");
+			d[2].ShouldBe("foo");
 		}
 
 		[TestMethod]
@@ -423,10 +423,10 @@
 				},
 			};
 			var d = items.GetNarratorNamesDistinct().ToList();
-			d.Count.Should().Be(3);
-			d[0].Should().Be("abc");
-			d[1].Should().Be("xyz");
-			d[2].Should().Be("foo");
+			d.Count.ShouldBe(3);
+			d[0].ShouldBe("abc");
+			d[1].ShouldBe("xyz");
+			d[2].ShouldBe("foo");
 		}
 
 		[TestMethod]
@@ -451,9 +451,9 @@
 				},
 			};
 			var d = items.GetNarratorNamesDistinct().ToList();
-			d.Count.Should().Be(2);
-			d[0].Should().Be("abc");
-			d[1].Should().Be("xyz");
+			d.Count.ShouldBe(2);
+			d[0].ShouldBe("abc");
+			d[1].ShouldBe("xyz");
 		}
 
 		[TestMethod]
@@ -478,9 +478,9 @@
 				},
 			};
 			var d = items.GetNarratorNamesDistinct().ToList();
-			d.Count.Should().Be(2);
-			d[0].Should().Be("abc");
-			d[1].Should().Be("xyz");
+			d.Count.ShouldBe(2);
+			d[0].ShouldBe("abc");
+			d[1].ShouldBe("xyz");
 		}
 	}
 
@@ -489,11 +489,11 @@
 	{
 		[TestMethod]
 		public void null_list()
-			=> ((List<Item>)null).GetPublishersDistinct().Should().BeNull();
+			=> ((List<Item>)null).GetPublishersDistinct().ShouldBeNull();
 
 		[TestMethod]
 		public void empty_list()
-			=> new List<Item>().GetPublishersDistinct().Count().Should().Be(0);
+			=> new List<Item>().GetPublishersDistinct().Count().ShouldBe(0);
 
 		[TestMethod]
 		public void publishers_null()
@@ -505,7 +505,7 @@
 					PublisherName = null
 				}
 			};
-			items.GetPublishersDistinct().Count().Should().Be(0);
+			items.GetPublishersDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -518,7 +518,7 @@
 					PublisherName = ""
 				}
 			};
-			items.GetPublishersDistinct().Count().Should().Be(0);
+			items.GetPublishersDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -532,8 +532,8 @@
 				}
 			};
 			var d = items.GetPublishersDistinct().ToList();
-			d.Count.Should().Be(1);
-			d[0].Should().Be("abc");
+			d.Count.ShouldBe(1);
+			d[0].ShouldBe("abc");
 		}
 
 		[TestMethod]
@@ -546,10 +546,10 @@
 				new Item { PublisherName = "foo" }
 			};
 			var d = items.GetPublishersDistinct().ToList();
-			d.Count.Should().Be(3);
-			d[0].Should().Be("abc");
-			d[1].Should().Be("xyz");
-			d[2].Should().Be("foo");
+			d.Count.ShouldBe(3);
+			d[0].ShouldBe("abc");
+			d[1].ShouldBe("xyz");
+			d[2].ShouldBe("foo");
 		}
 
 		[TestMethod]
@@ -562,9 +562,9 @@
 				new Item { PublisherName = "xyz" }
 			};
 			var d = items.GetPublishersDistinct().ToList();
-			d.Count.Should().Be(2);
-			d[0].Should().Be("abc");
-			d[1].Should().Be("xyz");
+			d.Count.ShouldBe(2);
+			d[0].ShouldBe("abc");
+			d[1].ShouldBe("xyz");
 		}
 	}
 
@@ -573,11 +573,11 @@
 	{
 		[TestMethod]
 		public void null_list()
-			=> ((List<Item>)null).GetSeriesDistinct().Should().BeNull();
+			=> ((List<Item>)null).GetSeriesDistinct().ShouldBeNull();
 
 		[TestMethod]
 		public void empty_list()
-			=> new List<Item>().GetSeriesDistinct().Count().Should().Be(0);
+			=> new List<Item>().GetSeriesDistinct().Count().ShouldBe(0);
 
 		[TestMethod]
 		public void series_null()
@@ -589,7 +589,7 @@
 					Series = null
 				}
 			};
-			items.GetSeriesDistinct().Count().Should().Be(0);
+			items.GetSeriesDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -602,7 +602,7 @@
 					Series = new Series[]{ }
 				}
 			};
-			items.GetSeriesDistinct().Count().Should().Be(0);
+			items.GetSeriesDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -619,8 +619,8 @@
 				}
 			};
 			var d = items.GetSeriesDistinct().ToList();
-			d.Count.Should().Be(1);
-			d[0].Title.Should().Be("abc");
+			d.Count.ShouldBe(1);
+			d[0].Title.ShouldBe("abc");
 		}
 
 		[TestMethod]
@@ -639,10 +639,10 @@
 				}
 			};
 			var d = items.GetSeriesDistinct().ToList();
-			d.Count.Should().Be(3);
-			d[0].Title.Should().Be("abc");
-			d[1].Title.Should().Be("xyz");
-			d[2].Title.Should().Be("foo");
+			d.Count.ShouldBe(3);
+			d[0].Title.ShouldBe("abc");
+			d[1].Title.ShouldBe("xyz");
+			d[2].Title.ShouldBe("foo");
 		}
 
 		[TestMethod]
@@ -667,10 +667,10 @@
 				},
 			};
 			var d = items.GetSeriesDistinct().ToList();
-			d.Count.Should().Be(3);
-			d[0].Title.Should().Be("abc");
-			d[1].Title.Should().Be("xyz");
-			d[2].Title.Should().Be("foo");
+			d.Count.ShouldBe(3);
+			d[0].Title.ShouldBe("abc");
+			d[1].Title.ShouldBe("xyz");
+			d[2].Title.ShouldBe("foo");
 		}
 
 		[TestMethod]
@@ -695,9 +695,9 @@
 				},
 			};
 			var d = items.GetSeriesDistinct().ToList();
-			d.Count.Should().Be(2);
-			d[0].Title.Should().Be("abc");
-			d[1].Title.Should().Be("xyz");
+			d.Count.ShouldBe(2);
+			d[0].Title.ShouldBe("abc");
+			d[1].Title.ShouldBe("xyz");
 		}
 
 		[TestMethod]
@@ -722,11 +722,11 @@
 				},
 			};
 			var d = items.GetSeriesDistinct().ToList();
-			d.Count.Should().Be(2);
-			d[0].Title.Should().Be("abc");
-			d[0].Asin.Should().Be("asin1");
-			d[1].Title.Should().Be("xyz");
-			d[1].Asin.Should().Be("2");
+			d.Count.ShouldBe(2);
+			d[0].Title.ShouldBe("abc");
+			d[0].Asin.ShouldBe("asin1");
+			d[1].Title.ShouldBe("xyz");
+			d[1].Asin.ShouldBe("2");
 		}
 	}
 
@@ -735,11 +735,11 @@
 	{
 		[TestMethod]
 		public void null_list()
-			=> ((List<Item>)null).GetCategoryPairsDistinct().Should().BeNull();
+			=> ((List<Item>)null).GetCategoryPairsDistinct().ShouldBeNull();
 
 		[TestMethod]
 		public void empty_list()
-			=> new List<Item>().GetCategoryPairsDistinct().Count().Should().Be(0);
+			=> new List<Item>().GetCategoryPairsDistinct().Count().ShouldBe(0);
 
 		[TestMethod]
 		public void CategoryLadder_set_null()
@@ -751,7 +751,7 @@
 					CategoryLadders = null
 				}
 			};
-			items.GetCategoryPairsDistinct().Count().Should().Be(0);
+			items.GetCategoryPairsDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -764,7 +764,7 @@
 					CategoryLadders = new CategoryLadder[0]
 				}
 			};
-			items.GetCategoryPairsDistinct().Count().Should().Be(0);
+			items.GetCategoryPairsDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -780,7 +780,7 @@
 					}
 				}
 			};
-			items.GetCategoryPairsDistinct().Count().Should().Be(0);
+			items.GetCategoryPairsDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -796,7 +796,7 @@
 					}
 				}
 			};
-			items.GetCategoryPairsDistinct().Count().Should().Be(0);
+			items.GetCategoryPairsDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -815,7 +815,7 @@
 					}
 				}
 			};
-			items.GetCategoryPairsDistinct().Count().Should().Be(0);
+			items.GetCategoryPairsDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -834,7 +834,7 @@
 					}
 				}
 			};
-			items.GetCategoryPairsDistinct().Count().Should().Be(0);
+			items.GetCategoryPairsDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -856,7 +856,7 @@
 					}
 				}
 			};
-			items.GetCategoryPairsDistinct().Count().Should().Be(0);
+			items.GetCategoryPairsDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -878,7 +878,7 @@
 					}
 				}
 			};
-			items.GetCategoryPairsDistinct().Count().Should().Be(0);
+			items.GetCategoryPairsDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -901,12 +901,12 @@
 				}
 			};
 			var ladderPairs = items.GetCategoryPairsDistinct().ToList();
-			ladderPairs.Count.Should().Be(1);
+			ladderPairs.Count.ShouldBe(1);
 			var ladderPair = ladderPairs[0];
-			ladderPair.Length.Should().Be(1);
+			ladderPair.Length.ShouldBe(1);
 			var ladder = ladderPair[0];
-			ladder.Name.Should().Be("name1");
-			ladder.Id.Should().Be("id1");
+			ladder.Name.ShouldBe("name1");
+			ladder.Id.ShouldBe("id1");
 		}
 
 		[TestMethod]
@@ -936,12 +936,12 @@
 				}
 			};
 			var ladderPairs = items.GetCategoryPairsDistinct().ToList();
-			ladderPairs.Count.Should().Be(1);
+			ladderPairs.Count.ShouldBe(1);
 			var ladderPair = ladderPairs[0];
-			ladderPair.Length.Should().Be(1);
+			ladderPair.Length.ShouldBe(1);
 			var ladder = ladderPair[0];
-			ladder.Name.Should().Be("name1");
-			ladder.Id.Should().Be("id1");
+			ladder.Name.ShouldBe("name1");
+			ladder.Id.ShouldBe("id1");
 		}
 
 		[TestMethod]
@@ -965,15 +965,15 @@
 				}
 			};
 			var ladderPairs = items.GetCategoryPairsDistinct().ToList();
-			ladderPairs.Count.Should().Be(1);
+			ladderPairs.Count.ShouldBe(1);
 			var ladderPair = ladderPairs[0];
-			ladderPair.Length.Should().Be(2);
+			ladderPair.Length.ShouldBe(2);
 			var ladder1 = ladderPair[0];
-			ladder1.Name.Should().Be("name1");
-			ladder1.Id.Should().Be("id1");
+			ladder1.Name.ShouldBe("name1");
+			ladder1.Id.ShouldBe("id1");
 			var ladder2 = ladderPair[1];
-			ladder2.Name.Should().Be("name2");
-			ladder2.Id.Should().Be("id2");
+			ladder2.Name.ShouldBe("name2");
+			ladder2.Id.ShouldBe("id2");
 		}
 
 		[TestMethod]
@@ -1011,25 +1011,25 @@
 				}
 			};
 			var ladderPairs = items.GetCategoryPairsDistinct().ToList();
-			ladderPairs.Count.Should().Be(2);
+			ladderPairs.Count.ShouldBe(2);
 
 			var ladderPair1 = ladderPairs[0];
-			ladderPair1.Length.Should().Be(2);
+			ladderPair1.Length.ShouldBe(2);
 			var ladder1 = ladderPair1[0];
-			ladder1.Name.Should().Be("name1");
-			ladder1.Id.Should().Be("id1");
+			ladder1.Name.ShouldBe("name1");
+			ladder1.Id.ShouldBe("id1");
 			var ladder2 = ladderPair1[1];
-			ladder2.Name.Should().Be("name2");
-			ladder2.Id.Should().Be("id2");
+			ladder2.Name.ShouldBe("name2");
+			ladder2.Id.ShouldBe("id2");
 
 			var ladderPair2 = ladderPairs[1];
-			ladderPair2.Length.Should().Be(2);
+			ladderPair2.Length.ShouldBe(2);
 			var ladder3 = ladderPair2[0];
-			ladder3.Name.Should().Be("name3");
-			ladder3.Id.Should().Be("id3");
+			ladder3.Name.ShouldBe("name3");
+			ladder3.Id.ShouldBe("id3");
 			var ladder4 = ladderPair2[1];
-			ladder4.Name.Should().Be("name4");
-			ladder4.Id.Should().Be("id4");
+			ladder4.Name.ShouldBe("name4");
+			ladder4.Id.ShouldBe("id4");
 		}
 
 		[TestMethod]
@@ -1066,22 +1066,22 @@
 				}
 			};
 			var ladderPairs = items.GetCategoryPairsDistinct().ToList();
-			ladderPairs.Count.Should().Be(2);
+			ladderPairs.Count.ShouldBe(2);
 
 			var ladderPair1 = ladderPairs[0];
-			ladderPair1.Length.Should().Be(2);
+			ladderPair1.Length.ShouldBe(2);
 			var ladder1 = ladderPair1[0];
-			ladder1.Name.Should().Be("name1");
-			ladder1.Id.Should().Be("id1");
+			ladder1.Name.ShouldBe("name1");
+			ladder1.Id.ShouldBe("id1");
 			var ladder2 = ladderPair1[1];
-			ladder2.Name.Should().Be("name2");
-			ladder2.Id.Should().Be("id2");
+			ladder2.Name.ShouldBe("name2");
+			ladder2.Id.ShouldBe("id2");
 
 			var ladderPair2 = ladderPairs[1];
-			ladderPair2.Length.Should().Be(1);
+			ladderPair2.Length.ShouldBe(1);
 			var ladder3 = ladderPair2[0];
-			ladder3.Name.Should().Be("name1");
-			ladder3.Id.Should().Be("id1");
+			ladder3.Name.ShouldBe("name1");
+			ladder3.Id.ShouldBe("id1");
 		}
 
 		[TestMethod]
@@ -1119,16 +1119,16 @@
 				}
 			};
 			var ladderPairs = items.GetCategoryPairsDistinct().ToList();
-			ladderPairs.Count.Should().Be(1);
+			ladderPairs.Count.ShouldBe(1);
 
 			var ladderPair1 = ladderPairs[0];
-			ladderPair1.Length.Should().Be(2);
+			ladderPair1.Length.ShouldBe(2);
 			var ladder1 = ladderPair1[0];
-			ladder1.Name.Should().Be("name1");
-			ladder1.Id.Should().Be("id1");
+			ladder1.Name.ShouldBe("name1");
+			ladder1.Id.ShouldBe("id1");
 			var ladder2 = ladderPair1[1];
-			ladder2.Name.Should().Be("name2");
-			ladder2.Id.Should().Be("id2");
+			ladder2.Name.ShouldBe("name2");
+			ladder2.Id.ShouldBe("id2");
 		}
 	}
 
@@ -1137,11 +1137,11 @@
 	{
 		[TestMethod]
 		public void null_list()
-			=> ((List<Item>)null).GetCategoriesDistinct().Should().BeNull();
+			=> ((List<Item>)null).GetCategoriesDistinct().ShouldBeNull();
 
 		[TestMethod]
 		public void empty_list()
-			=> new List<Item>().GetCategoriesDistinct().Count().Should().Be(0);
+			=> new List<Item>().GetCategoriesDistinct().Count().ShouldBe(0);
 
 		[TestMethod]
 		public void CategoryLadder_set_null()
@@ -1153,7 +1153,7 @@
 					CategoryLadders = null
 				}
 			};
-			items.GetCategoriesDistinct().Count().Should().Be(0);
+			items.GetCategoriesDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -1166,7 +1166,7 @@
 					CategoryLadders = new CategoryLadder[0]
 				}
 			};
-			items.GetCategoriesDistinct().Count().Should().Be(0);
+			items.GetCategoriesDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -1182,7 +1182,7 @@
 					}
 				}
 			};
-			items.GetCategoriesDistinct().Count().Should().Be(0);
+			items.GetCategoriesDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -1198,7 +1198,7 @@
 					}
 				}
 			};
-			items.GetCategoriesDistinct().Count().Should().Be(0);
+			items.GetCategoriesDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -1217,7 +1217,7 @@
 					}
 				}
 			};
-			items.GetCategoriesDistinct().Count().Should().Be(0);
+			items.GetCategoriesDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -1236,7 +1236,7 @@
 					}
 				}
 			};
-			items.GetCategoriesDistinct().Count().Should().Be(0);
+			items.GetCategoriesDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -1258,7 +1258,7 @@
 					}
 				}
 			};
-			items.GetCategoriesDistinct().Count().Should().Be(0);
+			items.GetCategoriesDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -1280,7 +1280,7 @@
 					}
 				}
 			};
-			items.GetCategoriesDistinct().Count().Should().Be(0);
+			items.GetCategoriesDistinct().Count().ShouldBe(0);
 		}
 
 		[TestMethod]
@@ -1310,10 +1310,10 @@
 				}
 			};
 			var ladders = items.GetCategoriesDistinct().ToList();
-			ladders.Count.Should().Be(1);
+			ladders.Count.ShouldBe(1);
 			var ladder = ladders[0];
-			ladder.Name.Should().Be("name1");
-			ladder.Id.Should().Be("id1");
+			ladder.Name.ShouldBe("name1");
+			ladder.Id.ShouldBe("id1");
 		}
 
 		[TestMethod]
@@ -1336,10 +1336,10 @@
 				}
 			};
 			var ladders = items.GetCategoriesDistinct().ToList();
-			ladders.Count.Should().Be(1);
+			ladders.Count.ShouldBe(1);
 			var ladder = ladders[0];
-			ladder.Name.Should().Be("name1");
-			ladder.Id.Should().Be("id1");
+			ladder.Name.ShouldBe("name1");
+			ladder.Id.ShouldBe("id1");
 		}
 
 		[TestMethod]
@@ -1363,13 +1363,13 @@
 				}
 			};
 			var ladders = items.GetCategoriesDistinct().ToList();
-			ladders.Count.Should().Be(2);
+			ladders.Count.ShouldBe(2);
 			var ladder1 = ladders[0];
-			ladder1.Name.Should().Be("name1");
-			ladder1.Id.Should().Be("id1");
+			ladder1.Name.ShouldBe("name1");
+			ladder1.Id.ShouldBe("id1");
 			var ladder2 = ladders[1];
-			ladder2.Name.Should().Be("name2");
-			ladder2.Id.Should().Be("id2");
+			ladder2.Name.ShouldBe("name2");
+			ladder2.Id.ShouldBe("id2");
 		}
 
 		[TestMethod]
@@ -1407,20 +1407,20 @@
 				}
 			};
 			var ladderPairs = items.GetCategoriesDistinct().ToList();
-			ladderPairs.Count.Should().Be(4);
+			ladderPairs.Count.ShouldBe(4);
 
 			var ladder1 = ladderPairs[0];
-			ladder1.Name.Should().Be("name1");
-			ladder1.Id.Should().Be("id1");
+			ladder1.Name.ShouldBe("name1");
+			ladder1.Id.ShouldBe("id1");
 			var ladder2 = ladderPairs[1];
-			ladder2.Name.Should().Be("name2");
-			ladder2.Id.Should().Be("id2");
+			ladder2.Name.ShouldBe("name2");
+			ladder2.Id.ShouldBe("id2");
 			var ladder3 = ladderPairs[2];
-			ladder3.Name.Should().Be("name3");
-			ladder3.Id.Should().Be("id3");
+			ladder3.Name.ShouldBe("name3");
+			ladder3.Id.ShouldBe("id3");
 			var ladder4 = ladderPairs[3];
-			ladder4.Name.Should().Be("name4");
-			ladder4.Id.Should().Be("id4");
+			ladder4.Name.ShouldBe("name4");
+			ladder4.Id.ShouldBe("id4");
 		}
 
 		[TestMethod]
@@ -1457,14 +1457,14 @@
 				}
 			};
 			var ladders = items.GetCategoriesDistinct().ToList();
-			ladders.Count.Should().Be(2);
+			ladders.Count.ShouldBe(2);
 
 			var ladder1 = ladders[0];
-			ladder1.Name.Should().Be("name1");
-			ladder1.Id.Should().Be("id1");
+			ladder1.Name.ShouldBe("name1");
+			ladder1.Id.ShouldBe("id1");
 			var ladder2 = ladders[1];
-			ladder2.Name.Should().Be("name2");
-			ladder2.Id.Should().Be("id2");
+			ladder2.Name.ShouldBe("name2");
+			ladder2.Id.ShouldBe("id2");
 		}
 
 		[TestMethod]
@@ -1502,14 +1502,14 @@
 				}
 			};
 			var ladders = items.GetCategoriesDistinct().ToList();
-			ladders.Count.Should().Be(2);
+			ladders.Count.ShouldBe(2);
 
 			var ladder1 = ladders[0];
-			ladder1.Name.Should().Be("name1");
-			ladder1.Id.Should().Be("id1");
+			ladder1.Name.ShouldBe("name1");
+			ladder1.Id.ShouldBe("id1");
 			var ladder2 = ladders[1];
-			ladder2.Name.Should().Be("name2");
-			ladder2.Id.Should().Be("id2");
+			ladder2.Name.ShouldBe("name2");
+			ladder2.Id.ShouldBe("id2");
 		}
 	}
 }

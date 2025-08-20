@@ -20,7 +20,7 @@
             var client = ApiHttpClientMock.GetClient(response);
             var result = await LoginResultRunner.GetResultsPageAsync(AuthenticateShared.GetAuthenticate(client), new Dictionary<string, string>(), HttpMethod.Get, "");
             var page = result as CredentialsPage;
-            page.Should().NotBeNull();
+            page.ShouldNotBeNull();
         }
 
         [TestMethod]
@@ -30,7 +30,7 @@
             var client = ApiHttpClientMock.GetClient(response);
             var result = await LoginResultRunner.GetResultsPageAsync(AuthenticateShared.GetAuthenticate(client), new Dictionary<string, string>(), HttpMethod.Get, "");
             var page = result as TwoFactorAuthenticationPage;
-            page.Should().NotBeNull();
+            page.ShouldNotBeNull();
         }
     }
 }

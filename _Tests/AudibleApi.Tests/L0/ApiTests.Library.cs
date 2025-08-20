@@ -17,13 +17,13 @@
 			var libraryOptions = new LibraryOptions();
 
 			libraryOptions.NumberOfResultPerPage = null;
-			libraryOptions.NumberOfResultPerPage.Should().BeNull();
+			libraryOptions.NumberOfResultPerPage.ShouldBeNull();
 
 			libraryOptions.NumberOfResultPerPage = 1;
-			libraryOptions.NumberOfResultPerPage.Should().Be(1);
+			libraryOptions.NumberOfResultPerPage.ShouldBe(1);
 
 			libraryOptions.NumberOfResultPerPage = 1000;
-			libraryOptions.NumberOfResultPerPage.Should().Be(1000);
+			libraryOptions.NumberOfResultPerPage.ShouldBe(1000);
 		}
 	}
 
@@ -45,13 +45,13 @@
 			var libraryOptions = new LibraryOptions();
 
 			libraryOptions.PageNumber = null;
-			libraryOptions.PageNumber.Should().BeNull();
+			libraryOptions.PageNumber.ShouldBeNull();
 
 			libraryOptions.PageNumber = 1;
-			libraryOptions.PageNumber.Should().Be(1);
+			libraryOptions.PageNumber.ShouldBe(1);
 
 			libraryOptions.PageNumber = 40;
-			libraryOptions.PageNumber.Should().Be(40);
+			libraryOptions.PageNumber.ShouldBe(40);
 		}
 	}
 
@@ -64,17 +64,17 @@
 			var libraryOptions = new LibraryOptions();
 
 			libraryOptions.PurchasedAfter = null;
-			libraryOptions.PurchasedAfter.Should().BeNull();
+			libraryOptions.PurchasedAfter.ShouldBeNull();
 
 			var now = DateTime.Now;
 			libraryOptions.PurchasedAfter = now;
-			libraryOptions.PurchasedAfter.Should().Be(now);
+			libraryOptions.PurchasedAfter.ShouldBe(now);
 
 			libraryOptions.PurchasedAfter = DateTime.MinValue;
-			libraryOptions.PurchasedAfter.Should().Be(DateTime.MinValue);
+			libraryOptions.PurchasedAfter.ShouldBe(DateTime.MinValue);
 
 			libraryOptions.PurchasedAfter = DateTime.MaxValue;
-			libraryOptions.PurchasedAfter.Should().Be(DateTime.MaxValue);
+			libraryOptions.PurchasedAfter.ShouldBe(DateTime.MaxValue);
 		}
 	}
 
@@ -83,7 +83,7 @@
 	{
 		[TestMethod]
 		public void default_returns_empty()
-			=> new LibraryOptions().ToQueryString().Should().BeEmpty();
+			=> new LibraryOptions().ToQueryString().ShouldBeEmpty();
 
 		[TestMethod]
 		public void only_NumberOfResultPerPage()
@@ -93,7 +93,7 @@
 				NumberOfResultPerPage = 20
 			};
 			var expected = "num_results=20";
-			libraryOptions.ToQueryString().Should().Be(expected);
+			libraryOptions.ToQueryString().ShouldBe(expected);
 		}
 
 		[TestMethod]
@@ -104,7 +104,7 @@
 				PageNumber = 5
 			};
 			var expected = "page=5";
-			libraryOptions.ToQueryString().Should().Be(expected);
+			libraryOptions.ToQueryString().ShouldBe(expected);
 		}
 
 		[TestMethod]
@@ -115,7 +115,7 @@
 				PurchasedAfter = new DateTime(1970, 1, 1)
 			};
 			var expected = "purchased_after=1970-01-01T00:00:00Z";
-			libraryOptions.ToQueryString().Should().Be(expected);
+			libraryOptions.ToQueryString().ShouldBe(expected);
 		}
 
 		[TestMethod]
@@ -126,7 +126,7 @@
 				ResponseGroups = LibraryOptions.ResponseGroupOptions.Sku | LibraryOptions.ResponseGroupOptions.Reviews
 			};
 			var expected = "response_groups=reviews,sku";
-			libraryOptions.ToQueryString().Should().Be(expected);
+			libraryOptions.ToQueryString().ShouldBe(expected);
 		}
 
 		[TestMethod]
@@ -137,7 +137,7 @@
 				SortBy = LibraryOptions.SortByOptions.TitleDesc
 			};
 			var expected = "sort_by=-Title";
-			libraryOptions.ToQueryString().Should().Be(expected);
+			libraryOptions.ToQueryString().ShouldBe(expected);
 		}
 
 		[TestMethod]
@@ -150,7 +150,7 @@
 			};
 
 			var expected = "num_results=20&page=5";
-			libraryOptions.ToQueryString().Should().Be(expected);
+			libraryOptions.ToQueryString().ShouldBe(expected);
 		}
 
 		[TestMethod]
@@ -171,7 +171,7 @@
 				+ "&purchased_after=1970-01-01T00:00:00Z"
 				+ "&response_groups=reviews,sku"
 				+ "&sort_by=-Title";
-			libraryOptions.ToQueryString().Should().Be(expected);
+			libraryOptions.ToQueryString().ShouldBe(expected);
 		}
 	}
 }
@@ -192,14 +192,14 @@ namespace LibraryOptions_ResponseGroupOptions_Tests
 		public void None_returns_empty()
 			=> LibraryOptions.ResponseGroupOptions.None
 			.ToResponseGroupsQueryString()
-			.Should().BeEmpty();
+			.ShouldBeEmpty();
 
 		[TestMethod]
 		public void parse_1()
 		{
 			var responseGroups = LibraryOptions.ResponseGroupOptions.Sku;
 			var expected = "response_groups=sku";
-			responseGroups.ToResponseGroupsQueryString().Should().Be(expected);
+			responseGroups.ToResponseGroupsQueryString().ShouldBe(expected);
 		}
 
 		[TestMethod]
@@ -207,7 +207,7 @@ namespace LibraryOptions_ResponseGroupOptions_Tests
 		{
 			var responseGroups = LibraryOptions.ResponseGroupOptions.Sku | LibraryOptions.ResponseGroupOptions.Reviews;
 			var expected = "response_groups=reviews,sku";
-			responseGroups.ToResponseGroupsQueryString().Should().Be(expected);
+			responseGroups.ToResponseGroupsQueryString().ShouldBe(expected);
 		}
 
 		[TestMethod]
@@ -215,7 +215,7 @@ namespace LibraryOptions_ResponseGroupOptions_Tests
 		{
 			var responseGroups = LibraryOptions.ResponseGroupOptions.ALL_OPTIONS;
 			var expected = "response_groups=badge_types,category_ladders,claim_code_url,contributors,is_downloaded,is_returnable,media,origin_asin,pdf_url,percent_complete,price,product_attrs,product_desc,product_extended_attrs,product_plan_details,product_plans,provided_review,rating,relationships,review_attrs,reviews,sample,series,sku,categories,customer_rights,in_wishlist,is_archived,is_finished,is_playable,is_removable,is_visible,listening_status,order_details,origin,periodicals,product_details,ws4v";
-			responseGroups.ToResponseGroupsQueryString().Should().Be(expected);
+			responseGroups.ToResponseGroupsQueryString().ShouldBe(expected);
 		}
     }
 }
@@ -236,14 +236,14 @@ namespace LibraryOptions_ImageSizeOptions_Tests
 		public void None_returns_empty()
 			=> LibraryOptions.ImageSizeOptions.None
 			.ToImageSizesQueryString()
-			.Should().BeEmpty();
+			.ShouldBeEmpty();
 
 		[TestMethod]
 		public void parse_1()
 		{
 			var imageSize = LibraryOptions.ImageSizeOptions._1215;
 			var expected = "image_sizes=1215";
-			imageSize.ToImageSizesQueryString().Should().Be(expected);
+			imageSize.ToImageSizesQueryString().ShouldBe(expected);
 		}
 
 		[TestMethod]
@@ -251,7 +251,7 @@ namespace LibraryOptions_ImageSizeOptions_Tests
 		{
 			var imageSize = LibraryOptions.ImageSizeOptions._1215 | LibraryOptions.ImageSizeOptions._500;
 			var expected = "image_sizes=500,1215";
-			imageSize.ToImageSizesQueryString().Should().Be(expected);
+			imageSize.ToImageSizesQueryString().ShouldBe(expected);
 		}
 
 		[TestMethod]
@@ -259,7 +259,7 @@ namespace LibraryOptions_ImageSizeOptions_Tests
 		{
 			var imageSizes = LibraryOptions.ImageSizeOptions.ALL_OPTIONS;
 			var expected = "image_sizes=252,315,360,408,500,558,570,882,900,1215";
-			imageSizes.ToImageSizesQueryString().Should().Be(expected);
+			imageSizes.ToImageSizesQueryString().ShouldBe(expected);
 		}
 	}
 }
@@ -282,12 +282,12 @@ namespace LibraryOptions_SortByOptions_Tests
 		public void None_returns_empty()
 			=> LibraryOptions.SortByOptions.None
 			.ToSortByQueryString()
-			.Should().BeEmpty();
+			.ShouldBeEmpty();
 
 		[TestMethod]
 		public void parse_valid()
 			=> LibraryOptions.SortByOptions.TitleDesc
 			.ToSortByQueryString()
-			.Should().Be("sort_by=-Title");
+			.ShouldBe("sort_by=-Title");
 	}
 }

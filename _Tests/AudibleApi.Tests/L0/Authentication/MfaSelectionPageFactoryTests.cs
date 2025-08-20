@@ -12,7 +12,7 @@
                 Content = new StringContent(match),
                 StatusCode = HttpStatusCode.OK
             };
-            (await ResultFactory.MfaSelectionPage.IsMatchAsync(response)).Should().BeTrue();
+            (await ResultFactory.MfaSelectionPage.IsMatchAsync(response)).ShouldBeTrue();
         }
 
         [TestMethod]
@@ -24,7 +24,7 @@
                 Content = new StringContent(noMatch),
                 StatusCode = HttpStatusCode.OK
             };
-            (await ResultFactory.MfaSelectionPage.IsMatchAsync(response)).Should().BeFalse();
+            (await ResultFactory.MfaSelectionPage.IsMatchAsync(response)).ShouldBeFalse();
         }
     }
 }

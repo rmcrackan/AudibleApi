@@ -33,11 +33,11 @@ namespace Authoriz.PrivateKeyTests
 		{
 			var justBeginningAndEnd = "-----BEGIN RSA PRIVATE KEY-----END RSA PRIVATE KEY-----";
 			Assert.ThrowsException<FormatException>(() => new PrivateKey(justBeginningAndEnd)
-				.Value.Should().Be(justBeginningAndEnd));
+				.Value.ShouldBe(justBeginningAndEnd));
 
 			var withWhitespace = "\r\n  -----BEGIN RSA PRIVATE KEY-----END RSA PRIVATE KEY-----\r\n  ";
 			Assert.ThrowsException<FormatException>(() => new PrivateKey(withWhitespace)
-				.Value.Should().Be(withWhitespace));
+				.Value.ShouldBe(withWhitespace));
 
 			var full = @"
 -----BEGIN RSA PRIVATE KEY-----
@@ -69,7 +69,7 @@ BxlXqPnQ4mG66oqSFQgDEmFdMhRb2of6xL1gYYL62C80G2T7QtmPfSab
 -----END RSA PRIVATE KEY-----
 ";
 			new PrivateKey(full)
-				.Value.Should().Be(full);
+				.Value.ShouldBe(full);
 		}
 	}
 }

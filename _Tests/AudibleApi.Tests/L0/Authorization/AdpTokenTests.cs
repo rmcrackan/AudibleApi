@@ -45,11 +45,11 @@
 		{
 			var min = "{enc:}{key:}{iv:}{name:QURQVG9rZW5FbmNyeXB0aW9uS2V5}{serial:}";
 			new AdpToken(min)
-				.Value.Should().Be(min);
+				.Value.ShouldBe(min);
 
 			var better = "{enc:abcdefg}{key:1234}{iv:56789}{name:QURQVG9rZW5FbmNyeXB0aW9uS2V5}{serial:Mg==}";
 			new AdpToken(better)
-				.Value.Should().Be(better);
+				.Value.ShouldBe(better);
 		}
 
 		[TestMethod]
@@ -69,17 +69,17 @@
 
 			var dic = AdpToken.adp_parser.Parse(str);
 
-			dic.Count.Should().Be(5);
-			dic.ContainsKey("enc").Should().BeTrue();
-			dic.ContainsKey("key").Should().BeTrue();
-			dic.ContainsKey("iv").Should().BeTrue();
-			dic.ContainsKey("name").Should().BeTrue();
-			dic.ContainsKey("serial").Should().BeTrue();
-			dic["enc"].Should().Be(enc);
-			dic["key"].Should().Be(key);
-			dic["iv"].Should().Be(iv);
-			dic["name"].Should().Be(name);
-			dic["serial"].Should().Be(serial);
+			dic.Count.ShouldBe(5);
+			dic.ContainsKey("enc").ShouldBeTrue();
+			dic.ContainsKey("key").ShouldBeTrue();
+			dic.ContainsKey("iv").ShouldBeTrue();
+			dic.ContainsKey("name").ShouldBeTrue();
+			dic.ContainsKey("serial").ShouldBeTrue();
+			dic["enc"].ShouldBe(enc);
+			dic["key"].ShouldBe(key);
+			dic["iv"].ShouldBe(iv);
+			dic["name"].ShouldBe(name);
+			dic["serial"].ShouldBe(serial);
 		}
 	}
 }

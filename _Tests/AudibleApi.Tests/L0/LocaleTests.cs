@@ -55,8 +55,8 @@
 		{
 			// most important part is to get past this line w/o exceptions
 			var l = Locale.Empty;
-			l.Name.Should().Be("[empty]");
-			l.CountryCode.Should().BeNull();
+			l.Name.ShouldBe("[empty]");
+			l.CountryCode.ShouldBeNull();
 		}
 	}
 }

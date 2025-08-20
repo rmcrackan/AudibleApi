@@ -31,7 +31,7 @@
             ExceptionExtensions
                 .ToJson(ex, "my message")
                 .ToString(Formatting.Indented)
-                .Should().Be(expected);
+                .ShouldBe(expected);
         }
     }
 }

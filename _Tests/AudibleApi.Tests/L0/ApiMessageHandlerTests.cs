@@ -17,8 +17,8 @@
             var client = new HttpClient(apiMessageHandler);
 
             var response = await client.SendAsync(request);
-            response.StatusCode.Should().Be(_200);
-            (await response.Content.ReadAsStringAsync()).Should().Be(message);
+            response.StatusCode.ShouldBe(_200);
+            (await response.Content.ReadAsStringAsync()).ShouldBe(message);
         }
 
         [TestMethod]
@@ -77,7 +77,7 @@
 
 			handler.ProcessResponse(response, _);
 
-			content.serializedWasCalled.Should().BeFalse();
+			content.serializedWasCalled.ShouldBeFalse();
 		}
 
 		// blacklist
@@ -92,7 +92,7 @@
 
 			handler.ProcessResponse(response, _);
 
-			content.serializedWasCalled.Should().BeFalse();
+			content.serializedWasCalled.ShouldBeFalse();
 		}
 
 		// blacklist
@@ -107,7 +107,7 @@
 
 			handler.ProcessResponse(response, _);
 
-			content.serializedWasCalled.Should().BeFalse();
+			content.serializedWasCalled.ShouldBeFalse();
 		}
 
 		// blacklist
@@ -122,7 +122,7 @@
 
 			handler.ProcessResponse(response, _);
 
-			content.serializedWasCalled.Should().BeFalse();
+			content.serializedWasCalled.ShouldBeFalse();
 		}
 
 		// whitelist

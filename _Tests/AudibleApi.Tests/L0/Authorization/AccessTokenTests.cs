@@ -25,11 +25,11 @@
 		{
 			var justBeginning = "Atna|";
 			new AccessToken(justBeginning, DateTime.MinValue)
-				.TokenValue.Should().Be(justBeginning);
+				.TokenValue.ShouldBe(justBeginning);
 
 			var full = "Atna|foo";
 			new AccessToken(full, DateTime.MinValue)
-				.TokenValue.Should().Be(full);
+				.TokenValue.ShouldBe(full);
 		}
 	}
 
@@ -42,10 +42,10 @@
 			// most important part is to get past this line w/o exceptions
 			var e = AccessToken.Empty;
 
-			e.TokenValue.Length.Should().BeGreaterThan(2);
-			e.TokenValue.Length.Should().BeLessThan(10);
+			e.TokenValue.Length.ShouldBeGreaterThan(2);
+			e.TokenValue.Length.ShouldBeLessThan(10);
 
-			e.Expires.Should().Be(DateTime.MinValue);
+			e.Expires.ShouldBe(DateTime.MinValue);
 		}
 	}
 
@@ -57,7 +57,7 @@
         {
             var token = new AccessToken("Atna|foo", DateTime.MaxValue);
             token.Invalidate();
-            token.Expires.Should().Be(DateTime.MinValue);
+            token.Expires.ShouldBe(DateTime.MinValue);
         }
     }
 
@@ -70,7 +70,7 @@
 			var dateTime = DateTime.MaxValue;
 			new AccessToken("Atna|foo", dateTime)
 				.ToString()
-				.Should().Be(
+				.ShouldBe(
 				$"AccessToken. Value=Atna|foo. Expires={dateTime}"
 				);
 		}

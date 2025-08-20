@@ -5,9 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using AudibleApi;
 using Dinah.Core;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
+using Shouldly;
 
 namespace RestMessageValidatorTests
 {

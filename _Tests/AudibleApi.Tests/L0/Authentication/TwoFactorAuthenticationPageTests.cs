@@ -26,10 +26,10 @@
             var content = await responseToCaptureRequest.RequestMessage.Content.ReadAsStringAsync();
             var split = content.Split('&');
             var dic = split.Select(s => s.Split('=')).ToDictionary(key => key[0], value => value[1]);
-            dic.Count.Should().Be(3);
-            dic["otpCode"].Should().Be("2fa");
-			dic["rememberDevice"].Should().Be("false");
-			dic["mfaSubmit"].Should().Be("Submit");
+            dic.Count.ShouldBe(3);
+            dic["otpCode"].ShouldBe("2fa");
+			dic["rememberDevice"].ShouldBe("false");
+			dic["mfaSubmit"].ShouldBe("Submit");
 		}
     }
 }

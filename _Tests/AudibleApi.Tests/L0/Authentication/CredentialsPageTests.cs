@@ -39,10 +39,10 @@
             var content = await responseToCaptureRequest.RequestMessage.Content.ReadAsStringAsync();
             var split = content.Split('&');
             var dic = split.Select(s => s.Split('=')).ToDictionary(key => key[0], value => value[1]);
-            dic.Count.Should().Be(3);
-            dic["email"].Should().Be("e");
-            dic["password"].Should().Be("pw");
-            dic["metadata1"].Length.Should().BeGreaterThan(100);
+            dic.Count.ShouldBe(3);
+            dic["email"].ShouldBe("e");
+            dic["password"].ShouldBe("pw");
+            dic["metadata1"].Length.ShouldBeGreaterThan(100);
         }
     }
 }

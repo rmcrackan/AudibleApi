@@ -12,7 +12,7 @@
                 + "<input name='use_image_captcha' />";
             var response = new HttpResponseMessage { Content = new StringContent(body) };
             var result = await ResultFactory.CredentialsPage.IsMatchAsync(response);
-            result.Should().BeFalse();
+            result.ShouldBeFalse();
         }
 
         [TestMethod]
@@ -23,7 +23,7 @@
                 + "<input name='password' />";
             var response = new HttpResponseMessage { Content = new StringContent(body) };
             var result = await ResultFactory.CredentialsPage.IsMatchAsync(response);
-            result.Should().BeTrue();
+            result.ShouldBeTrue();
         }
     }
 
@@ -39,9 +39,9 @@
             var credentialsPage = await ResultFactory.CredentialsPage.CreateResultAsync(AuthenticateShared.GetAuthenticate(), new HttpResponseMessage { Content = new StringContent(body) }, new Dictionary<string, string>()) as CredentialsPage;
 
             var inputs = credentialsPage.GetInputsReadOnly();
-            inputs.Count.Should().Be(2);
-            inputs["email"].Should().Be("zzz");
-            inputs["password"].Should().BeNull();
+            inputs.Count.ShouldBe(2);
+            inputs["email"].ShouldBe("zzz");
+            inputs["password"].ShouldBeNull();
         }
     }
 }

@@ -11,8 +11,8 @@
 		public void invalid()
 		{
 			var us = new Identity(Localization.Get("us"));
-			us.IsValid.Should().BeFalse();
-			us.Locale.Name.Should().Be("us");
+			us.IsValid.ShouldBeFalse();
+			us.Locale.Name.ShouldBe("us");
 		}
 	}
 
@@ -37,9 +37,9 @@
 		{
 			var idMgr = new Identity(Locale.Empty, OAuth2.Empty, new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("name1", "value1") });
 
-			idMgr.Cookies.Count().Should().Be(1);
-			idMgr.Cookies.Single().Key.Should().Be("name1");
-			idMgr.Cookies.Single().Value.Should().Be("value1");
+			idMgr.Cookies.Count().ShouldBe(1);
+			idMgr.Cookies.Single().Key.ShouldBe("name1");
+			idMgr.Cookies.Single().Value.ShouldBe("value1");
 		}
 	}
 
@@ -51,7 +51,7 @@
 		{
 			// most important part is to get past this line w/o exceptions
 			var i = Identity.Empty;
-			i.IsValid.Should().BeFalse();
+			i.IsValid.ShouldBeFalse();
 		}
 	}
 }

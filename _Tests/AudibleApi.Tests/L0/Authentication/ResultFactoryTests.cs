@@ -17,19 +17,19 @@
     {
         [TestMethod]
         public async Task null_response_returns_false()
-            => (await new ConcreteResultFactory().IsMatchAsync(null)).Should().BeFalse();
+            => (await new ConcreteResultFactory().IsMatchAsync(null)).ShouldBeFalse();
 
         [TestMethod]
         public async Task null_content_returns_false()
-            => (await new ConcreteResultFactory().IsMatchAsync(new HttpResponseMessage())).Should().BeFalse();
+            => (await new ConcreteResultFactory().IsMatchAsync(new HttpResponseMessage())).ShouldBeFalse();
 
         [TestMethod]
         public async Task invalid_content_returns_false()
-            => (await new ConcreteResultFactory().IsMatchAsync(new HttpResponseMessage { Content = new StringContent("x") })).Should().BeFalse();
+            => (await new ConcreteResultFactory().IsMatchAsync(new HttpResponseMessage { Content = new StringContent("x") })).ShouldBeFalse();
 
         [TestMethod]
         public async Task valid_content_returns_true()
-            => (await new ConcreteResultFactory().IsMatchAsync(new HttpResponseMessage { Content = new StringContent("IsMatch") })).Should().BeTrue();
+            => (await new ConcreteResultFactory().IsMatchAsync(new HttpResponseMessage { Content = new StringContent("IsMatch") })).ShouldBeTrue();
     }
 
     [TestClass]
