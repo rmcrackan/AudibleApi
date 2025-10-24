@@ -1,13 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using AudibleApi.Authorization;
+﻿using AudibleApi.Authorization;
 using Dinah.Core;
 using Dinah.Core.Net;
 using Dinah.Core.Net.Http;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace AudibleApi.Authentication
 {
@@ -33,16 +34,16 @@ namespace AudibleApi.Authentication
 
 			initClientState();
 		}
-		private void initClientState()
-		{
+        private void initClientState()
+        {
             var baseUri = Locale.LoginUri();
 
             LoginClient.Timeout = new TimeSpan(0, 0, 30);
-			LoginClient.BaseAddress = baseUri;
+            LoginClient.BaseAddress = baseUri;
 
             LoginClient.DefaultRequestHeaders.Add("Accept-Language", Locale.Language);
             LoginClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip");
-			LoginClient.DefaultRequestHeaders.Add("Host", baseUri.Host);
+            LoginClient.DefaultRequestHeaders.Add("Host", baseUri.Host);
             LoginClient.DefaultRequestHeaders.Add("User-Agent", Resources.User_Agent);
             LoginClient.CookieJar.Add(buildInitCookies());
         }
@@ -95,16 +96,12 @@ namespace AudibleApi.Authentication
         }
 
 		private CookieCollection buildInitCookies()
-        {
-            //Build initial cookies to prevent captcha in most cases
-            //https://github.com/mkb79/Audible/blob/master/src/audible/login.py
+		{
+			var frc = new byte[313];
+			Random.Shared.NextBytes(frc);
 
-            var frc = new byte[313];
-            new Random().NextBytes(frc);
-
-            var mapMd = new JObject
+			var mapMd = new JObject
             {
-                { "device_user_dictionary", new JArray() },
                 { "device_registration_data", 
                     new JObject {
                         {"software_version", Resources.SoftwareVersion }
@@ -112,22 +109,33 @@ namespace AudibleApi.Authentication
                 },
                 { "app_identifier",
                     new JObject {
+                        {"package", Resources.AppName },
+                        {"SHA-256", new JArray{ "b3599b31da17fb99c2eeb91f9e63284dd77883f579c28ed033b3f0ff1fb5e0bb" } },
                         {"app_version", Resources.AppVersion },
-                        {"bundle_id", "com.audible.iphone" }
+                        {"app_version_name", Resources.AppVersionName },
+                        {"app_sms_hash", "8vSNQ6I6sfR" },
+						{"map_version", "MAPAndroidLib-1.3.40908.0" }
+                    }
+                },
+                {"app_info",
+                    new JObject {
+                        { "auto_pv", 0 },
+                        { "auto_pv_with_smsretriever", 1 },
+                        { "smartlock_supported", 0 },
+                        { "permission_runtime_grant", 2 },
                     }
                 }
             };
 
-            var frcStr = Convert.ToBase64String(frc).TrimEnd('=');
-            var mapMdStr = Convert.ToBase64String(Encoding.UTF8.GetBytes(mapMd.ToString(Newtonsoft.Json.Formatting.None))).TrimEnd('=');
-            var amznAppId = "MAPiOSLib/6.0/ToHideRetailLink";
+			var frcStr = Convert.ToBase64String(frc);
+            var mapMdStr = Convert.ToBase64String(Encoding.UTF8.GetBytes(mapMd.ToString(Newtonsoft.Json.Formatting.None)));
             var cookieDomain = $".{Locale.LoginDomain()}.{Locale.TopDomain}";
 
             var initCookies = new CookieCollection
             {
                 new Cookie("frc", frcStr, "/", cookieDomain),
-                new Cookie("map-md", mapMdStr,"/", cookieDomain),
-                new Cookie("amzn-app-id", amznAppId,"/", cookieDomain),
+                new Cookie("map-md", mapMdStr, "/", cookieDomain),
+                new Cookie("sid", "", "/", cookieDomain),
             };
 
             return initCookies;

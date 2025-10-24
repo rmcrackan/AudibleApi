@@ -16,16 +16,19 @@ namespace AudibleApi
 		*/
 
         //Android
-        internal const string User_Agent = "Dalvik/2.1.0 (Linux; U; Android 14; Android SDK built for x86_64 Build/UE1A.230829.036.A1)";
+        internal const string User_Agent = "Mozilla/5.0 (Linux; Android 14; sdk_gphone64_x86_64 Build/UPB5.230623.003; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/113.0.5672.136 Mobile Safari/537.36";
 		public const string Download_User_Agent = "com.audible.playersdk.player/3.96.1 (Linux;Android 14) AndroidXMedia3/1.3.0";
 		public const string DeviceType = "A10KISP2GWF0E4";
-		internal const string OsVersion = "Android/"+ DeviceProduct + "/emu64x:14/UE1A.230829.036.A1/11228894:userdebug/test-keys";
+		internal const string OsVersion = @"google\/"+ DeviceModel + @"\/emu64xa:14\/UPB5.230623.003\/10615560:userdebug\/dev-keys";
 		internal const string OsVersionNumber = "34";
 		internal const string SoftwareVersion = "130050002";
-		internal const string AppVersion = "177102";
+		internal const string AppVersion = "2090253826";
+		internal const string AppVersionName = "25.38.26";
 		internal const string AppName = "com.audible.application";
-		internal const string DeviceModel = "Android SDK built for x86_64";
+		internal const string DeviceModel = "sdk_gphone64_x86_64";
+		internal const string DeviceName = "ranchu/Google/" + DeviceModel;
 		internal const string OsFamily = "android";
+		internal const string Manufacturer = "Google";
 		internal const string DeviceProduct = "sdk_phone64_x86_64";
 
         public static string LoginDomain(this Locale locale) => locale.WithUsername ? "audible" : "amazon";

@@ -61,10 +61,10 @@ namespace AudibleApi.Authorization
 						{ "device_serial", RegistrationOptions.DeviceSerialNumber },
 						{ "app_name",  Resources.AppName },
 						{ "app_version", Resources.AppVersion },
-						{ "device_name",  $"%FIRST_NAME%%FIRST_NAME_POSSESSIVE_STRING%%DUPE_STRATEGY_1ST%{RegistrationOptions.DeviceName}" },
+						{ "device_model",  Resources.DeviceModel },
 						{ "os_version",  Resources.OsVersion },
 						{ "software_version",  Resources.SoftwareVersion },
-						{ "device_model",  Resources.DeviceModel },
+						{ "device_name",  $"%FIRST_NAME%%FIRST_NAME_POSSESSIVE_STRING%%DUPE_STRATEGY_1ST%{RegistrationOptions.DeviceName}" },
 					}
 				},
 				{ "device_metadata", new JObject
@@ -72,10 +72,10 @@ namespace AudibleApi.Authorization
 						{ "device_os_family", Resources.OsFamily },
 						{ "device_type", Resources.DeviceType },
 						{ "device_serial", RegistrationOptions.DeviceSerialNumber },
-						{ "manufacturer", "unknown" },
+						{ "manufacturer",  Resources.Manufacturer },
 						{ "model", Resources.DeviceModel },
 						{ "os_version", Resources.OsVersionNumber },
-						{ "product", Resources.OsVersionNumber },
+						{ "product", Resources.DeviceProduct },
 					}
 				},
 				{ "auth_data", new JObject
