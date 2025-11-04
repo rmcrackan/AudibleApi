@@ -1,21 +1,22 @@
 ﻿using Newtonsoft.Json;
 using System.Text;
 
+#nullable enable
 namespace AudibleApi.Common
 {
     public partial class MetadataDtoV10
     {
         [JsonProperty("content_metadata")]
-        public ContentMetadata ContentMetadata { get; set; }
+        public required ContentMetadata ContentMetadata { get; set; }
     }
 
     public partial class ContentMetadata
     {
         [JsonProperty("chapter_info")]
-        public ChapterInfo ChapterInfo { get; set; }
+        public required ChapterInfo ChapterInfo { get; set; }
 
         [JsonProperty("content_reference")]
-        public ContentReference ContentReference { get; set; }
+        public required ContentReference ContentReference { get; set; }
     }
 
     public partial class ChapterInfo
@@ -27,7 +28,7 @@ namespace AudibleApi.Common
         public long BrandOutroDurationMs { get; set; }
 
         [JsonProperty("chapters")]
-        public Chapter[] Chapters { get; set; }
+        public Chapter[]? Chapters { get; set; }
 
         [JsonProperty("is_accurate")]
         public bool IsAccurate { get; set; }
@@ -42,7 +43,7 @@ namespace AudibleApi.Common
     public partial class Chapter
     {
         [JsonProperty("chapters")]
-        public Chapter[] Chapters { get; set; }
+        public Chapter[]? Chapters { get; set; }
 
         [JsonProperty("length_ms")]
         public long LengthMs { get; set; }
@@ -54,23 +55,23 @@ namespace AudibleApi.Common
         public long StartOffsetSec { get; set; }
 
         [JsonProperty("title")]
-        public string Title { get; set; }
-        public override string ToString() => Title;
+        public required string Title { get; set; }
+        public override string? ToString() => Title;
     }
 
-    public partial class ContentReference
-    {
+    public record ContentReference
+	{
         [JsonProperty("acr")]
-        public string Acr { get; set; }
+        public required string Acr { get; set; }
 
         [JsonProperty("asin")]
-        public string Asin { get; set; }
+        public required string Asin { get; set; }
 
-        [JsonProperty("codec")]
-        public string Codec { get; set; }
+        [JsonProperty("codec", Required = Required.DisallowNull)]
+        public required string Codec { get; set; }
 
         [JsonProperty("content_format")]
-        public string ContentFormat { get; set; }
+        public required string ContentFormat { get; set; }
 
         [JsonProperty("content_size_in_bytes")]
         public long ContentSizeInBytes { get; set; }
@@ -80,17 +81,17 @@ namespace AudibleApi.Common
         public long FileVersion { get; set; }
 
         [JsonProperty("marketplace")]
-        public string Marketplace { get; set; }
+        public required string Marketplace { get; set; }
 
         [JsonProperty("sku")]
-        public string Sku { get; set; }
+        public required string Sku { get; set; }
 
         [JsonProperty("tempo")]
-        public string Tempo { get; set; }
+        public required string Tempo { get; set; }
 
         [JsonProperty("version")]
-        public string Version { get; set; }
+        public required string Version { get; set; }
 
         public bool IsSpatial => Codec is "ec+3" or "ac-4";
-    }
+	}
 }
