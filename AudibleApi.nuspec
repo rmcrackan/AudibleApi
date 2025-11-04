@@ -13,7 +13,7 @@
 		<license type="file">lic</license>
 		<dependencies>
 			<group targetFramework="net9.0">
-				<dependency id="Dinah.Core" version="9.0.0.1" />
+				<dependency id="Dinah.Core" version="9.0.3.1" />
 			</group>
 		</dependencies>
 	</metadata>
