@@ -5,19 +5,19 @@
 	{
 		[TestMethod]
 		public void null_throws()
-			=> Assert.ThrowsException<ArgumentNullException>(() => new RefreshToken(null));
+			=> Assert.Throws<ArgumentNullException>(() => new RefreshToken(null));
 
 		[TestMethod]
 		public void blank_throws()
 		{
-			Assert.ThrowsException<ArgumentException>(() => new RefreshToken(""));
-			Assert.ThrowsException<ArgumentException>(() => new RefreshToken("   "));
+			Assert.Throws<ArgumentException>(() => new RefreshToken(""));
+			Assert.Throws<ArgumentException>(() => new RefreshToken("   "));
 		}
 
 		[TestMethod]
 		public void bad_beginning()
 		{
-			Assert.ThrowsException<ArgumentException>(() => new RefreshToken("foo"));
+			Assert.Throws<ArgumentException>(() => new RefreshToken("foo"));
 		}
 
 		[TestMethod]

@@ -7,8 +7,8 @@
 		public void out_of_range_throws()
 		{
 			var libraryOptions = new LibraryOptions();
-			Assert.ThrowsException<ArgumentException>(() => libraryOptions.NumberOfResultPerPage = -1);
-			Assert.ThrowsException<ArgumentException>(() => libraryOptions.NumberOfResultPerPage = 1001);
+			Assert.Throws<ArgumentException>(() => libraryOptions.NumberOfResultPerPage = -1);
+			Assert.Throws<ArgumentException>(() => libraryOptions.NumberOfResultPerPage = 1001);
 		}
 
 		[TestMethod]
@@ -34,9 +34,9 @@
 		public void out_of_range_throws()
 		{
 			var libraryOptions = new LibraryOptions();
-			Assert.ThrowsException<ArgumentException>(() => libraryOptions.PageNumber = -1);
-			Assert.ThrowsException<ArgumentException>(() => libraryOptions.PageNumber = 0);
-			//no known concrete max//Assert.ThrowsException<ArgumentException>(() => libraryOptions.PageNumber = 41);
+			Assert.Throws<ArgumentException>(() => libraryOptions.PageNumber = -1);
+			Assert.Throws<ArgumentException>(() => libraryOptions.PageNumber = 0);
+			//no known concrete max//Assert.Throws<ArgumentException>(() => libraryOptions.PageNumber = 41);
 		}
 
 		[TestMethod]
@@ -185,7 +185,7 @@ namespace LibraryOptions_ResponseGroupOptions_Tests
 		public void invalid_groups_throws()
 		{
 			var responseGroups = (LibraryOptions.ResponseGroupOptions)((ulong)1 << 39);
-			Assert.ThrowsException<Exception>(() => responseGroups.ToResponseGroupsQueryString());
+			Assert.Throws<Exception>(() => responseGroups.ToResponseGroupsQueryString());
 		}
 
 		[TestMethod]
@@ -229,7 +229,7 @@ namespace LibraryOptions_ImageSizeOptions_Tests
 		public void invalid_throws()
 		{
 			var imageSize = (LibraryOptions.ImageSizeOptions)(1 << 11);
-			Assert.ThrowsException<Exception>(() => imageSize.ToImageSizesQueryString());
+			Assert.Throws<Exception>(() => imageSize.ToImageSizesQueryString());
 		}
 
 		[TestMethod]
@@ -275,7 +275,7 @@ namespace LibraryOptions_SortByOptions_Tests
 			{
 				SortBy = (LibraryOptions.SortByOptions)(1 << 30)
 			};
-			Assert.ThrowsException<Exception>(() => libraryOptions.ToQueryString());
+			Assert.Throws<Exception>(() => libraryOptions.ToQueryString());
 		}
 
 		[TestMethod]

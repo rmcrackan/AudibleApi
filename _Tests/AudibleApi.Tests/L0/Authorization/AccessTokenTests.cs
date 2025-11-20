@@ -5,19 +5,19 @@
 	{
 		[TestMethod]
 		public void null_value_throws()
-			=> Assert.ThrowsException<ArgumentNullException>(() => new AccessToken(null, DateTime.MinValue));
+			=> Assert.Throws<ArgumentNullException>(() => new AccessToken(null, DateTime.MinValue));
 
 		[TestMethod]
         public void blank_string_throws()
         {
-            Assert.ThrowsException<ArgumentException>(() => new AccessToken("", DateTime.MinValue));
-            Assert.ThrowsException<ArgumentException>(() => new AccessToken("   ", DateTime.MinValue));
+            Assert.Throws<ArgumentException>(() => new AccessToken("", DateTime.MinValue));
+            Assert.Throws<ArgumentException>(() => new AccessToken("   ", DateTime.MinValue));
         }
 
 		[TestMethod]
 		public void bad_beginning()
 		{
-			Assert.ThrowsException<ArgumentException>(() => new AccessToken("foo", DateTime.MinValue));
+			Assert.Throws<ArgumentException>(() => new AccessToken("foo", DateTime.MinValue));
 		}
 
 		[TestMethod]

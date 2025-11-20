@@ -37,7 +37,7 @@
                 = "<input name='email' />"
                 + "<input name='password' />"
                 + "<input name='use_image_captcha' />";
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => ResultFactory.CaptchaPage.CreateResultAsync(AuthenticateShared.GetAuthenticate(), new HttpResponseMessage { Content = new StringContent(body) }, new Dictionary<string, string>()));
+            await Assert.ThrowsAsync<ArgumentException>(() => ResultFactory.CaptchaPage.CreateResultAsync(AuthenticateShared.GetAuthenticate(), new HttpResponseMessage { Content = new StringContent(body) }, new Dictionary<string, string>()));
         }
     }
 }

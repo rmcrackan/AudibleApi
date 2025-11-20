@@ -30,7 +30,7 @@ namespace ExceptionTests
             Assert.AreEqual(exception.RequestUri, uri.OriginalString);
             Assert.AreEqual(exception.JsonMessage, jObjString);
             Assert.AreEqual(exception.Message, $"Exception of type '{typeof(FakeAbstractException).FullName}' was thrown.");
-            Assert.AreEqual(exception.InnerException, null);
+            Assert.IsNull(exception.InnerException);
         }
     }
 
@@ -49,7 +49,7 @@ namespace ExceptionTests
             Assert.AreEqual(exception.RequestUri, uri.OriginalString);
             Assert.AreEqual(exception.JsonMessage, jObjString);
             Assert.AreEqual(exception.Message, message);
-            Assert.AreEqual(exception.InnerException, null);
+            Assert.IsNull(exception.InnerException);
         }
     }
 

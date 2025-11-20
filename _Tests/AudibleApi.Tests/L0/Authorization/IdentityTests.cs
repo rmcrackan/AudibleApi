@@ -5,7 +5,7 @@
 	{
 		[TestMethod]
 		public void null_params_throw()
-			=> Assert.ThrowsException<ArgumentNullException>(() => new Identity(null));
+			=> Assert.Throws<ArgumentNullException>(() => new Identity(null));
 
 		[TestMethod]
 		public void invalid()
@@ -22,11 +22,11 @@
 		[TestMethod]
 		public void null_params_throw()
 		{
-			Assert.ThrowsException<ArgumentNullException>(() => new Identity(
+			Assert.Throws<ArgumentNullException>(() => new Identity(
 				null,
 				OAuth2.Empty,
 				new List<KeyValuePair<string, string>>()));
-			Assert.ThrowsException<ArgumentNullException>(() => new Identity(
+			Assert.Throws<ArgumentNullException>(() => new Identity(
 				Locale.Empty,
 				null,
 				new List<KeyValuePair<string, string>>()));

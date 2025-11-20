@@ -5,7 +5,7 @@
     {
         [TestMethod]
         public void null_img_throws()
-            => Assert.ThrowsException<ArgumentNullException>(() => new CaptchaPage(AuthenticateShared.GetAuthenticate(), "body", null, "email", "pw"));
+            => Assert.Throws<ArgumentNullException>(() => new CaptchaPage(AuthenticateShared.GetAuthenticate(), "body", null, "email", "pw"));
 
 
         [TestMethod]
@@ -32,24 +32,24 @@
 
 		[TestMethod]
         public async Task null_guess_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => getPage().SubmitAsync("pass", null));
+            => await Assert.ThrowsAsync<ArgumentNullException>(() => getPage().SubmitAsync("pass", null));
 
 		[TestMethod]
         public async Task null_pass_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => getPage().SubmitAsync(null, "guess"));
+            => await Assert.ThrowsAsync<ArgumentNullException>(() => getPage().SubmitAsync(null, "guess"));
 
 		[TestMethod]
         public async Task null_param_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => getPage().SubmitAsync(null, null));
+            => await Assert.ThrowsAsync<ArgumentNullException>(() => getPage().SubmitAsync(null, null));
 
         [TestMethod]
         public async Task blank_param_throws()
         {
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => getPage().SubmitAsync("", ""));
-			await Assert.ThrowsExceptionAsync<ArgumentException>(() => getPage().SubmitAsync("   ", "   "));
-			await Assert.ThrowsExceptionAsync<ArgumentException>(() => getPage().SubmitAsync("", "   "));
-			await Assert.ThrowsExceptionAsync<ArgumentException>(() => getPage().SubmitAsync("", "   "));
-			await Assert.ThrowsExceptionAsync<ArgumentException>(() => getPage().SubmitAsync("   ", ""));
+            await Assert.ThrowsAsync<ArgumentException>(() => getPage().SubmitAsync("", ""));
+			await Assert.ThrowsAsync<ArgumentException>(() => getPage().SubmitAsync("   ", "   "));
+			await Assert.ThrowsAsync<ArgumentException>(() => getPage().SubmitAsync("", "   "));
+			await Assert.ThrowsAsync<ArgumentException>(() => getPage().SubmitAsync("", "   "));
+			await Assert.ThrowsAsync<ArgumentException>(() => getPage().SubmitAsync("   ", ""));
         }
 
         [TestMethod]
@@ -58,7 +58,7 @@
             var responseToCaptureRequest = new HttpResponseMessage();
 			var page = new CaptchaPage(AuthenticateShared.GetAuthenticate(responseToCaptureRequest), "body", new Uri("http://a.com"), "email", "pw");
 
-			await Assert.ThrowsExceptionAsync<LoginFailedException>(() => page.SubmitAsync("pw", "GUESS1"));
+			await Assert.ThrowsAsync<LoginFailedException>(() => page.SubmitAsync("pw", "GUESS1"));
 
             var content = await responseToCaptureRequest.RequestMessage.Content.ReadAsStringAsync();
             var split = content.Split('&');

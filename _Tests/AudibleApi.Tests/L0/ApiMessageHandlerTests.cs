@@ -33,7 +33,7 @@
             var apiMessageHandler = new ApiMessageHandler(innerHandler);
             var client = new HttpClient(apiMessageHandler);
 
-            await Assert.ThrowsExceptionAsync<NotAuthenticatedException>(async () => await client.SendAsync(request));
+            await Assert.ThrowsAsync<NotAuthenticatedException>(async () => await client.SendAsync(request));
         }
 
 		// - custom length

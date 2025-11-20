@@ -37,21 +37,21 @@
     {
         [TestMethod]
         public async Task null_authenticate_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(null, new HttpResponseMessage { Content = new StringContent("x") }, new Dictionary<string, string>()));
+            => await Assert.ThrowsAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(null, new HttpResponseMessage { Content = new StringContent("x") }, new Dictionary<string, string>()));
 
         [TestMethod]
 		public async Task null_response_throws()
-			=> await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(AuthenticateShared.GetAuthenticate(), null, new Dictionary<string, string>()));
+			=> await Assert.ThrowsAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(AuthenticateShared.GetAuthenticate(), null, new Dictionary<string, string>()));
 
         [TestMethod]
         public async Task null_inputs_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(AuthenticateShared.GetAuthenticate(), new HttpResponseMessage { Content = new StringContent("x") }, null));
+            => await Assert.ThrowsAsync<ArgumentNullException>(() => new ConcreteResultFactory().CreateResultAsync(AuthenticateShared.GetAuthenticate(), new HttpResponseMessage { Content = new StringContent("x") }, null));
 
         [TestMethod]
         public async Task false_IsMatch_throws()
         {
             var badMatch = "x";
-            await Assert.ThrowsExceptionAsync<LoginFailedException>(() => new ConcreteResultFactory().CreateResultAsync(AuthenticateShared.GetAuthenticate(), new HttpResponseMessage { Content = new StringContent(badMatch) }, new Dictionary<string, string>())
+            await Assert.ThrowsAsync<LoginFailedException>(() => new ConcreteResultFactory().CreateResultAsync(AuthenticateShared.GetAuthenticate(), new HttpResponseMessage { Content = new StringContent(badMatch) }, new Dictionary<string, string>())
             );
         }
 

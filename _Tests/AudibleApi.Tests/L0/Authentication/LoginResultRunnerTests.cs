@@ -5,11 +5,11 @@
     {
 		[TestMethod]
         public async Task null_authenticate_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => LoginResultRunner.GetResultsPageAsync(null, new Dictionary<string, string>(), HttpMethod.Get, ""));
+            => await Assert.ThrowsAsync<ArgumentNullException>(() => LoginResultRunner.GetResultsPageAsync(null, new Dictionary<string, string>(), HttpMethod.Get, ""));
 
         [TestMethod]
         public async Task null_inputs_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => LoginResultRunner.GetResultsPageAsync(AuthenticateShared.GetAuthenticate(), null, HttpMethod.Get, ""));
+            => await Assert.ThrowsAsync<ArgumentNullException>(() => LoginResultRunner.GetResultsPageAsync(AuthenticateShared.GetAuthenticate(), null, HttpMethod.Get, ""));
 
         [TestMethod]
         public async Task returns_CredentialsPage()

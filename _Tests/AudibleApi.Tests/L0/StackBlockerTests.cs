@@ -71,7 +71,7 @@ namespace StackBlockerTests
 		[DataRow("foo.L1")]
 		[DataRow("foo.l1")]
 		public void matches(string str)
-			=> Assert.AreEqual(true, StackBlocker.L1Regex.IsMatch(str));
+			=> Assert.IsTrue(StackBlocker.L1Regex.IsMatch(str));
 
 		[TestMethod]
 
@@ -81,7 +81,7 @@ namespace StackBlockerTests
 		[DataRow("L_")]
 		[DataRow("L_1")]
 		public void non_matches(string str)
-			=> Assert.AreEqual(false, StackBlocker.L1Regex.IsMatch(str));
+			=> Assert.IsFalse(StackBlocker.L1Regex.IsMatch(str));
 	}
 }
 
@@ -92,7 +92,7 @@ namespace StackBlockerTests_L0_Fail
 	{
 		[TestMethod]
 		public void access_from_L0_throws()
-			=> Assert.ThrowsException<MethodAccessException>(() => StackBlocker.ApiTestBlocker());
+			=> Assert.Throws<MethodAccessException>(() => StackBlocker.ApiTestBlocker());
 	}
 }
 
@@ -122,7 +122,7 @@ namespace StackBlockerTests_L1_Pass
 
 		[TestMethod]
 		public async Task null_param_throws()
-			=> await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => IdentityMaintainer.CreateAsync(null));
+			=> await Assert.ThrowsAsync<ArgumentNullException>(() => IdentityMaintainer.CreateAsync(null));
 	}
 
 	[TestClass]
@@ -170,7 +170,7 @@ namespace StackBlockerTests_L1_Pass
 
 		[TestMethod]
 		public void null_param_throws()
-			=> Assert.ThrowsException<ArgumentNullException>(() => new Api(null));
+			=> Assert.Throws<ArgumentNullException>(() => new Api(null));
 	}
 
 	[TestClass]
