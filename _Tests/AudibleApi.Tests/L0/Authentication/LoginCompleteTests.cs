@@ -5,6 +5,6 @@
     {
         [TestMethod]
         public void null_identity_throws()
-            => Assert.ThrowsException<ArgumentNullException>(() => new LoginComplete(AuthenticateShared.GetAuthenticate(), "x", null));
+            => Assert.Throws<ArgumentNullException>(() => new LoginComplete(AuthenticateShared.GetAuthenticate(), "x", null));
     }
 }

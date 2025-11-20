@@ -30,28 +30,28 @@ namespace RestMessageValidatorTests
 
         [TestMethod]
         public void throws_NotAuthenticatedException()
-            => Assert.ThrowsException<NotAuthenticatedException>(() => test(new JObject
+            => Assert.Throws<NotAuthenticatedException>(() => test(new JObject
             {
                 { "message", "Message could not be authenticated" }
             }));
 
         [TestMethod]
         public void throws_InvalidResponseException()
-            => Assert.ThrowsException<InvalidResponseException>(() => test(new JObject
+            => Assert.Throws<InvalidResponseException>(() => test(new JObject
             {
                 { "message", "Invalid response group" }
             }));
 
         [TestMethod]
         public void throws_InvalidValueException()
-            => Assert.ThrowsException<InvalidValueException>(() => test(new JObject
+            => Assert.Throws<InvalidValueException>(() => test(new JObject
             {
                 { "error", "InvalidValue" }
             }));
 
         [TestMethod]
         public void throws_ApiErrorException()
-            => Assert.ThrowsException<ApiErrorException>(() => test(new JObject
+            => Assert.Throws<ApiErrorException>(() => test(new JObject
             {
                 { "error", "Unknown Error Test" }
             }));
@@ -66,7 +66,7 @@ namespace RestMessageValidatorTests
                 @"1 validation error detected: Value '-1' at 'page' failed to satisfy constraint: Member must satisfy regular expression pattern: ^\\d+$"
             };
             foreach (var msg in messages)
-                Assert.ThrowsException<ValidationErrorException>(
+                Assert.Throws<ValidationErrorException>(
                     () => test(new JObject { { "message", msg } })
                 );
         }
@@ -79,12 +79,12 @@ namespace RestMessageValidatorTests
                 { "error_code", "000307" },
                 { "message", "No response groups populated." }
             };
-            var ex = Assert.ThrowsException<ApiErrorException>(() => test(msg));
+            var ex = Assert.Throws<ApiErrorException>(() => test(msg));
         }
 
         [TestMethod]
         public void internal_server_error()
-            => Assert.ThrowsException<ApiErrorException>(
+            => Assert.Throws<ApiErrorException>(
        () => test(new JObject { { "message", "Whoops! Looks like something went wrong." } }));
     }
 }

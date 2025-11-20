@@ -5,13 +5,13 @@
     {
 		[TestMethod]
         public async Task null_param_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => new TwoFactorAuthenticationPage(AuthenticateShared.GetAuthenticate(), "x").SubmitAsync(null));
+            => await Assert.ThrowsAsync<ArgumentNullException>(() => new TwoFactorAuthenticationPage(AuthenticateShared.GetAuthenticate(), "x").SubmitAsync(null));
 
         [TestMethod]
         public async Task blank_param_throws()
         {
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => new TwoFactorAuthenticationPage(AuthenticateShared.GetAuthenticate(), "body").SubmitAsync(""));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => new TwoFactorAuthenticationPage(AuthenticateShared.GetAuthenticate(), "body").SubmitAsync("   "));
+            await Assert.ThrowsAsync<ArgumentException>(() => new TwoFactorAuthenticationPage(AuthenticateShared.GetAuthenticate(), "body").SubmitAsync(""));
+            await Assert.ThrowsAsync<ArgumentException>(() => new TwoFactorAuthenticationPage(AuthenticateShared.GetAuthenticate(), "body").SubmitAsync("   "));
         }
 
         [TestMethod]
@@ -21,7 +21,7 @@
 
 			var page = new TwoFactorAuthenticationPage(AuthenticateShared.GetAuthenticate(responseToCaptureRequest), "body");
 
-			await Assert.ThrowsExceptionAsync<LoginFailedException>(() => page.SubmitAsync("2fa"));
+			await Assert.ThrowsAsync<LoginFailedException>(() => page.SubmitAsync("2fa"));
 
             var content = await responseToCaptureRequest.RequestMessage.Content.ReadAsStringAsync();
             var split = content.Split('&');

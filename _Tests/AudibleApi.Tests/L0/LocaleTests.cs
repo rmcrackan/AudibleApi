@@ -10,7 +10,7 @@
 		[DataRow("nn", "cc", "td", null, "ll")]
 		[DataRow("nn", "cc", "td", "mp", null)]
 		public void null_param_throws(string name, string countryCode, string topDomain, string marketPlaceId, string language)
-			=> Assert.ThrowsException<ArgumentNullException>(() => new Locale(name, countryCode, topDomain, marketPlaceId, language));
+			=> Assert.Throws<ArgumentNullException>(() => new Locale(name, countryCode, topDomain, marketPlaceId, language));
 
 		[TestMethod]
 		[DataRow("", "cc", "td", "mp", "ll")]
@@ -24,7 +24,7 @@
 		[DataRow("nn", "cc", "td", "mp", "")]
 		[DataRow("nn", "cc", "td", "mp", "   ")]
 		public void blank_param_throws(string name, string countryCode, string topDomain, string marketPlaceId, string language)
-			=> Assert.ThrowsException<ArgumentException>(() => new Locale(name, countryCode, topDomain, marketPlaceId, language));
+			=> Assert.Throws<ArgumentException>(() => new Locale(name, countryCode, topDomain, marketPlaceId, language));
 
 		[TestMethod]
 		public void instances_are_equal()

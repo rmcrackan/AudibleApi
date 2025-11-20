@@ -10,11 +10,11 @@
     {
         [TestMethod]
         public void null_authenticate_throws()
-            => Assert.ThrowsException<ArgumentNullException>(() => new ValidateLoginResult(null, "foo"));
+            => Assert.Throws<ArgumentNullException>(() => new ValidateLoginResult(null, "foo"));
 
         [TestMethod]
         public void null_responseBody_throws()
-            => Assert.ThrowsException<ArgumentNullException>(() => new ValidateLoginResult(AuthenticateShared.GetAuthenticate(), null));
+            => Assert.Throws<ArgumentNullException>(() => new ValidateLoginResult(AuthenticateShared.GetAuthenticate(), null));
 
         [TestMethod]
         public void inputs_are_saved()

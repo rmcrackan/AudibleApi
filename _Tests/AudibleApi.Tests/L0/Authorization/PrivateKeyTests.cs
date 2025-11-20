@@ -7,36 +7,36 @@ namespace Authoriz.PrivateKeyTests
 	{
 		[TestMethod]
 		public void null_throws()
-			=> Assert.ThrowsException<ArgumentNullException>(() => new PrivateKey(null));
+			=> Assert.Throws<ArgumentNullException>(() => new PrivateKey(null));
 
 		[TestMethod]
 		public void blank_throws()
 		{
-			Assert.ThrowsException<ArgumentException>(() => new PrivateKey(""));
-			Assert.ThrowsException<ArgumentException>(() => new PrivateKey("   "));
+			Assert.Throws<ArgumentException>(() => new PrivateKey(""));
+			Assert.Throws<ArgumentException>(() => new PrivateKey("   "));
 		}
 
 		[TestMethod]
 		public void bad_beginning()
 		{
-			Assert.ThrowsException<ArgumentException>(() => new PrivateKey("foo-----END RSA PRIVATE KEY-----"));
+			Assert.Throws<ArgumentException>(() => new PrivateKey("foo-----END RSA PRIVATE KEY-----"));
 		}
 
 		[TestMethod]
 		public void bad_ending()
 		{
-			Assert.ThrowsException<ArgumentException>(() => new PrivateKey("-----BEGIN RSA PRIVATE KEY-----foo"));
+			Assert.Throws<ArgumentException>(() => new PrivateKey("-----BEGIN RSA PRIVATE KEY-----foo"));
 		}
 
 		[TestMethod]
 		public void valid_strings()
 		{
 			var justBeginningAndEnd = "-----BEGIN RSA PRIVATE KEY-----END RSA PRIVATE KEY-----";
-			Assert.ThrowsException<FormatException>(() => new PrivateKey(justBeginningAndEnd)
+			Assert.Throws<FormatException>(() => new PrivateKey(justBeginningAndEnd)
 				.Value.ShouldBe(justBeginningAndEnd));
 
 			var withWhitespace = "\r\n  -----BEGIN RSA PRIVATE KEY-----END RSA PRIVATE KEY-----\r\n  ";
-			Assert.ThrowsException<FormatException>(() => new PrivateKey(withWhitespace)
+			Assert.Throws<FormatException>(() => new PrivateKey(withWhitespace)
 				.Value.ShouldBe(withWhitespace));
 
 			var full = @"

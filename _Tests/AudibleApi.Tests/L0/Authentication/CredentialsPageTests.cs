@@ -8,24 +8,24 @@
 
 		[TestMethod]
         public async Task null_email_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => getPage().SubmitAsync(null, "pw"));
+            => await Assert.ThrowsAsync<ArgumentNullException>(() => getPage().SubmitAsync(null, "pw"));
 
         [TestMethod]
         public async Task blank_email_throws()
         {
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => getPage().SubmitAsync("", "pw"));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => getPage().SubmitAsync("   ", "pw"));
+            await Assert.ThrowsAsync<ArgumentException>(() => getPage().SubmitAsync("", "pw"));
+            await Assert.ThrowsAsync<ArgumentException>(() => getPage().SubmitAsync("   ", "pw"));
         }
 
         [TestMethod]
         public async Task null_password_throws()
-            => await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => getPage().SubmitAsync("email", null));
+            => await Assert.ThrowsAsync<ArgumentNullException>(() => getPage().SubmitAsync("email", null));
 
         [TestMethod]
         public async Task blank_password_throws()
         {
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => getPage().SubmitAsync("email", ""));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => getPage().SubmitAsync("email", "    "));
+            await Assert.ThrowsAsync<ArgumentException>(() => getPage().SubmitAsync("email", ""));
+            await Assert.ThrowsAsync<ArgumentException>(() => getPage().SubmitAsync("email", "    "));
 		}
 
 		[TestMethod]
@@ -34,7 +34,7 @@
             var responseToCaptureRequest = new HttpResponseMessage();
 
             var page = new CredentialsPage(AuthenticateShared.GetAuthenticate(responseToCaptureRequest), "body");
-			await Assert.ThrowsExceptionAsync<LoginFailedException>(() => page.SubmitAsync("e", "pw"));
+			await Assert.ThrowsAsync<LoginFailedException>(() => page.SubmitAsync("e", "pw"));
 
             var content = await responseToCaptureRequest.RequestMessage.Content.ReadAsStringAsync();
             var split = content.Split('&');

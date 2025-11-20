@@ -5,39 +5,39 @@
 	{
 		[TestMethod]
 		public void null_throws()
-			=> Assert.ThrowsException<ArgumentNullException>(() => new AdpToken(null));
+			=> Assert.Throws<ArgumentNullException>(() => new AdpToken(null));
 
 		[TestMethod]
 		public void blank_throws()
 		{
-			Assert.ThrowsException<ArgumentException>(() => new AdpToken(""));
-			Assert.ThrowsException<ArgumentException>(() => new AdpToken("   "));
+			Assert.Throws<ArgumentException>(() => new AdpToken(""));
+			Assert.Throws<ArgumentException>(() => new AdpToken("   "));
 		}
 
 		[TestMethod]
 		public void bad_format()
 		{
-			Assert.ThrowsException<ArgumentException>(() => new AdpToken("no braces"));
-			Assert.ThrowsException<ArgumentException>(() => new AdpToken("{no end brace"));
-			Assert.ThrowsException<ArgumentException>(() => new AdpToken("no begin end}"));
+			Assert.Throws<ArgumentException>(() => new AdpToken("no braces"));
+			Assert.Throws<ArgumentException>(() => new AdpToken("{no end brace"));
+			Assert.Throws<ArgumentException>(() => new AdpToken("no begin end}"));
 		}
 
 		[TestMethod]
 		public void missing_entry()
 		{
-			Assert.ThrowsException<ArgumentException>(() => new AdpToken("{enc:}{key:}{iv:}{name:QURQVG9rZW5FbmNyeXB0aW9uS2V5}"));
+			Assert.Throws<ArgumentException>(() => new AdpToken("{enc:}{key:}{iv:}{name:QURQVG9rZW5FbmNyeXB0aW9uS2V5}"));
 		}
 
 		[TestMethod]
 		public void extra_entry()
 		{
-			Assert.ThrowsException<ArgumentException>(() => new AdpToken("{enc:}{key:}{iv:}{name:QURQVG9rZW5FbmNyeXB0aW9uS2V5}{serial:}{foo:bar}"));
+			Assert.Throws<ArgumentException>(() => new AdpToken("{enc:}{key:}{iv:}{name:QURQVG9rZW5FbmNyeXB0aW9uS2V5}{serial:}{foo:bar}"));
 		}
 
 		[TestMethod]
 		public void bad_name()
 		{
-			Assert.ThrowsException<ArgumentException>(() => new AdpToken("{enc:}{key:}{iv:}{name:foo}{serial:}"));
+			Assert.Throws<ArgumentException>(() => new AdpToken("{enc:}{key:}{iv:}{name:foo}{serial:}"));
 		}
 
 		[TestMethod]

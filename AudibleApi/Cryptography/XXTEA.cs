@@ -18,7 +18,7 @@ namespace AudibleApi.Cryptography
             int n = (int)Math.Ceiling(clearBytes.Length / 4d);
 
             byte[] cipherBytes = new byte[n * sizeof(uint)];
-            Span<uint> transformBuffer = MemoryMarshal.Cast<byte, uint>(cipherBytes);
+            Span<uint> transformBuffer = MemoryMarshal.Cast<byte, uint>(cipherBytes.AsSpan());
             clearBytes.CopyTo(cipherBytes);
 
 			Transform(transformBuffer, key, encrypting: true);
@@ -34,7 +34,7 @@ namespace AudibleApi.Cryptography
 			int n = (int)Math.Ceiling(cipherBytes.Length / 4d);
 
 			byte[] clearBytes = new byte[n * sizeof(uint)];
-			Span<uint> transformBuffer = MemoryMarshal.Cast<byte, uint>(clearBytes);
+			Span<uint> transformBuffer = MemoryMarshal.Cast<byte, uint>(clearBytes.AsSpan());
 			cipherBytes.CopyTo(clearBytes);
 
 			Transform(transformBuffer, key, encrypting: false);

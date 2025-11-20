@@ -5,7 +5,7 @@
 	{
 		[TestMethod]
 		public void access_from_L0_throws()
-			=> Assert.ThrowsException<MethodAccessException>(() => ApiHttpClient.Create());
+			=> Assert.Throws<MethodAccessException>(() => ApiHttpClient.Create());
 	}
 
 	[TestClass]
@@ -13,7 +13,7 @@
 	{
 		[TestMethod]
 		public void null_param_throws()
-			=> Assert.ThrowsException<ArgumentNullException>(() => ApiHttpClient.Create(null));
+			=> Assert.Throws<ArgumentNullException>(() => ApiHttpClient.Create(null));
 
 		[TestMethod]
 		public void has_cookies_throws()
@@ -23,7 +23,7 @@
 				CookieContainer = new CookieContainer()
 			};
 			httpClientHandler.CookieContainer.Add(new Cookie("foo", "bar", "/", "a.com"));
-			Assert.ThrowsException<ArgumentException>(() => ApiHttpClient.Create(httpClientHandler));
+			Assert.Throws<ArgumentException>(() => ApiHttpClient.Create(httpClientHandler));
 		}
 
 		[TestMethod]
@@ -43,7 +43,7 @@
 				{ "message", "Invalid response group" }
 			}.ToString());
 			var client = ApiHttpClient.Create(handler);
-			await Assert.ThrowsExceptionAsync<InvalidResponseException>(() => client.GetAsync(new Uri("http://a.com")));
+			await Assert.ThrowsAsync<InvalidResponseException>(() => client.GetAsync(new Uri("http://a.com")));
 		}
 	}
 }

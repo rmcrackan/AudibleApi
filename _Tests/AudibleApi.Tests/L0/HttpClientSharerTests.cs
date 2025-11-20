@@ -5,7 +5,7 @@
 	{
 		[TestMethod]
 		public void access_from_L0_throws()
-			=> Assert.ThrowsException<MethodAccessException>(() => new HttpClientSharer());
+			=> Assert.Throws<MethodAccessException>(() => new HttpClientSharer());
 	}
 
 	[TestClass]
@@ -13,7 +13,7 @@
 	{
 		[TestMethod]
 		public void null_param_throws()
-			=> Assert.ThrowsException<ArgumentNullException>(() => new HttpClientSharer(null));
+			=> Assert.Throws<ArgumentNullException>(() => new HttpClientSharer(null));
 	}
 
 	[TestClass]
@@ -24,7 +24,7 @@
 
 		[TestMethod]
 		public void null_param_throws()
-			=> Assert.ThrowsException<ArgumentNullException>(() => new HttpClientSharer(newHandler(() => { })).GetSharedHttpClient((Uri)null));
+			=> Assert.Throws<ArgumentNullException>(() => new HttpClientSharer(newHandler(() => { })).GetSharedHttpClient((Uri)null));
 
 		[TestMethod]
 		public async Task uses_SharedMessageHandler()
