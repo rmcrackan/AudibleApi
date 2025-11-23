@@ -1,8 +1,12 @@
-﻿using Dinah.Core;
+﻿using AudibleApi.Cryptography;
+using Dinah.Core;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -15,6 +19,7 @@ namespace AudibleApi.Authorization
 		public string ChallengeCode { get; }
 		public string DeviceSerialNumber { get; }
 		public string ClientID { get; }
+		public string FrcCookie { get; }
 
 		public RegistrationOptions(string deviceName)
 		{
@@ -61,6 +66,22 @@ namespace AudibleApi.Authorization
 			return new Uri(locale.LoginUri(), $"/ap/signin?{urlencode(oauth_params)}");
 		}
 
+		public CookieCollection GetSignInCookies(Locale locale)
+		{
+			var frcStr = create_frc_cookie(locale, DeviceSerialNumber);
+			var mapMdStr = create_map_md_cookie();
+			var cookieDomain = $".{locale.LoginDomain()}.{locale.TopDomain}";
+
+			var initCookies = new CookieCollection
+			{
+				new Cookie("frc", frcStr, "/ap", cookieDomain),
+				new Cookie("map-md", mapMdStr, "/ap", cookieDomain),
+				new Cookie("sid", "", "/", cookieDomain),
+			};
+
+			return initCookies;
+		}
+
 		private static string urlencode(IEnumerable<KeyValuePair<string, string>> nameValuePairs)
 			=> nameValuePairs
 			.Select(kvp => $"{System.Web.HttpUtility.UrlEncode(kvp.Key)}={System.Web.HttpUtility.UrlEncode(kvp.Value)}")
@@ -92,6 +113,78 @@ namespace AudibleApi.Authorization
 		{
 			var hash = SHA256.HashData(Encoding.ASCII.GetBytes(code_verifier));
 			return Base64Url.EncodeToString(hash);
+		}
+
+		private static string create_map_md_cookie()
+		{
+			var mapMd = new JObject
+			{
+				{ "device_registration_data",
+					new JObject {
+						{"software_version", Resources.SoftwareVersion }
+					}
+				},
+				{ "app_identifier",
+					new JObject {
+						{"package", Resources.AppName },
+						{"SHA-256", null },
+						{"app_version", Resources.AppVersion },
+						{"app_version_name", Resources.AppVersionName },
+						{"app_sms_hash", null },
+						{"map_version", Resources.MapVersion }
+					}
+				},
+				{"app_info",
+					new JObject {
+						{ "auto_pv", 0 },
+						{ "auto_pv_with_smsretriever", 1 },
+						{ "smartlock_supported", 0 },
+						{ "permission_runtime_grant", 2 },
+					}
+				}
+			};
+
+			return Convert.ToBase64String(Encoding.UTF8.GetBytes(mapMd.ToString(Newtonsoft.Json.Formatting.None)));
+		}
+
+		private static string create_frc_cookie(Locale locale, string deviceSn)
+		{
+			IPAddress ip;
+			try
+			{
+				ip = NetworkInterface.GetAllNetworkInterfaces().Select(i => i.GetIPProperties()).SelectMany(GetAllIpAddresses)
+				.OrderBy(a => a.AddressFamily != System.Net.Sockets.AddressFamily.InterNetworkV6)
+				.OrderByDescending(a => !a.IsIPv6LinkLocal && !a.IsIPv6SiteLocal && !a.IsIPv6UniqueLocal).FirstOrDefault();
+			}
+			catch
+			{
+				ip = IPAddress.IPv6Any;
+			}
+
+			var ts = DateTimeOffset.Now.Offset;
+			var timeZone = (ts.Ticks < 0 ? "-" : "") + $"{ts:hh\\:mm}";
+
+			var deviceInto = new JObject{
+				{ "ApplicationName", "com.audible.application" },
+				{ "ApplicationVersion", "2090254511" },
+				{ "DeviceOSVersion", Resources.OsVersion },
+				{ "DeviceName", Resources.DeviceName },
+				{ "ScreenWidthPixels", "1344" },
+				{ "ThirdPartyDeviceId", deviceSn },
+				{ "FirstPartyDeviceId", deviceSn },
+				{ "ScreenHeightPixels", "2769" },
+				{ "DeviceLanguage", locale.Language },
+				{ "TimeZone", timeZone },
+				{ "Carrier", "T-Mobile" },
+				{ "IpAddress", ip.ToString() }
+			};
+
+			return FrcEncoder.Encode(deviceSn, deviceInto.ToString(Newtonsoft.Json.Formatting.None));
+
+			IEnumerable<IPAddress> GetAllIpAddresses(IPInterfaceProperties iPInterfaceProperties)
+			=> iPInterfaceProperties.DnsAddresses.Select(a => a)
+			.Concat(iPInterfaceProperties.GatewayAddresses.Select(a => a.Address))
+			.Concat(iPInterfaceProperties.UnicastAddresses.Select(a => a.Address));
 		}
 	}
 }
