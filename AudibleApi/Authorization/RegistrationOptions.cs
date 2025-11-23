@@ -27,10 +27,10 @@ namespace AudibleApi.Authorization
 
 		public Uri OAuthUrl(Locale locale)
 		{
-			var baseUri = locale.LoginUri();
-
 			// this helps dramatically with debugging
-			var return_to = $"{baseUri.GetOrigin()}/ap/maplanding";
+			//According to static analysis of the Audible v25.38.26 apk,
+			//the return_to domain is always www.audible.TLD, even for private pool accounts.
+			var return_to = $"{locale.AudibleLoginUri().GetOrigin()}/ap/maplanding";
 			var assoc_handle = locale.WithUsername ? $"amzn_audible_android_aui_lap_{locale.CountryCode}" : $"amzn_audible_android_aui_{locale.CountryCode}";
 			var page_id = locale.WithUsername ? $"amzn_audible_android_privatepool_aui_v2_dark_{locale.CountryCode}" : $"amzn_audible_android_aui_v2_dark_us{locale.CountryCode}";
 
@@ -58,7 +58,7 @@ namespace AudibleApi.Authorization
 				{ "openid.ns", "http://specs.openid.net/auth/2.0"},
 			};
 
-			return new Uri(baseUri, $"/ap/signin?{urlencode(oauth_params)}");
+			return new Uri(locale.LoginUri(), $"/ap/signin?{urlencode(oauth_params)}");
 		}
 
 		private static string urlencode(IEnumerable<KeyValuePair<string, string>> nameValuePairs)
