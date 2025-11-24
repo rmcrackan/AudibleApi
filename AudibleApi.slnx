@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Demos/">
+    <Project Path="_Demos/AudibleApiClientExample/AudibleApiClientExample.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="_Tests/AudibleApi.Common.Tests/AudibleApi.Common.Tests.csproj" />
+    <Project Path="_Tests/AudibleApi.Tests/AudibleApi.Tests.csproj" />
+  </Folder>
+  <Project Path="AudibleApi.Common/AudibleApi.Common.csproj" />
+  <Project Path="AudibleApi/AudibleApi.csproj" />
+</Solution>
