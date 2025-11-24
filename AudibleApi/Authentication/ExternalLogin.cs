@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using AudibleApi.Authorization;
 using Dinah.Core;
 
@@ -21,6 +22,11 @@ namespace AudibleApi.Authentication
 		/// Builds the url to login to Amazon as an Audible device.
 		/// </summary>
 		public string GetLoginUrl() => RegistrationOptions.OAuthUrl(_locale).ToString();
+
+		/// <summary>
+		/// Gives initial cookies to be used at /ap/Signin page.
+		/// </summary>
+		public CookieCollection GetSignInCookies() => RegistrationOptions.GetSignInCookies(_locale);
 
 		/// <summary>Retrieve tokens from response URL. Return an in-memory Identity object</summary>
 		public Identity Login(string responseUrl) =>

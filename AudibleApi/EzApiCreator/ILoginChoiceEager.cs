@@ -3,7 +3,9 @@ using System.Threading.Tasks;
 
 namespace AudibleApi
 {
-	public record ChoiceIn(string LoginUrl);
+	/// <param name="LoginUrl">Initial sign-in page to begin login</param>
+	/// <param name="SignInCookies">Cookies to be sent with the initial sign-in request</param>
+	public record ChoiceIn(string LoginUrl, System.Net.CookieCollection SignInCookies);
 
 	public class ChoiceOut
 	{

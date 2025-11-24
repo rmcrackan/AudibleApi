@@ -36,7 +36,8 @@ namespace AudibleApi
 			var externalLogin = new ExternalLogin(locale, loginExternal.DeviceName);
 
 			var loginUrl = externalLogin.GetLoginUrl();
-			var responseUrl = loginExternal.GetResponseUrl(loginUrl);
+			var signInCookies = externalLogin.GetSignInCookies();
+			var responseUrl = loginExternal.GetResponseUrl(loginUrl, signInCookies);
 			return externalLogin.Login(responseUrl);
 		}
 	}
