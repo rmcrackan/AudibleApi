@@ -11,11 +11,16 @@ namespace AudibleApi
             {
                 { "error", message },
                 { "error_message", ex.Message },
-                { "error_stack_trace", ex.StackTrace }
             };
-            
-            // Handle inner exceptions
-            var innerException = ex.InnerException;
+            if (ex is System.Net.Http.HttpRequestException httpEx)
+			{
+				json.Add("http_status_code", httpEx.StatusCode?.ToString());
+				json.Add("http_request_error", httpEx.HttpRequestError.ToString());
+			}
+            json.Add("error_stack_trace", ex.StackTrace);
+
+			// Handle inner exceptions
+			var innerException = ex.InnerException;
             var count = 1;
             while (innerException != null)
             {
