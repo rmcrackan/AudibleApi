@@ -16,10 +16,11 @@ namespace AudibleApi
         const int ACTIVATION_BLOB_SZ = 0x238;
         public async Task<string> GetActivationBytesAsync()
         {
-            // note: this call uses the audible login uri, NOT api
-            var client = Sharer.GetSharedHttpClient(Locale.AudibleLoginUri());
+			// notes: this call uses the audible login uri, NOT api.
+			// This should always be .com, not localized.
+			var client = Sharer.GetSharedHttpClient(new Uri("https://www.audible.com"));
 
-            var response = await AdHocAuthenticatedGetAsync($"/license/token?action=register&player_manuf=Audible,Android&player_model=Android", client);
+			var response = await AdHocAuthenticatedGetAsync($"/license/token?action=register&player_manuf=Audible,Android&player_model=Android", client);
 
             var deviceLicense = await response.Content.ReadAsByteArrayAsync();
 
