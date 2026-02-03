@@ -1,45 +1,45 @@
 ﻿using AudibleApi.Cryptography;
 
-namespace Authoriz.PrivateKeyTests
+namespace Authoriz.PrivateKeyTests;
+
+[TestClass]
+public class ValidateInput
 {
-	[TestClass]
-	public class ValidateInput
+	[TestMethod]
+	public void null_throws()
+		=> Assert.Throws<ArgumentNullException>(() => new PrivateKey(null!));
+
+	[TestMethod]
+	public void blank_throws()
 	{
-		[TestMethod]
-		public void null_throws()
-			=> Assert.Throws<ArgumentNullException>(() => new PrivateKey(null));
+		Assert.Throws<ArgumentException>(() => new PrivateKey(""));
+		Assert.Throws<ArgumentException>(() => new PrivateKey("   "));
+	}
 
-		[TestMethod]
-		public void blank_throws()
-		{
-			Assert.Throws<ArgumentException>(() => new PrivateKey(""));
-			Assert.Throws<ArgumentException>(() => new PrivateKey("   "));
-		}
+	[TestMethod]
+	public void bad_beginning()
+	{
+		Assert.Throws<ArgumentException>(() => new PrivateKey("foo-----END RSA PRIVATE KEY-----"));
+	}
 
-		[TestMethod]
-		public void bad_beginning()
-		{
-			Assert.Throws<ArgumentException>(() => new PrivateKey("foo-----END RSA PRIVATE KEY-----"));
-		}
+	[TestMethod]
+	public void bad_ending()
+	{
+		Assert.Throws<ArgumentException>(() => new PrivateKey("-----BEGIN RSA PRIVATE KEY-----foo"));
+	}
 
-		[TestMethod]
-		public void bad_ending()
-		{
-			Assert.Throws<ArgumentException>(() => new PrivateKey("-----BEGIN RSA PRIVATE KEY-----foo"));
-		}
+	[TestMethod]
+	public void valid_strings()
+	{
+		var justBeginningAndEnd = "-----BEGIN RSA PRIVATE KEY-----END RSA PRIVATE KEY-----";
+		Assert.Throws<FormatException>(() => new PrivateKey(justBeginningAndEnd)
+			.Value.ShouldBe(justBeginningAndEnd));
 
-		[TestMethod]
-		public void valid_strings()
-		{
-			var justBeginningAndEnd = "-----BEGIN RSA PRIVATE KEY-----END RSA PRIVATE KEY-----";
-			Assert.Throws<FormatException>(() => new PrivateKey(justBeginningAndEnd)
-				.Value.ShouldBe(justBeginningAndEnd));
+		var withWhitespace = "\r\n  -----BEGIN RSA PRIVATE KEY-----END RSA PRIVATE KEY-----\r\n  ";
+		Assert.Throws<FormatException>(() => new PrivateKey(withWhitespace)
+			.Value.ShouldBe(withWhitespace));
 
-			var withWhitespace = "\r\n  -----BEGIN RSA PRIVATE KEY-----END RSA PRIVATE KEY-----\r\n  ";
-			Assert.Throws<FormatException>(() => new PrivateKey(withWhitespace)
-				.Value.ShouldBe(withWhitespace));
-
-			var full = @"
+		var full = @"
 -----BEGIN RSA PRIVATE KEY-----
 MIIEpgIBAAKCAQEA5nPbGSVDmlEH2tJa6kz/P2HI8IeirhfPHdmi+X/nsb9i3WNf
 tmEdZxfK26IValQDXvBH17a1gr0HD6pYse1XsV2w0HxiW1RW+ZnjL8/fzPdkSOb+
@@ -68,8 +68,7 @@ irGgbUJrAoGBAOseS3J4BqYM4R3Hr7cRAhvzSjIkeTcDF1zTOa4FZDHBxZ6g2PNq
 BxlXqPnQ4mG66oqSFQgDEmFdMhRb2of6xL1gYYL62C80G2T7QtmPfSab
 -----END RSA PRIVATE KEY-----
 ";
-			new PrivateKey(full)
-				.Value.ShouldBe(full);
-		}
+		new PrivateKey(full)
+			.Value.ShouldBe(full);
 	}
 }

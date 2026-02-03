@@ -1,8 +1,3 @@
-﻿using System;
+﻿namespace AudibleApi.Common;
 
-namespace AudibleApi.Common
-{
-	public partial class VoucherDtoV10 : DtoBase<VoucherDtoV10>
-	{
-	}
-}
+public partial class VoucherDtoV10 : DtoBase<VoucherDtoV10> { }

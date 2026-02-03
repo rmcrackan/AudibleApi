@@ -1,11 +1,10 @@
-﻿using System;
-using Dinah.Core.Net.Http;
+﻿using Dinah.Core.Net.Http;
+using System;
 
-namespace AudibleApi
+namespace AudibleApi;
+
+public interface IHttpClientSharer
 {
-	public interface IHttpClientSharer
-	{
-		IHttpClientActions GetSharedHttpClient(Uri target);
-		IHttpClientActions GetSharedHttpClient(string target);
-	}
+	IHttpClientActions GetSharedHttpClient(Uri target);
+	IHttpClientActions GetSharedHttpClient(string target);
 }

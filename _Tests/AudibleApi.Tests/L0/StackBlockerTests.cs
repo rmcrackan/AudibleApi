@@ -1,24 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using AudibleApi;
-using AudibleApi.Authorization;
-using AudibleApi.Cryptography;
-using Dinah.Core;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Shouldly;
-using TestAudibleApiCommon;
-using static AuthorizationShared.Shared;
+﻿using AudibleApi.Cryptography;
 
 namespace StackBlockerTests
 {
-    [TestClass]
+	[TestClass]
 	public class L1Regex
 	{
 		[TestMethod]
@@ -87,7 +71,7 @@ namespace StackBlockerTests
 
 namespace StackBlockerTests_L0_Fail
 {
-    [TestClass]
+	[TestClass]
 	public class ApiTestBlocker
 	{
 		[TestMethod]
@@ -98,7 +82,7 @@ namespace StackBlockerTests_L0_Fail
 
 namespace StackBlockerTests_L1_Pass
 {
-    [TestClass]
+	[TestClass]
 	public class ApiTestBlocker
 	{
 		[TestMethod]
@@ -122,7 +106,7 @@ namespace StackBlockerTests_L1_Pass
 
 		[TestMethod]
 		public async Task null_param_throws()
-			=> await Assert.ThrowsAsync<ArgumentNullException>(() => IdentityMaintainer.CreateAsync(null));
+			=> await Assert.ThrowsAsync<ArgumentNullException>(() => IdentityMaintainer.CreateAsync(null!));
 	}
 
 	[TestClass]
@@ -159,9 +143,9 @@ namespace StackBlockerTests_L1_Pass
 			public string DeviceSerialNumber => throw new NotImplementedException();
 			public string DeviceType => throw new NotImplementedException();
 			public string AmazonAccountId => throw new NotImplementedException();
-			public Task<AccessToken> GetAccessTokenAsync() => throw new NotImplementedException();
-			public Task<AdpToken> GetAdpTokenAsync() => throw new NotImplementedException();
-			public Task<PrivateKey> GetPrivateKeyAsync() => throw new NotImplementedException();
+			public Task<AccessToken?> GetAccessTokenAsync() => throw new NotImplementedException();
+			public Task<AdpToken?> GetAdpTokenAsync() => throw new NotImplementedException();
+			public Task<PrivateKey?> GetPrivateKeyAsync() => throw new NotImplementedException();
 		}
 
 		[TestMethod]
@@ -170,7 +154,7 @@ namespace StackBlockerTests_L1_Pass
 
 		[TestMethod]
 		public void null_param_throws()
-			=> Assert.Throws<ArgumentNullException>(() => new Api(null));
+			=> Assert.Throws<ArgumentNullException>(() => new Api(null!));
 	}
 
 	[TestClass]

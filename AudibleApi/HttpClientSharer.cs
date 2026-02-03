@@ -1,53 +1,52 @@
-﻿using System;
+﻿using Dinah.Core;
+using Dinah.Core.Net.Http;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using Dinah.Core;
-using Dinah.Core.Net.Http;
 
-namespace AudibleApi
+namespace AudibleApi;
+
+public class HttpClientSharer : IHttpClientSharer
 {
-	public class HttpClientSharer : IHttpClientSharer
+	private HttpMessageHandler _sharedMessageHandler { get; }
+
+	public HttpClientSharer()
 	{
-		private HttpMessageHandler _sharedMessageHandler { get; }
+		StackBlocker.ApiTestBlocker();
 
-		public HttpClientSharer()
+		var handler = new HttpClientHandler
 		{
-			StackBlocker.ApiTestBlocker();
+			// AllowAutoRedirect = false needed for DownloadAaxWorkaroundAsync and seems to do no harm anywhere else
+			AllowAutoRedirect = false,
+			AutomaticDecompression =
+				DecompressionMethods.GZip |
+				DecompressionMethods.Deflate
+		};
+		_sharedMessageHandler = handler;
+	}
+	public HttpClientSharer(HttpMessageHandler sharedMessageHandler)
+	{
+		_sharedMessageHandler = ArgumentValidator.EnsureNotNull(sharedMessageHandler, nameof(sharedMessageHandler));
+	}
 
-			var handler = new HttpClientHandler
+	private Dictionary<Uri, IHttpClientActions> _sharedUrls { get; } = new Dictionary<Uri, IHttpClientActions>();
+	public IHttpClientActions GetSharedHttpClient(string uri) => GetSharedHttpClient(new Uri(uri));
+	public IHttpClientActions GetSharedHttpClient(Uri uri)
+	{
+		ArgumentValidator.EnsureNotNull(uri, nameof(uri));
+
+		if (!_sharedUrls.ContainsKey(uri))
+		{
+			var wrappedHandler = new ApiMessageHandler { InnerHandler = _sharedMessageHandler };
+			var client = new SealedHttpClient(wrappedHandler)
 			{
-				// AllowAutoRedirect = false needed for DownloadAaxWorkaroundAsync and seems to do no harm anywhere else
-				AllowAutoRedirect = false,
-				AutomaticDecompression =
-					DecompressionMethods.GZip |
-					DecompressionMethods.Deflate
+				BaseAddress = uri,
+				Timeout = new TimeSpan(0, 0, 30)
 			};
-			_sharedMessageHandler = handler;
-		}
-		public HttpClientSharer(HttpMessageHandler sharedMessageHandler)
-		{
-			_sharedMessageHandler = ArgumentValidator.EnsureNotNull(sharedMessageHandler, nameof(sharedMessageHandler));
+			_sharedUrls[uri] = client;
 		}
 
-		private Dictionary<Uri, IHttpClientActions> _sharedUrls { get; } = new Dictionary<Uri, IHttpClientActions>();
-		public IHttpClientActions GetSharedHttpClient(string uri) => GetSharedHttpClient(new Uri(uri));
-		public IHttpClientActions GetSharedHttpClient(Uri uri)
-		{
-			ArgumentValidator.EnsureNotNull(uri, nameof(uri));
-
-			if (!_sharedUrls.ContainsKey(uri))
-			{
-				var wrappedHandler = new ApiMessageHandler { InnerHandler = _sharedMessageHandler };
-				var client = new SealedHttpClient(wrappedHandler)
-				{
-					BaseAddress = uri,
-					Timeout = new TimeSpan(0, 0, 30)
-				};
-				_sharedUrls[uri] = client;
-			}
-
-			return _sharedUrls[uri];
-		}
+		return _sharedUrls[uri];
 	}
 }

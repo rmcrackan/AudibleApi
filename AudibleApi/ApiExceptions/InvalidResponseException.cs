@@ -1,17 +1,16 @@
-﻿using System;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
+using System;
 
-namespace AudibleApi
+namespace AudibleApi;
+
+public class InvalidResponseException : AudibleApiException
 {
-    public class InvalidResponseException : AudibleApiException
-    {
-        public InvalidResponseException(Uri requestUri, JObject jObj)
-            : this(requestUri, jObj, null, null) { }
+	public InvalidResponseException(Uri? requestUri, JObject? jObj)
+		: base(requestUri, jObj, null, null) { }
 
-        public InvalidResponseException(Uri requestUri, JObject jObj, string message)
-            : this(requestUri, jObj, message, null) { }
+	public InvalidResponseException(Uri? requestUri, JObject? jObj, string? message)
+		: base(requestUri, jObj, message, null) { }
 
-        public InvalidResponseException(Uri requestUri, JObject jObj, string message, Exception innerException)
-            : base(requestUri, jObj, message, innerException) { }
-    }
+	public InvalidResponseException(Uri? requestUri, JObject? jObj, string? message, Exception? innerException)
+		: base(requestUri, jObj, message, innerException) { }
 }

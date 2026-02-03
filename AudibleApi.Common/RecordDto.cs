@@ -9,32 +9,30 @@ namespace AudibleApi.Common
 	public class RecordDto : DtoBase<RecordDto>
 	{
 		[JsonProperty("md5")]
-		public string Md5 { get; set; }
+		public string? Md5 { get; set; }
 
 		[JsonProperty("payload")]
-		public Payload Payload { get; set; }
+		public Payload? Payload { get; set; }
 	}
 
 	public class Payload
 	{
 		[JsonProperty("acr")]
-		public string Acr { get; set; }
+		public string? Acr { get; set; }
 
 		[JsonProperty("records")]
 		[JsonConverter(typeof(RecordConverter))]
-		public List<IRecord> Records { get; set; }
+		public List<IRecord>? Records { get; set; }
 
 		[JsonProperty("guid")]
-		public string Guid { get; set; }
+		public string? Guid { get; set; }
 
 		[JsonProperty("key")]
-		public string Asin { get; set; }
+		public string? Asin { get; set; }
 
 		[JsonProperty("type")]
-		public string Type { get; set; }
+		public string? Type { get; set; }
 	}
-
-#nullable enable
 
 	internal class RecordConverter : JsonConverter
 	{
@@ -53,7 +51,7 @@ namespace AudibleApi.Common
 				if (type == RecordType.LastHeard)
 					return new LastHeard(creationTime, startPosition);
 
-				var lastModificationTime = jObj.Value<string>("lastModificationTime") is string lct ? DateTime.Parse(lct).ToLocalTime() : default; 
+				var lastModificationTime = jObj.Value<string>("lastModificationTime") is string lct ? DateTime.Parse(lct).ToLocalTime() : default;
 				var annotationId = jObj.Value<string>("annotationId");
 
 				if (type == RecordType.Bookmark)

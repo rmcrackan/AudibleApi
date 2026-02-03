@@ -1,27 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 
-namespace AudibleApi.Authentication
+namespace AudibleApi.Authentication;
+
+internal abstract partial class ResultFactory
 {
-	internal abstract partial class ResultFactory
-    {
-        private class TwoFactorAuthenticationPageFactory : ResultFactory
-        {
-            public TwoFactorAuthenticationPageFactory() : base(nameof(TwoFactorAuthenticationPageFactory)) { }
+	private class TwoFactorAuthenticationPageFactory : ResultFactory
+	{
+		public TwoFactorAuthenticationPageFactory() : base(nameof(TwoFactorAuthenticationPageFactory)) { }
 
-            protected override bool _isMatchAsync(HttpResponseMessage response, string body)
-            {
-                var doc = new HtmlAgilityPack.HtmlDocument();
-                doc.LoadHtml(body);
+		protected override bool _isMatchAsync(HttpResponseMessage response, string body)
+		{
+			var doc = new HtmlAgilityPack.HtmlDocument();
+			doc.LoadHtml(body);
 
-                var otpCodeNodes = doc.DocumentNode.SelectNodes(".//input[@name='otpCode']");
-                return otpCodeNodes != null && otpCodeNodes.Any();
-            }
+			var otpCodeNodes = doc.DocumentNode.SelectNodes(".//input[@name='otpCode']");
+			return otpCodeNodes != null && otpCodeNodes.Any();
+		}
 
-			protected override LoginResult _createResultAsync(Authenticate authenticate, HttpResponseMessage response, string body, Dictionary<string, string> oldInputs)
-                => new TwoFactorAuthenticationPage(authenticate, body);
-        }
-    }
+		protected override LoginResult _createResultAsync(Authenticate authenticate, HttpResponseMessage response, string body, Dictionary<string, string?> oldInputs)
+			=> new TwoFactorAuthenticationPage(authenticate, body);
+	}
 }

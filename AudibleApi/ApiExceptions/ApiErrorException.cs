@@ -1,24 +1,23 @@
-﻿using System;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
+using System;
 
-namespace AudibleApi
+namespace AudibleApi;
+
+/// <summary>
+/// Error returned by API calls
+/// </summary>
+public class ApiErrorException : AudibleApiException
 {
-    /// <summary>
-    /// Error returned by API calls
-    /// </summary>
-    public class ApiErrorException : AudibleApiException
-    {
-        public ApiErrorException(Uri requestUri, JObject jObj)
-            : this(requestUri, jObj, null, null) { }
+	public ApiErrorException(Uri? requestUri, JObject? jObj)
+		: this(requestUri, jObj, null, null) { }
 
-        public ApiErrorException(string requestUri, JObject jObj, string message)
-            : this(requestUri, jObj, message, null) { }
-        public ApiErrorException(string requestUri, JObject jObj, string message, Exception innerException)
-            : base(requestUri, jObj, message, innerException) { }
+	public ApiErrorException(string? requestUri, JObject? jObj, string? message)
+		: this(requestUri, jObj, message, null) { }
+	public ApiErrorException(string? requestUri, JObject? jObj, string? message, Exception? innerException)
+		: base(requestUri, jObj, message, innerException) { }
 
-        public ApiErrorException(Uri requestUri, JObject jObj, string message)
-            : this(requestUri, jObj, message, null) { }
-        public ApiErrorException(Uri requestUri, JObject jObj, string message, Exception innerException)
-            : base(requestUri, jObj, message, innerException) { }
-    }
+	public ApiErrorException(Uri? requestUri, JObject? jObj, string? message)
+		: this(requestUri, jObj, message, null) { }
+	public ApiErrorException(Uri? requestUri, JObject? jObj, string? message, Exception? innerException)
+		: base(requestUri, jObj, message, innerException) { }
 }

@@ -6,123 +6,123 @@
 //
 //    var contentLicenseDtoV10 = ContentLicenseDtoV10.FromJson(jsonString);
 
-namespace AudibleApi.Common
+#nullable enable
+namespace AudibleApi.Common;
+
+using System;
+using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+public enum DrmType
 {
-    using System;
-    using System.Linq;
-    using Newtonsoft.Json;
-	using Newtonsoft.Json.Converters;
+	Adrm,
+	Mpeg,
+	Widevine
+}
 
-	public enum DrmType
-	{
-        Adrm,
-        Mpeg,
-        Widevine
-	}
+public partial class ContentLicenseDtoV10
+{
+	/// <summary>
+	/// If null, check for <see cref="Message"/>
+	/// </summary>
+	[JsonProperty("content_license", Required = Required.Always)]
+	public ContentLicense? ContentLicense { get; set; }
+}
 
-    public partial class ContentLicenseDtoV10
-    {
-        /// <summary>
-        /// If null, check for <see cref="Message"/>
-        /// </summary>
-        [JsonProperty("content_license", Required = Required.Always)]
-        public ContentLicense ContentLicense { get; set; }
-    }
+public partial class ContentLicense
+{
+	[JsonProperty("access_expiry_date")]
+	public DateTimeOffset AccessExpiryDate { get; set; }
 
-    public partial class ContentLicense
-    {
-        [JsonProperty("access_expiry_date")]
-        public DateTimeOffset AccessExpiryDate { get; set; }
+	[JsonProperty("acr")]
+	public string? Acr { get; set; }
 
-        [JsonProperty("acr")]
-        public string Acr { get; set; }
+	[JsonProperty("asin")]
+	public string? Asin { get; set; }
 
-        [JsonProperty("asin")]
-        public string Asin { get; set; }
+	[JsonProperty("content_metadata")]
+	public ContentMetadata? ContentMetadata { get; set; }
 
-        [JsonProperty("content_metadata")]
-        public ContentMetadata ContentMetadata { get; set; }
+	[JsonProperty("drm_type")]
+	[JsonConverter(typeof(StringEnumConverter))]
+	public DrmType DrmType { get; set; }
 
-        [JsonProperty("drm_type")]
-        [JsonConverter(typeof(StringEnumConverter))]
-        public DrmType DrmType { get; set; }
+	[JsonProperty("license_id")]
+	public Guid LicenseId { get; set; }
 
-        [JsonProperty("license_id")]
-        public Guid LicenseId { get; set; }
+	/// <summary>
+	/// A base-64 string containing the <see cref="VoucherDtoV10"/> encrypted with the device type, device serial number, amazon account ID, and asin.
+	/// See https://patchwork.ffmpeg.org/project/ffmpeg/patch/17559601585196510@sas2-2fa759678732.qloud-c.yandex.net/
+	/// </summary>
+	[JsonProperty("license_response")]
+	public string? LicenseResponse { get; set; }
 
-        /// <summary>
-        /// A base-64 string containing the <see cref="VoucherDtoV10"/> encrypted with the device type, device serial number, amazon account ID, and asin.
-        /// See https://patchwork.ffmpeg.org/project/ffmpeg/patch/17559601585196510@sas2-2fa759678732.qloud-c.yandex.net/
-        /// </summary>
-        [JsonProperty("license_response")]
-        public string LicenseResponse { get; set; }
-        
-        public VoucherDtoV10 Voucher { get; set; }
+	public VoucherDtoV10? Voucher { get; set; }
 
-        [JsonProperty("message")]
-        public string Message { get; set; }
+	[JsonProperty("message")]
+	public string? Message { get; set; }
 
-        [JsonProperty("pdf_url")]
-        public string PdfUrl { get; set; }
+	[JsonProperty("pdf_url")]
+	public string? PdfUrl { get; set; }
 
-        [JsonProperty("refresh_date")]
-        public DateTimeOffset RefreshDate { get; set; }
+	[JsonProperty("refresh_date")]
+	public DateTimeOffset RefreshDate { get; set; }
 
-        [JsonProperty("removal_date")]
-        public DateTimeOffset RemovalDate { get; set; }
+	[JsonProperty("removal_date")]
+	public DateTimeOffset RemovalDate { get; set; }
 
-        [JsonProperty("request_id")]
-        public string RequestId { get; set; }
+	[JsonProperty("request_id")]
+	public string? RequestId { get; set; }
 
-        [JsonProperty("requires_ad_supported_playback")]
-        public bool RequiresAdSupportedPlayback { get; set; }
+	[JsonProperty("requires_ad_supported_playback")]
+	public bool RequiresAdSupportedPlayback { get; set; }
 
-        [JsonProperty("status_code")]
-        public string StatusCode { get; set; }
+	[JsonProperty("status_code")]
+	public string? StatusCode { get; set; }
 
-        [JsonProperty("voucher_id")]
-        public string VoucherId { get; set; }
+	[JsonProperty("voucher_id")]
+	public string? VoucherId { get; set; }
 
-        [JsonProperty("license_denial_reasons")]
-        public LicenseDenialReason[] LicenseDenialReasons { get; set; }
-    }
+	[JsonProperty("license_denial_reasons")]
+	public LicenseDenialReason[]? LicenseDenialReasons { get; set; }
+}
 
-    public partial class ContentMetadata
-    {
-        [JsonProperty("content_url")]
-        public ContentUrl ContentUrl { get; set; }
+public partial class ContentMetadata
+{
+	[JsonProperty("content_url")]
+	public ContentUrl? ContentUrl { get; set; }
 
-        [JsonProperty("last_position_heard")]
-        public LastPositionHeard LastPositionHeard { get; set; }
-    }
+	[JsonProperty("last_position_heard")]
+	public LastPositionHeard? LastPositionHeard { get; set; }
+}
 
-    public partial class ContentUrl
-    {
-        [JsonProperty("offline_url")]
-        public string OfflineUrl { get; set; }
-    }
+public partial class ContentUrl
+{
+	[JsonProperty("offline_url")]
+	public string? OfflineUrl { get; set; }
+}
 
-    public partial class LastPositionHeard
-    {
-        [JsonProperty("last_updated")]
-        public DateTimeOffset LastUpdated { get; set; }
+public partial class LastPositionHeard
+{
+	[JsonProperty("last_updated")]
+	public DateTimeOffset LastUpdated { get; set; }
 
-        [JsonProperty("position_ms")]
-        public long PositionMs { get; set; }
+	[JsonProperty("position_ms")]
+	public long PositionMs { get; set; }
 
-        [JsonProperty("status")]
-        public string Status { get; set; }
-    }
+	[JsonProperty("status")]
+	public string? Status { get; set; }
+}
 
-    public partial class LicenseDenialReason
-    {
-        [JsonProperty("message")]
-        public string Message { get; set; }
+public partial class LicenseDenialReason
+{
+	[JsonProperty("message")]
+	public string? Message { get; set; }
 
-        [JsonProperty("rejectionReason")]
-        public string RejectionReason { get; set; }
+	[JsonProperty("rejectionReason")]
+	public string? RejectionReason { get; set; }
 
-        [JsonProperty("validationType")]
-        public string ValidationType { get; set; }
-    }
+	[JsonProperty("validationType")]
+	public string? ValidationType { get; set; }
 }

@@ -5,7 +5,7 @@
 	{
 		[TestMethod]
 		public void null_list()
-			=> ((List<Item>)null).GetAuthorsDistinct().ShouldBeNull();
+			=> ((List<Item>?)null).GetAuthorsDistinct().ShouldBeNull();
 
 		[TestMethod]
 		public void empty_list()
@@ -167,7 +167,7 @@
 	{
 		[TestMethod]
 		public void null_list()
-			=> ((List<Item>)null).GetNarratorsDistinct().ShouldBeNull();
+			=> ((List<Item>?)null).GetNarratorsDistinct().ShouldBeNull();
 
 		[TestMethod]
 		public void empty_list()
@@ -329,7 +329,7 @@
 	{
 		[TestMethod]
 		public void null_list()
-			=> ((List<Item>)null).GetNarratorNamesDistinct().ShouldBeNull();
+			=> ((List<Item>?)null).GetNarratorNamesDistinct().ShouldBeNull();
 
 		[TestMethod]
 		public void empty_list()
@@ -489,7 +489,7 @@
 	{
 		[TestMethod]
 		public void null_list()
-			=> ((List<Item>)null).GetPublishersDistinct().ShouldBeNull();
+			=> ((List<Item>?)null).GetPublishersDistinct().ShouldBeNull();
 
 		[TestMethod]
 		public void empty_list()
@@ -573,7 +573,7 @@
 	{
 		[TestMethod]
 		public void null_list()
-			=> ((List<Item>)null).GetSeriesDistinct().ShouldBeNull();
+			=> ((List<Item>?)null).GetSeriesDistinct().ShouldBeNull();
 
 		[TestMethod]
 		public void empty_list()
@@ -735,7 +735,7 @@
 	{
 		[TestMethod]
 		public void null_list()
-			=> ((List<Item>)null).GetCategoryPairsDistinct().ShouldBeNull();
+			=> ((List<Item>?)null).GetCategoryPairsDistinct().ShouldBeNull();
 
 		[TestMethod]
 		public void empty_list()
@@ -774,10 +774,7 @@
 			{
 				new Item
 				{
-					CategoryLadders = new CategoryLadder[]
-					{
-						null
-					}
+					CategoryLadders = [null]
 				}
 			};
 			items.GetCategoryPairsDistinct().Count().ShouldBe(0);
@@ -848,10 +845,7 @@
 					{
 						new CategoryLadder
 						{
-							Ladder = new Ladder[]
-							{
-								null
-							}
+							Ladder = [null]
 						}
 					}
 				}
@@ -905,6 +899,7 @@
 			var ladderPair = ladderPairs[0];
 			ladderPair.Length.ShouldBe(1);
 			var ladder = ladderPair[0];
+			ladder.ShouldNotBeNull();
 			ladder.Name.ShouldBe("name1");
 			ladder.Id.ShouldBe("id1");
 		}
@@ -940,6 +935,7 @@
 			var ladderPair = ladderPairs[0];
 			ladderPair.Length.ShouldBe(1);
 			var ladder = ladderPair[0];
+			ladder.ShouldNotBeNull();
 			ladder.Name.ShouldBe("name1");
 			ladder.Id.ShouldBe("id1");
 		}
@@ -969,9 +965,11 @@
 			var ladderPair = ladderPairs[0];
 			ladderPair.Length.ShouldBe(2);
 			var ladder1 = ladderPair[0];
+			ladder1.ShouldNotBeNull();
 			ladder1.Name.ShouldBe("name1");
 			ladder1.Id.ShouldBe("id1");
 			var ladder2 = ladderPair[1];
+			ladder2.ShouldNotBeNull();
 			ladder2.Name.ShouldBe("name2");
 			ladder2.Id.ShouldBe("id2");
 		}
@@ -1016,18 +1014,22 @@
 			var ladderPair1 = ladderPairs[0];
 			ladderPair1.Length.ShouldBe(2);
 			var ladder1 = ladderPair1[0];
+			ladder1.ShouldNotBeNull();
 			ladder1.Name.ShouldBe("name1");
 			ladder1.Id.ShouldBe("id1");
 			var ladder2 = ladderPair1[1];
+			ladder2.ShouldNotBeNull();
 			ladder2.Name.ShouldBe("name2");
 			ladder2.Id.ShouldBe("id2");
 
 			var ladderPair2 = ladderPairs[1];
 			ladderPair2.Length.ShouldBe(2);
 			var ladder3 = ladderPair2[0];
+			ladder3.ShouldNotBeNull();
 			ladder3.Name.ShouldBe("name3");
 			ladder3.Id.ShouldBe("id3");
 			var ladder4 = ladderPair2[1];
+			ladder4.ShouldNotBeNull();
 			ladder4.Name.ShouldBe("name4");
 			ladder4.Id.ShouldBe("id4");
 		}
@@ -1071,15 +1073,18 @@
 			var ladderPair1 = ladderPairs[0];
 			ladderPair1.Length.ShouldBe(2);
 			var ladder1 = ladderPair1[0];
+			ladder1.ShouldNotBeNull();
 			ladder1.Name.ShouldBe("name1");
 			ladder1.Id.ShouldBe("id1");
 			var ladder2 = ladderPair1[1];
+			ladder2.ShouldNotBeNull();
 			ladder2.Name.ShouldBe("name2");
 			ladder2.Id.ShouldBe("id2");
 
 			var ladderPair2 = ladderPairs[1];
 			ladderPair2.Length.ShouldBe(1);
 			var ladder3 = ladderPair2[0];
+			ladder3.ShouldNotBeNull();
 			ladder3.Name.ShouldBe("name1");
 			ladder3.Id.ShouldBe("id1");
 		}
@@ -1124,9 +1129,11 @@
 			var ladderPair1 = ladderPairs[0];
 			ladderPair1.Length.ShouldBe(2);
 			var ladder1 = ladderPair1[0];
+			ladder1.ShouldNotBeNull();
 			ladder1.Name.ShouldBe("name1");
 			ladder1.Id.ShouldBe("id1");
 			var ladder2 = ladderPair1[1];
+			ladder2.ShouldNotBeNull();
 			ladder2.Name.ShouldBe("name2");
 			ladder2.Id.ShouldBe("id2");
 		}
@@ -1137,7 +1144,7 @@
 	{
 		[TestMethod]
 		public void null_list()
-			=> ((List<Item>)null).GetCategoriesDistinct().ShouldBeNull();
+			=> ((List<Item>?)null).GetCategoriesDistinct().ShouldBeNull();
 
 		[TestMethod]
 		public void empty_list()
@@ -1176,10 +1183,7 @@
 			{
 				new Item
 				{
-					CategoryLadders = new CategoryLadder[]
-					{
-						null
-					}
+					CategoryLadders = [null]
 				}
 			};
 			items.GetCategoriesDistinct().Count().ShouldBe(0);
@@ -1250,10 +1254,7 @@
 					{
 						new CategoryLadder
 						{
-							Ladder = new Ladder[]
-							{
-								null
-							}
+							Ladder = [null]
 						}
 					}
 				}

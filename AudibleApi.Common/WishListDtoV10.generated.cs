@@ -1,15 +1,16 @@
 ﻿using Newtonsoft.Json;
 using System;
 
+#nullable enable
 namespace AudibleApi.Common
 {
 	public partial class WishListDtoV10
 	{
 		[JsonProperty("bin_fields")]
-		public object BinFields { get; set; }
+		public object? BinFields { get; set; }
 
 		[JsonProperty("products")]
-		public Product[] Products { get; set; }
+		public Product[]? Products { get; set; }
 
 		[JsonProperty("total_results")]
 		public int TotalResults { get; set; }
@@ -21,34 +22,34 @@ namespace AudibleApi.Common
 		public DateTimeOffset AddedTimestamp { get; set; }
 
 		[JsonProperty("asin")]
-		public string Asin { get; set; }
+		public string? Asin { get; set; }
 
 		[JsonProperty("audible_editors_summary")]
-		public string AudibleEditorsSummary { get; set; }
+		public string? AudibleEditorsSummary { get; set; }
 
 		[JsonProperty("authors")]
-		public Author[] Authors { get; set; }
+		public Author[]? Authors { get; set; }
 
 		[JsonProperty("available_codecs")]
-		public AvailableCodec[] AvailableCodecs { get; set; }
+		public AvailableCodec[]? AvailableCodecs { get; set; }
 
 		[JsonProperty("content_delivery_type")]
-		public string ContentDeliveryType { get; set; }
+		public string? ContentDeliveryType { get; set; }
 
 		[JsonProperty("content_type")]
-		public string ContentType { get; set; }
+		public string? ContentType { get; set; }
 
 		[JsonProperty("customer_rights")]
-		public CustomerRights CustomerRights { get; set; }
+		public CustomerRights? CustomerRights { get; set; }
 
 		[JsonProperty("distribution_rights_region")]
-		public string[] DistributionRightsRegion { get; set; }
+		public string[]? DistributionRightsRegion { get; set; }
 
 		[JsonProperty("editorial_reviews")]
-		public string[] EditorialReviews { get; set; }
+		public string[]? EditorialReviews { get; set; }
 
 		[JsonProperty("format_type")]
-		public string FormatType { get; set; }
+		public string? FormatType { get; set; }
 
 		[JsonProperty("has_children")]
 		public bool? HasChildren { get; set; }
@@ -75,40 +76,40 @@ namespace AudibleApi.Common
 		public DateTimeOffset? IssueDate { get; set; }
 
 		[JsonProperty("language")]
-		public string Language { get; set; }
+		public string? Language { get; set; }
 
 		[JsonProperty("merchandising_summary")]
-		public string MerchandisingSummary { get; set; }
+		public string? MerchandisingSummary { get; set; }
 
 		[JsonProperty("narrators")]
-		public Author[] Narrators { get; set; }
+		public Author[]? Narrators { get; set; }
 
 		[JsonProperty("preorder_release_date")]
 		public DateTimeOffset? PreorderReleaseDate { get; set; }
 
 		[JsonProperty("price")]
-		public Price Price { get; set; }
+		public Price? Price { get; set; }
 
 		[JsonProperty("product_images")]
-		public ProductImages ProductImages { get; set; }
+		public ProductImages? ProductImages { get; set; }
 
 		[JsonProperty("publication_datetime")]
 		public DateTimeOffset? PublicationDatetime { get; set; }
 
 		[JsonProperty("publication_name")]
-		public string PublicationName { get; set; }
+		public string? PublicationName { get; set; }
 
 		[JsonProperty("publisher_name")]
-		public string PublisherName { get; set; }
+		public string? PublisherName { get; set; }
 
 		[JsonProperty("publisher_summary")]
-		public string PublisherSummary { get; set; }
+		public string? PublisherSummary { get; set; }
 
 		[JsonProperty("rating")]
-		public Rating Rating { get; set; }
+		public Rating? Rating { get; set; }
 
 		[JsonProperty("relationships")]
-		public Relationship[] Relationships { get; set; }
+		public Relationship[]? Relationships { get; set; }
 
 		[JsonProperty("release_date")]
 		public DateTimeOffset? ReleaseDate { get; set; }
@@ -117,34 +118,34 @@ namespace AudibleApi.Common
 		public long? RuntimeLengthMin { get; set; }
 
 		[JsonProperty("sample_url")]
-		public Uri SampleUrl { get; set; }
+		public Uri? SampleUrl { get; set; }
 
 		[JsonProperty("sku")]
-		public string Sku { get; set; }
+		public string? Sku { get; set; }
 
 		[JsonProperty("sku_lite")]
-		public string SkuLite { get; set; }
+		public string? SkuLite { get; set; }
 
 		[JsonProperty("social_media_images")]
-		public SocialMediaImages SocialMediaImages { get; set; }
+		public SocialMediaImages? SocialMediaImages { get; set; }
 
 		[JsonProperty("subtitle")]
-		public string Subtitle { get; set; }
+		public string? Subtitle { get; set; }
 
 		[JsonProperty("thesaurus_subject_keywords")]
-		public string[] ThesaurusSubjectKeywords { get; set; }
+		public string[]? ThesaurusSubjectKeywords { get; set; }
 
 		[JsonProperty("title")]
-		public string Title { get; set; }
+		public string? Title { get; set; }
 	}
 
 	public partial class Author
 	{
 		[JsonProperty("asin")]
-		public string Asin { get; set; }
+		public string? Asin { get; set; }
 
 		[JsonProperty("name")]
-		public string Name { get; set; }
+		public string? Name { get; set; }
 	}
 
 	public partial class CustomerRights
@@ -159,15 +160,15 @@ namespace AudibleApi.Common
 		public bool IsConsumableOffline { get; set; }
 
 		[JsonProperty("is_consumable_until")]
-		public object IsConsumableUntil { get; set; }
+		public object? IsConsumableUntil { get; set; }
 	}
 
 	public partial class SocialMediaImages
 	{
 		[JsonProperty("facebook")]
-		public Uri Facebook { get; set; }
+		public Uri? Facebook { get; set; }
 
 		[JsonProperty("twitter")]
-		public Uri Twitter { get; set; }
+		public Uri? Twitter { get; set; }
 	}
 }
