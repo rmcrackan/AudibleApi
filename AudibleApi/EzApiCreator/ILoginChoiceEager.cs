@@ -26,13 +26,15 @@ public class ChoiceOut
 		LoginMethod = LoginMethod.External;
 		ResponseUrl = responseUrl;
 	}
-	public static ChoiceOut External(string responseUrl) => new(responseUrl);
+
+	[return: System.Diagnostics.CodeAnalysis.NotNullIfNotNull(nameof(responseUrl))]
+	public static ChoiceOut? External(string? responseUrl) => responseUrl is null ? null : new(responseUrl);
 }
 
 /// <summary>If not already logged in, user can log in with API or an external browser. External browser url is provided. Response can be external browser login or continuing with native api callbacks.</summary>
 public interface ILoginChoiceEager
 {
-	Task<ChoiceOut> StartAsync(ChoiceIn choiceIn);
+	Task<ChoiceOut?> StartAsync(ChoiceIn choiceIn);
 
 	ILoginCallback LoginCallback { get; }
 }

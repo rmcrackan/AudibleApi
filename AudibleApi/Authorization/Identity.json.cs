@@ -13,7 +13,7 @@ public partial class Identity
 	protected Identity(string localeName, AccessToken existingAccessToken, PrivateKey privateKey, AdpToken adpToken, RefreshToken refreshToken, List<KeyValuePair<string, string?>> cookies)
 	{
 		LocaleName = localeName?.Trim() ?? string.Empty;
-		IsValid = string.IsNullOrWhiteSpace(localeName);
+		IsValid = !string.IsNullOrWhiteSpace(localeName);
 		ExistingAccessToken = ArgumentValidator.EnsureNotNull(existingAccessToken, nameof(existingAccessToken));
 
 		if (privateKey is null)
