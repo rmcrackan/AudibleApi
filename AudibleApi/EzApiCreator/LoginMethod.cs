@@ -1,6 +1,3 @@
-﻿using System;
+﻿namespace AudibleApi;
 
-namespace AudibleApi
-{
-	public enum LoginMethod { Api, External }
-}
+public enum LoginMethod { Api, External }

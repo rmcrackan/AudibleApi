@@ -1,17 +1,15 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace AudibleApi.Common
+namespace AudibleApi.Common;
+
+public abstract class V10Base<T> : DtoBase<T>
 {
-	public abstract class V10Base<T> : DtoBase<T>
-	{
-        [JsonProperty("response_groups")]
-        public string[] ResponseGroups { get; set; }
+	[JsonProperty("response_groups")]
+	public string[]? ResponseGroups { get; set; }
 
-        /// <summary>
-        /// If not null, then main content was not returned by the Api.
-        /// </summary>
-        [JsonProperty("message")]
-        public string Message { get; set; }
-    }
+	/// <summary>
+	/// If not null, then main content was not returned by the Api.
+	/// </summary>
+	[JsonProperty("message")]
+	public string? Message { get; set; }
 }

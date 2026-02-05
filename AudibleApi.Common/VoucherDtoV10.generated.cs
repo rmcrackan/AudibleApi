@@ -6,47 +6,47 @@
 //
 //    var voucherDtoV10 = VoucherDtoV10.FromJson(jsonString);
 
-namespace AudibleApi.Common
+#nullable enable
+namespace AudibleApi.Common;
+
+using System;
+using Newtonsoft.Json;
+
+public partial class VoucherDtoV10
 {
-    using System;
-    using Newtonsoft.Json;
+	[JsonProperty("key")]
+	public string? Key { get; set; }
 
-    public partial class VoucherDtoV10
-    {
-        [JsonProperty("key")]
-        public string Key { get; set; }
+	[JsonProperty("iv")]
+	public string? Iv { get; set; }
 
-        [JsonProperty("iv")]
-        public string Iv { get; set; }
+	[JsonProperty("refreshDate")]
+	public DateTimeOffset RefreshDate { get; set; }
 
-        [JsonProperty("refreshDate")]
-        public DateTimeOffset RefreshDate { get; set; }
+	[JsonProperty("removalOnExpirationDate")]
+	public DateTimeOffset RemovalOnExpirationDate { get; set; }
 
-        [JsonProperty("removalOnExpirationDate")]
-        public DateTimeOffset RemovalOnExpirationDate { get; set; }
+	[JsonProperty("rules")]
+	public Rule[]? Rules { get; set; }
+}
 
-        [JsonProperty("rules")]
-        public Rule[] Rules { get; set; }
-    }
+public partial class Rule
+{
+	[JsonProperty("parameters")]
+	public Parameter[]? Parameters { get; set; }
 
-    public partial class Rule
-    {
-        [JsonProperty("parameters")]
-        public Parameter[] Parameters { get; set; }
+	[JsonProperty("name")]
+	public string? Name { get; set; }
+}
 
-        [JsonProperty("name")]
-        public string Name { get; set; }
-    }
+public partial class Parameter
+{
+	[JsonProperty("expireDate", NullValueHandling = NullValueHandling.Ignore)]
+	public DateTimeOffset? ExpireDate { get; set; }
 
-    public partial class Parameter
-    {
-        [JsonProperty("expireDate", NullValueHandling = NullValueHandling.Ignore)]
-        public DateTimeOffset? ExpireDate { get; set; }
+	[JsonProperty("type")]
+	public string? Type { get; set; }
 
-        [JsonProperty("type")]
-        public string Type { get; set; }
-
-        [JsonProperty("directedIds", NullValueHandling = NullValueHandling.Ignore)]
-        public string[] DirectedIds { get; set; }
-    }
+	[JsonProperty("directedIds", NullValueHandling = NullValueHandling.Ignore)]
+	public string[]? DirectedIds { get; set; }
 }

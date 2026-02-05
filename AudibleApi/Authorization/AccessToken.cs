@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Dinah.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Dinah.Core;
 
 namespace AudibleApi.Authorization
 {
-    public class AccessToken : ValueObject
+	public class AccessToken : ValueObject
 	{
 		private const string REQUIRED_BEGINNING = "Atna|";
 
@@ -13,9 +13,9 @@ namespace AudibleApi.Authorization
 		public static AccessToken EmptyFuture => new AccessToken(REQUIRED_BEGINNING, DateTime.MaxValue);
 
 		public string TokenValue { get; }
-        public DateTime Expires { get; private set; }
+		public DateTime Expires { get; private set; }
 
-        public AccessToken(string value, DateTime expires)
+		public AccessToken(string value, DateTime expires)
 		{
 			ArgumentValidator.EnsureNotNullOrWhiteSpace(value, nameof(value));
 			if (!value.StartsWith(REQUIRED_BEGINNING))
@@ -29,38 +29,39 @@ namespace AudibleApi.Authorization
 
 		public void Invalidate() => Expires = DateTime.MinValue;
 
-		public static AccessToken Parse(Uri uri)
+		public static AccessToken? Parse(Uri uri)
 			=> uri.IsAbsoluteUri
 			? ParseQuery(uri?.Query)
 			: Parse(uri?.OriginalString);
 
-		public static AccessToken Parse(string url) => ParseQuery(url?.Split('?').Last());
+		public static AccessToken? Parse(string? url) => ParseQuery(url?.Split('?').Last());
 
-		public static AccessToken ParseQuery(string urlQueryPortion)
-        {
+		public static AccessToken? ParseQuery(string? urlQueryPortion)
+		{
 			if (string.IsNullOrWhiteSpace(urlQueryPortion))
 				return null;
 
-            // keys and values are already url-decoded
-            var parameters = System.Web.HttpUtility.ParseQueryString(urlQueryPortion);
+			// keys and values are already url-decoded
+			var parameters = System.Web.HttpUtility.ParseQueryString(urlQueryPortion);
 
-            var tokenKey = "openid.oa2.access_token";
-            if (!parameters.AllKeys.Contains(tokenKey))
-                return null;
+			const string tokenKey = "openid.oa2.access_token";
+			if (!parameters.AllKeys.Contains(tokenKey))
+				return null;
 
-            var timeKey = "openid.pape.auth_time";
-            if (!parameters.AllKeys.Contains(timeKey))
-                return null;
+			const string timeKey = "openid.pape.auth_time";
+			if (!parameters.AllKeys.Contains(timeKey))
+				return null;
 
-            var expires = parameters[timeKey];
-			return new AccessToken(parameters[tokenKey], DateTime.Parse(expires));
-        }
+			var expires = parameters[timeKey] ?? throw new RegistrationException("Expiration time missing from query string");
+			var token = parameters[tokenKey] ?? throw new RegistrationException("Access token missing from query string");
+			return new AccessToken(token, DateTime.Parse(expires));
+		}
 
 		protected override IEnumerable<object> GetEqualityComponents()
-        {
-            yield return TokenValue;
-            yield return Expires;
-        }
+		{
+			yield return TokenValue;
+			yield return Expires;
+		}
 
 		public override string ToString()
 			=> "AccessToken. "

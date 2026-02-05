@@ -152,18 +152,26 @@
 		public void Publisher_value() => new Item { PublisherName = "foo" }.Publisher.ShouldBe("foo");
 
 		[TestMethod]
-		public void Categories_null_CategoryLadders() => new Item { CategoryLadders = null }.Categories.Length.ShouldBe(0);
-		[TestMethod]
-		public void Categories_empty_CategoryLadders() => new Item { CategoryLadders = new CategoryLadder[0] }.Categories.Length.ShouldBe(0);
-		[TestMethod]
-		public void Categories_empty_Ladder_set() => new Item
+		public void Categories_null_CategoryLadders()
 		{
-			CategoryLadders = new CategoryLadder[]
-			{
-				new CategoryLadder { Ladder = new Ladder[0] }
-			}
+			var categories = new Item { CategoryLadders = null }.Categories;
+			categories.ShouldNotBeNull();
+			categories.Length.ShouldBe(0);
 		}
-		.Categories.Count().ShouldBe(0);
+		[TestMethod]
+		public void Categories_empty_CategoryLadders()
+		{
+			var categories = new Item { CategoryLadders = new CategoryLadder[0] }.Categories;
+			categories.ShouldNotBeNull();
+			categories.Length.ShouldBe(0);
+		}
+		[TestMethod]
+		public void Categories_empty_Ladder_set()
+		{
+			var categories = new Item { CategoryLadders = [new CategoryLadder { Ladder = [] }] }.Categories;
+			categories.ShouldNotBeNull();
+			categories.Length.ShouldBe(0);
+		}
 		[TestMethod]
 		public void Categories_1_Ladder()
 		{
@@ -178,8 +186,10 @@
 				}
 			};
 			var ladders = item.Categories;
+			ladders.ShouldNotBeNull();
 			ladders.Count().ShouldBe(1);
-			ladders[0].Name.ShouldBe("a");
+			ladders[0].ShouldNotBeNull();
+			ladders[0]!.Name.ShouldBe("a");
 		}
 		[TestMethod]
 		public void Categories_2_Ladders()
@@ -199,9 +209,12 @@
 				}
 			};
 			var ladders = item.Categories;
+			ladders.ShouldNotBeNull();
 			ladders.Count().ShouldBe(2);
-			ladders[0].Name.ShouldBe("a");
-			ladders[1].Name.ShouldBe("b");
+			ladders[0].ShouldNotBeNull();
+			ladders[1].ShouldNotBeNull();
+			ladders[0]!.Name.ShouldBe("a");
+			ladders[1]!.Name.ShouldBe("b");
 		}
 		[TestMethod]
 		public void Categories_ignore_2nd_CategoryLadder()
@@ -221,26 +234,49 @@
 				}
 			};
 			var ladders = item.Categories;
+			ladders.ShouldNotBeNull();
 			ladders.Count().ShouldBe(2);
-			ladders[0].Name.ShouldBe("a");
-			ladders[1].Name.ShouldBe("b");
+			ladders[0].ShouldNotBeNull();
+			ladders[1].ShouldNotBeNull();
+			ladders[0]!.Name.ShouldBe("a");
+			ladders[1]!.Name.ShouldBe("b");
 		}
 
 		[TestMethod]
 		public void ParentCategory_null_Categories() => new Item { CategoryLadders = null }.ParentCategory.ShouldBeNull();
 		[TestMethod]
-		public void ParentCategory_1_Category() => new Item { CategoryLadders = new[] { new CategoryLadder { Ladder = new[] { new Ladder { Name = "a" } } } } }.ParentCategory.Name.ShouldBe("a");
+		public void ParentCategory_1_Category()
+		{
+			var parentCategory = new Item { CategoryLadders = new[] { new CategoryLadder { Ladder = new[] { new Ladder { Name = "a" } } } } }.ParentCategory;
+			parentCategory.ShouldNotBeNull();
+			parentCategory.Name.ShouldBe("a");
+		}
 		[TestMethod]
-		public void ParentCategory_get_1st_category() => new Item { CategoryLadders = new[] { new CategoryLadder { Ladder = new[] { new Ladder { Name = "a" }, new Ladder { Name = "xxxx" } } } } }.ParentCategory.Name.ShouldBe("a");
+		public void ParentCategory_get_1st_category()
+		{
+			var parentCategory = new Item { CategoryLadders = new[] { new CategoryLadder { Ladder = new[] { new Ladder { Name = "a" }, new Ladder { Name = "xxxx" } } } } }.ParentCategory;
+			parentCategory.ShouldNotBeNull();
+			parentCategory.Name.ShouldBe("a");
+		}
 
 		[TestMethod]
 		public void ChildCategory_0_categories_returns_null() => new Item { CategoryLadders = new[] { new CategoryLadder { Ladder = new Ladder[0] } } }.ChildCategory.ShouldBeNull();
 		[TestMethod]
 		public void ChildCategory_1_category_returns_null() => new Item { CategoryLadders = new[] { new CategoryLadder { Ladder = new[] { new Ladder { Name = "xxxx" } } } } }.ChildCategory.ShouldBeNull();
 		[TestMethod]
-		public void ChildCategory_2_categories_returns_2nd() => new Item { CategoryLadders = new[] { new CategoryLadder { Ladder = new[] { new Ladder { Name = "xxxx" }, new Ladder { Name = "a" } } } } }.ChildCategory.Name.ShouldBe("a");
+		public void ChildCategory_2_categories_returns_2nd()
+		{
+			var childCategory = new Item { CategoryLadders = new[] { new CategoryLadder { Ladder = new[] { new Ladder { Name = "xxxx" }, new Ladder { Name = "a" } } } } }.ChildCategory;
+			childCategory.ShouldNotBeNull();
+			childCategory.Name.ShouldBe("a");
+		}
 		[TestMethod]
-		public void ChildCategory_3_categories_returns_2nd() => new Item { CategoryLadders = new[] { new CategoryLadder { Ladder = new[] { new Ladder { Name = "xxxx" }, new Ladder { Name = "a" }, new Ladder { Name = "zzzz" } } } } }.ChildCategory.Name.ShouldBe("a");
+		public void ChildCategory_3_categories_returns_2nd()
+		{
+			var childCategory = new Item { CategoryLadders = new[] { new CategoryLadder { Ladder = new[] { new Ladder { Name = "xxxx" }, new Ladder { Name = "a" }, new Ladder { Name = "zzzz" } } } } }.ChildCategory;
+			childCategory.ShouldNotBeNull();
+			childCategory.Name.ShouldBe("a");
+		}
 	}
 
 	[TestClass]
@@ -282,19 +318,19 @@
 		[TestMethod]
 		public void Ladder_set_null() => new CategoryLadder { Ladder = null }.ToString().ShouldBe("[null]");
 		[TestMethod]
-		public void Ladder_set_empty() => new CategoryLadder { Ladder = new Ladder[0] }.ToString().ShouldBe("[empty]");
+		public void Ladder_set_empty() => new CategoryLadder { Ladder = [] }.ToString().ShouldBe("[empty]");
 		[TestMethod]
-		public void Ladder_1_null() => new CategoryLadder { Ladder = new Ladder[] { null } }.ToString().ShouldBeNull();
+		public void Ladder_1_null() => new CategoryLadder { Ladder = [null] }.ToString().ShouldBeNull();
 		[TestMethod]
-		public void Ladder_2_nulls() => new CategoryLadder { Ladder = new Ladder[] { null, null } }.ToString().ShouldBe(" | ");
+		public void Ladder_2_nulls() => new CategoryLadder { Ladder = [null, null] }.ToString().ShouldBe(" | ");
 		[TestMethod]
-		public void Ladder_1_populated_null_Name() => new CategoryLadder { Ladder = new[] { new Ladder { Name = null } } }.ToString().ShouldBeNull();
+		public void Ladder_1_populated_null_Name() => new CategoryLadder { Ladder = [new Ladder { Name = null }] }.ToString().ShouldBeNull();
 		[TestMethod]
-		public void Ladder_1_populated() => new CategoryLadder { Ladder = new[] { new Ladder { Name = "a" } } }.ToString().ShouldBe("a");
+		public void Ladder_1_populated() => new CategoryLadder { Ladder = [new Ladder { Name = "a" }] }.ToString().ShouldBe("a");
 		[TestMethod]
-		public void Ladder_1_populated_1_null() => new CategoryLadder { Ladder = new[] { new Ladder { Name = "a" }, null } }.ToString().ShouldBe("a | ");
+		public void Ladder_1_populated_1_null() => new CategoryLadder { Ladder = [new Ladder { Name = "a" }, null] }.ToString().ShouldBe("a | ");
 		[TestMethod]
-		public void CategoryName_2_values() => new CategoryLadder { Ladder = new[] { new Ladder { Name = "a" }, new Ladder { Name = "b" } } }.ToString().ShouldBe("a | b");
+		public void CategoryName_2_values() => new CategoryLadder { Ladder = [new Ladder { Name = "a" }, new Ladder { Name = "b" }] }.ToString().ShouldBe("a | b");
 	}
 
 	[TestClass]
@@ -439,7 +475,7 @@
 		[TestMethod]
 		public void StoryDistribution_null() => new Rating { OverallDistribution = new Distribution { DisplayStars = 1.23 }, PerformanceDistribution = new Distribution { DisplayStars = 4.56 }, StoryDistribution = null }.ToString().ShouldBe("1.2|4.6|");
 		[TestMethod]
-		public void populated() => new Rating { OverallDistribution = new Distribution { DisplayStars = 1.23 }, PerformanceDistribution = new Distribution { DisplayStars = 4.56}, StoryDistribution = new Distribution { DisplayStars = 7.89 } }.ToString().ShouldBe("1.2|4.6|7.9");
+		public void populated() => new Rating { OverallDistribution = new Distribution { DisplayStars = 1.23 }, PerformanceDistribution = new Distribution { DisplayStars = 4.56 }, StoryDistribution = new Distribution { DisplayStars = 7.89 } }.ToString().ShouldBe("1.2|4.6|7.9");
 	}
 
 	[TestClass]

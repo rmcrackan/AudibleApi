@@ -1,61 +1,72 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Dinah.Core.Collections.Generic;
 
-namespace AudibleApi.Common
+namespace AudibleApi.Common;
+
+public static class IEnumerable_Item_Extensions
 {
-	public static class IEnumerable_Item_Extensions
+	extension(IEnumerable<Item>? items)
 	{
-		public static IEnumerable<Person> GetAuthorsDistinct(this IEnumerable<Item> items)
-			=> items
-			?.Where(i => i.Authors != null)
-			.SelectMany(i => i.Authors)
+		[return: NotNullIfNotNull(nameof(items))]
+		public IEnumerable<Item>? NonNull() => items?.OfType<Item>();
+
+		[return: NotNullIfNotNull(nameof(items))]
+		public IEnumerable<Person>? GetAuthorsDistinct()
+			=> items.NonNull()
+			?.SelectMany(i => i.Authors ?? [])
+			.OfType<Person>()
 			.DistinctBy(a => new { a.Name, a.Asin });
 
-		public static IEnumerable<Person> GetNarratorsDistinct(this IEnumerable<Item> items)
-			=> items
-			?.Where(i => i.Narrators != null)
-			.SelectMany(i => i.Narrators)
+		[return: NotNullIfNotNull(nameof(items))]
+		public IEnumerable<Person>? GetNarratorsDistinct()
+			=> items.NonNull()
+			?.SelectMany(i => i.Narrators ?? [])
 			.DistinctBy(n => new { n.Name, n.Asin });
 
-		public static IEnumerable<string> GetNarratorNamesDistinct(this IEnumerable<Item> items)
-			=> items
-			?.Where(i => i.Narrators != null)
-			.SelectMany(i => i.Narrators, (i, n) => n.Name)
+		[return: NotNullIfNotNull(nameof(items))]
+		public IEnumerable<string>? GetNarratorNamesDistinct()
+			=> items.NonNull()
+			?.SelectMany(i => i.Narrators ?? [], (i, n) => n.Name)
+			.OfType<string>()
 			.Distinct();
 
-		public static IEnumerable<string> GetPublishersDistinct(this IEnumerable<Item> items)
-			=> items
-			?.Where(i => !string.IsNullOrWhiteSpace(i.Publisher))
-			.Select(i => i.Publisher)
+		[return: NotNullIfNotNull(nameof(items))]
+		public IEnumerable<string>? GetPublishersDistinct()
+			=> items.NonNull()
+			?.Select(i => i.Publisher)
+			.Where(p => !string.IsNullOrWhiteSpace(p))
+			.Cast<string>()
 			.Distinct();
 
-		public static IEnumerable<Series> GetSeriesDistinct(this IEnumerable<Item> items)
-			=> items
-			?.Where(i => i.Series != null)
-			.SelectMany(i => i.Series)
+		[return: NotNullIfNotNull(nameof(items))]
+		public IEnumerable<Series>? GetSeriesDistinct()
+			=> items.NonNull()
+			?.SelectMany(i => i.Series ?? [])
 			// if series is present, Name and Id must both be non-null. don't use Elvis operator in DistinctBy()
 			.DistinctBy(s => new { s.SeriesName, s.SeriesId });
 
-		public static IEnumerable<Ladder[]> GetCategoryPairsDistinct(this IEnumerable<Item> items)
-			=> items
-			?.Where (i => !string.IsNullOrWhiteSpace(i.ParentCategory?.Name))
+		[return: NotNullIfNotNull(nameof(items))]
+		public IEnumerable<Ladder?[]>? GetCategoryPairsDistinct()
+			=> items.NonNull()
+			?.Where(i => !string.IsNullOrWhiteSpace(i.ParentCategory?.Name))
 			.DistinctBy(i => new
 			{
-				parentName = i.ParentCategory.Name,
-				parentId = i.ParentCategory.Id,
+				parentName = i.ParentCategory?.Name,
+				parentId = i.ParentCategory?.Id,
 				childName = i.ChildCategory?.Name,
 				childId = i.ChildCategory?.Id
 			})
 			.Select(i => i.Categories)
-			.Where(c => c != null && c.Length > 0);
+			.OfType<Ladder?[]>()
+			.Where(c => c.Length > 0);
 
-		public static IEnumerable<Ladder> GetCategoriesDistinct(this IEnumerable<Item> items)
-			=> items
-			?.Where(i => i.Categories != null)
-			.SelectMany(l => l.Categories)
-			.DistinctBy(l => new { l?.CategoryName, l?.CategoryId })
-			.Where(l => !string.IsNullOrWhiteSpace(l?.CategoryName));
+		[return: NotNullIfNotNull(nameof(items))]
+		public IEnumerable<Ladder>? GetCategoriesDistinct()
+			=> items.NonNull()
+			?.SelectMany(l => l.Categories ?? [])
+			.OfType<Ladder>()
+			.DistinctBy(l => new { l.CategoryName, l.CategoryId })
+			.Where(l => !string.IsNullOrWhiteSpace(l.CategoryName));
 	}
 }

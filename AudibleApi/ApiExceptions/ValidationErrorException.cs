@@ -1,17 +1,16 @@
-﻿using System;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
+using System;
 
-namespace AudibleApi
+namespace AudibleApi;
+
+public class ValidationErrorException : AudibleApiException
 {
-    public class ValidationErrorException : AudibleApiException
-    {
-        public ValidationErrorException(Uri requestUri, JObject jObj)
-            : this(requestUri, jObj, null, null) { }
+	public ValidationErrorException(Uri? requestUri, JObject? jObj)
+		: base(requestUri, jObj, null, null) { }
 
-        public ValidationErrorException(Uri requestUri, JObject jObj, string message)
-            : this(requestUri, jObj, message, null) { }
+	public ValidationErrorException(Uri? requestUri, JObject? jObj, string? message)
+		: base(requestUri, jObj, message, null) { }
 
-        public ValidationErrorException(Uri requestUri, JObject jObj, string message, Exception innerException)
-            : base(requestUri, jObj, message, innerException) { }
-    }
+	public ValidationErrorException(Uri? requestUri, JObject? jObj, string? message, Exception? innerException)
+		: base(requestUri, jObj, message, innerException) { }
 }

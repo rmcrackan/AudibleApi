@@ -217,13 +217,13 @@ namespace LibraryOptions_ResponseGroupOptions_Tests
 			var expected = "response_groups=badge_types,category_ladders,claim_code_url,contributors,is_downloaded,is_returnable,media,origin_asin,pdf_url,percent_complete,price,product_attrs,product_desc,product_extended_attrs,product_plan_details,product_plans,provided_review,rating,relationships,review_attrs,reviews,sample,series,sku,categories,customer_rights,in_wishlist,is_archived,is_finished,is_playable,is_removable,is_visible,listening_status,order_details,origin,periodicals,product_details,ws4v";
 			responseGroups.ToResponseGroupsQueryString().ShouldBe(expected);
 		}
-    }
+	}
 }
 
 namespace LibraryOptions_ImageSizeOptions_Tests
 {
 	[TestClass]
-    public class ToQueryString
+	public class ToQueryString
 	{
 		[TestMethod]
 		public void invalid_throws()

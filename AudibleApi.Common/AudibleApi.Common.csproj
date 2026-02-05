@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+	<Nullable>enable</Nullable>
     <Version>10.1.2.1</Version>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>
       $(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb
@@ -15,7 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="Dinah.Core" Version="10.0.0.1" />
-	<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+	<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.102" PrivateAssets="All" />
   </ItemGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -1,10 +1,9 @@
-﻿namespace Authentic.LoginCompleteTests
+﻿namespace Authentic.LoginCompleteTests;
+
+[TestClass]
+public class ctor
 {
-    [TestClass]
-    public class ctor
-    {
-        [TestMethod]
-        public void null_identity_throws()
-            => Assert.Throws<ArgumentNullException>(() => new LoginComplete(AuthenticateShared.GetAuthenticate(), "x", null));
-    }
+	[TestMethod]
+	public void null_identity_throws()
+		=> Assert.Throws<ArgumentNullException>(() => new LoginComplete(AuthenticateShared.GetAuthenticate(), "x", null!));
 }
