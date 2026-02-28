@@ -424,8 +424,33 @@ public partial class Api
 			while (semaphore.CurrentCount > 0 && page < totalPages)
 				await spinupPageRequestAsync();
 
-			if (completed.Result?.Items?.Length is not (null or 0))
-				yield return completed.Result.Items;
+            #region // DO NOT EDIT THE BELOW LINES WITHOUT READING THIS
+            // old bad code:
+            // if (completed.Result?.Items?.Length is not (null or 0))
+            //    yield return completed.Result.Items;
+            //
+            // What the above condition does
+            // * In the if we only read completed.Result with ?., so if Result is null we never throw there; the expression is just null and we don’t enter the block.
+            // * So in theory we only enter the block when Result and Items are non-null and Length > 0.
+            //
+            // Why the old code can still throw
+            // * The condition and the yield are two separate expressions. The compiler does not use the condition to assume that completed.Result is non-null in the next statement.
+            // * So in the yield line we’re doing a second access: completed.Result.Items with no ?. on Result. If for any reason that second access sees Result as null (or if the compiler/optimizer doesn’t treat the first check as guaranteeing the second), we get a NullReferenceException on that line.
+            //
+            // So the issue isn’t the logic of the condition; it’s that we then _dereference_ completed.Result again without null-safety.
+            //
+            // What the new code does
+            // var libDto = completed.Result;   // one read, storedif (libDto?.Items?.Length is not (null or 0))
+            //     yield return libDto.Items;   // use the same variable we checked
+            // * We read Result once and store it in libDto.
+            // * We only yield when libDto and libDto.Items have been checked via libDto?.Items?.Length.
+            // * When we yield, we use that same libDto, so we’re not doing a second, unchecked access to completed.Result. The value we yield from is exactly the one we validated.
+            //
+            // So the difference is: old code = “check with null-safe access, then use completed.Result again (unsafe)”. New code = “check one copy in a local, then use that same local so we never dereference Result a second time.” That’s why the new code avoids the NullReferenceException.
+            #endregion
+            var libDto = completed.Result;
+			if (libDto?.Items?.Length is not (null or 0))
+				yield return libDto.Items;
 		}
 
 		async Task spinupPageRequestAsync()
