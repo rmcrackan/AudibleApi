@@ -85,7 +85,7 @@ public static class Localization
 				{"countryCode", "it"},
 				{"topDomain", "it"},
 				{"marketPlaceId", "A2N7FU2W2BU2ZC"},
-				{"language", "it"}
+				{"language", "it-IT"}
 			},
 			new JObject
 			{
@@ -93,7 +93,7 @@ public static class Localization
 				{"countryCode", "jp"},
 				{"topDomain", "co.jp"},
 				{"marketPlaceId", "A1QAP3MOU4173J"},
-				{"language", "ja"}
+				{"language", "ja-JP"}
 			},
 			new JObject
 			{
@@ -101,7 +101,7 @@ public static class Localization
 				{"countryCode", "es"},
 				{"topDomain", "es"},
 				{"marketPlaceId", "ALMIKO4SZCSAR"},
-				{"language", "es"}
+				{"language", "es-ES"}
 			},
 			new JObject
 			{
