@@ -238,6 +238,24 @@ public partial class Api
 
 		var responseJobj = await response.Content.ReadAsJObjectAsync();
 
+		if (Serilog.Log.Logger.IsEnabled(Serilog.Events.LogEventLevel.Verbose))
+		{
+			var rootKeys = string.Join(",", responseJobj.Properties().Select(p => p.Name));
+			var contentLicense = responseJobj["content_license"] as JObject;
+			var contentLicenseKeys = contentLicense is null
+				? ""
+				: string.Join(",", contentLicense.Properties().Select(p => p.Name));
+			var refSummary = "";
+			if (contentLicense?["content_metadata"]?["content_reference"] is JObject cr)
+			{
+				refSummary = $" codec={cr["codec"]} tempo={cr["tempo"]} bytes={cr["content_size_in_bytes"]}";
+			}
+
+			Serilog.Log.Logger.Verbose(
+				"licenserequest response shape: asin={Asin} requestedQuality={Quality} drmType={DrmType} rootKeys=[{RootKeys}] content_licenseKeys=[{ContentLicenseKeys}]{RefSummary}",
+				asin, quality, drmType, rootKeys, contentLicenseKeys, refSummary);
+		}
+
 		ContentLicenseDtoV10 contentLicenseDtoV10;
 		try
 		{
