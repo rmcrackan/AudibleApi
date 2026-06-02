@@ -36,6 +36,24 @@ public class ProcessResponse
 		await Assert.ThrowsAsync<NotAuthenticatedException>(async () => await client.SendAsync(request));
 	}
 
+	[TestMethod]
+	public async Task throws_NonJsonResponseException_for_html()
+	{
+		var message = "<html><head><title>502 Bad Gateway</title></head><body></body></html>";
+		var request = new HttpRequestMessage(HttpMethod.Get, "http://test.com");
+		var response = new HttpResponseMessage(HttpStatusCode.BadGateway)
+		{
+			Content = new StringContent(message, System.Text.Encoding.UTF8, "text/html")
+		};
+		var innerHandler = HttpMock.CreateMockHttpClientHandler(response);
+
+		var apiMessageHandler = new ApiMessageHandler(innerHandler);
+		var client = new HttpClient(apiMessageHandler);
+
+		var ex = await Assert.ThrowsAsync<NonJsonResponseException>(async () => await client.SendAsync(request));
+		Assert.AreEqual("502 Bad Gateway", ex.HtmlTitle);
+	}
+
 	// - custom length
 	// - records whether stream/string was requested
 	class testContent : HttpContent

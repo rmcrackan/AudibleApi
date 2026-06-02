@@ -15,6 +15,21 @@ public class ThrowStrongExceptionsIfInvalid
 	public void no_error_string() => test("hi");
 
 	[TestMethod]
+	public void throws_NonJsonResponseException_for_html()
+	{
+		var html = """
+			<html>
+			<head><title>502 Bad Gateway</title></head>
+			<body><center><h1>502 Bad Gateway</h1></center></body>
+			</html>
+			""";
+		var ex = Assert.Throws<NonJsonResponseException>(() => test(html));
+		Assert.AreEqual("502 Bad Gateway", ex.HtmlTitle);
+		Assert.IsTrue(ex.Message.Contains("502 Bad Gateway", StringComparison.Ordinal));
+		Assert.IsTrue(ex.Message.Contains("HTML instead of JSON", StringComparison.Ordinal));
+	}
+
+	[TestMethod]
 	public void no_error_json() => test(new JObject { { "a", 1 } });
 
 	[TestMethod]

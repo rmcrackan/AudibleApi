@@ -11,6 +11,9 @@ public static class RestMessageValidator
 		if (message is null)
 			return;
 
+		if (ResponseBodyInspector.IsHtmlResponse(message))
+			throw new NonJsonResponseException(requestUri, message);
+
 		// Audible API returned content strings SHOULD always be json but there could be exceptions I'm not aware of.
 		// Errors are always returned as json.
 		// This method is not intended to be json validation. only finding out just enough to see if it's amazon's json error message. then throwing strong exceptions where needed
