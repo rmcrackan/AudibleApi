@@ -47,8 +47,16 @@ public static class Converter
 		var contentStr = await content.ReadAsStringAsync();
 		try
 		{
+			if (ResponseBodyInspector.IsHtmlResponse(contentStr))
+				throw new NonJsonResponseException((string?)null, contentStr);
+
 			var jobj = JObject.Parse(contentStr);
 			return DtoBase<T>.FromJson(jobj) ?? throw new InvalidCastException("Failed to convert JObject to object");
+		}
+		catch (NonJsonResponseException)
+		{
+			Serilog.Log.Logger.Error($"Error converting {typeof(T).Name}. Audible returned HTML instead of JSON. Full body:\r\n" + contentStr);
+			throw;
 		}
 		catch (Exception ex)
 		{
