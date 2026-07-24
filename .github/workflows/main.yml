@@ -1,5 +1,5 @@
 # validate.yml
-# Validates that Libation will build on a pull request or push to master. 
+# Validates that AudibleApi will build on a pull request or push to master.
 ---
 name: validate
 
@@ -11,9 +11,10 @@ on:
 
 jobs:
   build:
+    permissions:
+      id-token: write
+      contents: read
     uses: ./.github/workflows/build.yml
     with:
       project_file: ./AudibleApi/AudibleApi.csproj
       nuspec_file: ./AudibleApi.nuspec
-    secrets:
-      nuget_token: ${{ secrets.NUGET_API_KEY }}
