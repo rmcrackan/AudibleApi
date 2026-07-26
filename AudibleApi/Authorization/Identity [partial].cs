@@ -59,6 +59,10 @@ public partial class Identity : IIdentity
 	[JsonProperty]
 	public string? StoreAuthenticationCookie { get; private set; }
 
+	/// <summary>Per-field encryption persistence state. Not serialized.</summary>
+	[JsonIgnore]
+	internal IdentitySecretPersistence SecretPersistence { get; } = new();
+
 	protected Identity() { LocaleName = string.Empty; }
 
 	public Identity(Locale locale)
@@ -74,11 +78,13 @@ public partial class Identity : IIdentity
 		Authorization = ArgumentValidator.EnsureNotNull(authorization, nameof(authorization));
 		ExistingAccessToken = AccessToken.Empty;
 		_cookies = cookies?.ToList();
+		SecretPersistence.CookiesDirty = true;
 	}
 
 	public void Update(AccessToken accessToken)
 	{
 		ExistingAccessToken = ArgumentValidator.EnsureNotNull(accessToken, nameof(accessToken));
+		SecretPersistence.AccessToken.Dirty = true;
 		Updated?.Invoke(this, new EventArgs());
 	}
 
@@ -97,6 +103,8 @@ public partial class Identity : IIdentity
 		DeviceName = deviceName ?? string.Empty;
 		StoreAuthenticationCookie = storeAuthenticationCookie ?? string.Empty;
 
+		SecretPersistence.MarkAllSecretsDirty();
+
 		Updated?.Invoke(this, new EventArgs());
 
 		IsValid = true;
@@ -107,6 +115,9 @@ public partial class Identity : IIdentity
 		AdpToken = null;
 		RefreshToken = null;
 		ExistingAccessToken?.Invalidate();
+		SecretPersistence.AdpToken.Dirty = true;
+		SecretPersistence.RefreshToken.Dirty = true;
+		SecretPersistence.AccessToken.Dirty = true;
 
 		Updated?.Invoke(this, new EventArgs());
 
