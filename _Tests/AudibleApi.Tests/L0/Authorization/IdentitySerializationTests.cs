@@ -108,8 +108,15 @@ BxlXqPnQ4mG66oqSFQgDEmFdMhRb2of6xL1gYYL62C80G2T7QtmPfSab
 			""";
 	}
 
-	[TestMethod]
-	public void serialize_registered_identity_has_no_IsEncrypted_metadata()
+		[TestMethod]
+		public void null_json_token_deserializes_as_null_identity()
+		{
+			var identity = JsonConvert.DeserializeObject<Identity>("null", Identity.GetJsonSerializerSettings());
+			identity.ShouldBeNull();
+		}
+
+		[TestMethod]
+		public void serialize_registered_identity_has_no_IsEncrypted_metadata()
 	{
 		var json = JsonConvert.SerializeObject(CreateRegisteredIdentity(), Identity.GetJsonSerializerSettings());
 		var jo = JObject.Parse(json);
