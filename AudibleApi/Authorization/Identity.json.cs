@@ -1,8 +1,6 @@
 ﻿using AudibleApi.Cryptography;
 using Dinah.Core;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 
 namespace AudibleApi.Authorization;
@@ -40,30 +38,7 @@ public partial class Identity
 	public static JsonSerializerSettings GetJsonSerializerSettings()
 	{
 		var settings = new JsonSerializerSettings();
-		settings.Converters.Add(new AccessTokenConverter());
+		settings.Converters.Add(new IdentityJsonConverter());
 		return settings;
-	}
-
-	// https://stackoverflow.com/a/23017892
-	internal class AccessTokenConverter : JsonConverter
-	{
-		public override bool CanConvert(Type objectType)
-			=> objectType == typeof(AccessToken);
-
-		public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
-		{
-			var jo = JObject.Load(reader);
-
-			var accessTokenValue = jo["TokenValue"]?.Value<string>() ?? throw new JsonReaderException("TokenValue not found on AccessToken");
-			var expires = jo["Expires"]?.Value<DateTime>() ?? throw new JsonReaderException("Expires not found on AccessToken");
-
-			var result = new AccessToken(accessTokenValue, expires);
-			return result;
-		}
-
-		public override bool CanWrite => false;
-
-		public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
-			=> throw new NotImplementedException();
 	}
 }

@@ -7,8 +7,15 @@ namespace Authoriz.IdentitySerializationTests;
 /// These tests lock the legacy JSON shape before encryption work lands.
 /// </summary>
 [TestClass]
+[DoNotParallelize]
 public class IdentitySerialization
 {
+	[TestInitialize]
+	public void Init() => IdentityTokenStorage.Reset();
+
+	[TestCleanup]
+	public void Cleanup() => IdentityTokenStorage.Reset();
+
 	public const string SampleAccessToken = "Atna|_CHAR_ACCESS_";
 	public const string SampleRefreshToken = "Atnr|_CHAR_REFRESH_";
 	public const string SampleAdpToken = "{enc:abcdefg}{key:1234}{iv:56789}{name:QURQVG9rZW5FbmNyeXB0aW9uS2V5}{serial:Mg==}";

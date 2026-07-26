@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dinah.Core" Version="10.0.0.1" />
+    <PackageReference Include="Dinah.Core" Version="10.1.0.1" />
 	<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.102" PrivateAssets="All" />
   </ItemGroup>
 
