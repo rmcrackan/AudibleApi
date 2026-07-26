@@ -40,6 +40,30 @@ public static class IdentityTokenStorage
 	public static void Reset()
 		=> Configure(TokenStorageMethod.Plaintext, protector: null);
 
+	/// <summary>
+	/// Run <paramref name="action"/> with a temporary write method, restoring prior configuration afterward.
+	/// The current protector is preserved.
+	/// </summary>
+	public static void RunWithWriteMethod(TokenStorageMethod writeMethod, Action action)
+	{
+		ArgumentNullException.ThrowIfNull(action);
+		lock (Gate)
+		{
+			var previousMethod = _writeMethod;
+			var previousProtector = _protector;
+			try
+			{
+				_writeMethod = writeMethod;
+				action();
+			}
+			finally
+			{
+				_writeMethod = previousMethod;
+				_protector = previousProtector;
+			}
+		}
+	}
+
 	internal static bool ShouldEncrypt(bool fieldDirty, bool loadedEncrypted)
 		=> fieldDirty
 			? WriteMethod == TokenStorageMethod.Encrypted
