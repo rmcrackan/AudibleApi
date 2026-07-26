@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Dinah.Core.Security;
 
 namespace AudibleApi.Authorization;
@@ -10,7 +11,7 @@ namespace AudibleApi.Authorization;
 /// </summary>
 public static class IdentityTokenStorage
 {
-	private static readonly object Gate = new();
+	private static Lock Gate { get; } = new();
 	private static TokenStorageMethod _writeMethod = TokenStorageMethod.Plaintext;
 	private static AesGcmSecretProtector? _protector;
 
