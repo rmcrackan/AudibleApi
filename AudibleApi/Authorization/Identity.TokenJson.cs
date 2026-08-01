@@ -320,7 +320,7 @@ public partial class Identity
 			}
 			catch (Exception ex) when (ex is SecretProtectionException or OsSecretStoreUnavailableException or InvalidOperationException)
 			{
-				throw new JsonSerializationException($"Failed to encrypt {fieldName}.", ex);
+				throw new IdentityTokenEncryptException(fieldName, ex);
 			}
 		}
 
@@ -332,7 +332,7 @@ public partial class Identity
 			}
 			catch (Exception ex) when (ex is SecretProtectionException or OsSecretStoreUnavailableException or InvalidOperationException)
 			{
-				throw new JsonReaderException($"Failed to decrypt {fieldName}.", ex);
+				throw new IdentityTokenDecryptException(fieldName, ex);
 			}
 		}
 

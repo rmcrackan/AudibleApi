@@ -461,7 +461,8 @@ public class FailureSafety
 			["IsEncrypted"] = true
 		};
 
-		var ex = Should.Throw<JsonReaderException>(() => Load(jo));
+		var ex = Should.Throw<IdentityTokenDecryptException>(() => Load(jo));
+		ex.FieldName.ShouldBe("ExistingAccessToken");
 		ex.Message.ShouldContain("Failed to decrypt");
 		ex.ToString().ShouldNotContain(SampleAccessToken);
 		ex.ToString().ShouldNotContain(SampleRefreshToken);
@@ -476,7 +477,8 @@ public class FailureSafety
 		parts[2] = TamperBase64Url(parts[2]);
 		jo["RefreshToken"]!["Value"] = string.Join('.', parts);
 
-		var ex = Should.Throw<JsonReaderException>(() => Load(jo));
+		var ex = Should.Throw<IdentityTokenDecryptException>(() => Load(jo));
+		ex.FieldName.ShouldBe("RefreshToken");
 		ex.ToString().ShouldNotContain(SampleRefreshToken);
 	}
 
@@ -492,7 +494,8 @@ public class FailureSafety
 			["IsEncrypted"] = true
 		};
 
-		Should.Throw<JsonReaderException>(() => Load(jo));
+		var ex = Should.Throw<IdentityTokenDecryptException>(() => Load(jo));
+		ex.FieldName.ShouldBe("AdpToken");
 	}
 
 	[TestMethod]
@@ -509,7 +512,7 @@ public class FailureSafety
 			File.WriteAllText(path, jo.ToString(Formatting.Indented));
 			var tampered = File.ReadAllText(path);
 
-			Should.Throw<Exception>(() => new IdentityPersister(path));
+			Should.Throw<IdentityTokenDecryptException>(() => new IdentityPersister(path));
 			File.ReadAllText(path).ShouldBe(tampered);
 		}
 		finally
@@ -523,7 +526,8 @@ public class FailureSafety
 	public void encrypted_write_without_protector_fails_closed()
 	{
 		IdentityTokenStorage.Configure(TokenStorageMethod.Encrypted, protector: null);
-		Should.Throw<JsonSerializationException>(() => Serialize(CreateRegisteredIdentity()));
+		var ex = Should.Throw<IdentityTokenEncryptException>(() => Serialize(CreateRegisteredIdentity()));
+		ex.FieldName.ShouldNotBeNullOrWhiteSpace();
 	}
 
 	[TestMethod]
@@ -531,6 +535,7 @@ public class FailureSafety
 	{
 		var jo = FullyEncryptedObject();
 		IdentityTokenStorage.Reset();
-		Should.Throw<JsonReaderException>(() => Load(jo));
+		var ex = Should.Throw<IdentityTokenDecryptException>(() => Load(jo));
+		ex.FieldName.ShouldNotBeNullOrWhiteSpace();
 	}
 }
