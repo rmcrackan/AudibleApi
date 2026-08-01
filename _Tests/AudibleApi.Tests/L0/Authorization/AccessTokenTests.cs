@@ -65,13 +65,14 @@ public class Invalidate
 public class ToString
 {
 	[TestMethod]
-	public void print()
+	public void print_redacts_token_value()
 	{
 		var dateTime = DateTime.MaxValue;
-		new AccessToken("Atna|foo", dateTime)
-			.ToString()
-			.ShouldBe(
-			$"AccessToken. Value=Atna|foo. Expires={dateTime}"
-			);
+		var token = new AccessToken("Atna|foo", dateTime);
+		var text = token.ToString();
+
+		text.ShouldBe($"AccessToken [REDACTED length={token.TokenValue.Length}]. Expires={dateTime}");
+		text.ShouldNotContain("Atna|foo");
+		text.ShouldNotContain(token.TokenValue);
 	}
 }

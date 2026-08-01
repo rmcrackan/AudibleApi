@@ -32,3 +32,16 @@ public class ValidateInput
 			.Value.ShouldBe(full);
 	}
 }
+
+[TestClass]
+public class ToString
+{
+	[TestMethod]
+	public void redacts_value()
+	{
+		var full = "Atnr|foo";
+		var text = new RefreshToken(full).ToString();
+		text.ShouldBe($"RefreshToken [REDACTED length={full.Length}]");
+		text.ShouldNotContain(full);
+	}
+}

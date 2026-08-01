@@ -1,10 +1,12 @@
 ﻿using Dinah.Core;
 using System;
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace AudibleApi.Cryptography;
 
+[DebuggerDisplay("{ToString(),nq}")]
 public class PrivateKey : StrongType<string>
 {
 	public const string REQUIRED_BEGINNING = "-----BEGIN RSA PRIVATE KEY-----";
@@ -29,6 +31,11 @@ public class PrivateKey : StrongType<string>
 		if (!value.Trim().EndsWith(REQUIRED_ENDING))
 			throw new ArgumentException("Improperly formatted RSA private key", nameof(value));
 	}
+
+	public override string ToString()
+		=> Value is null
+			? "PrivateKey [REDACTED <null>]"
+			: $"PrivateKey [REDACTED length={Value.Length}]";
 
 	public string SignMessage(string message)
 	{

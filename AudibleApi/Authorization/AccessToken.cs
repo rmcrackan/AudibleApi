@@ -1,10 +1,12 @@
 ﻿using Dinah.Core;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace AudibleApi.Authorization
 {
+	[DebuggerDisplay("{ToString(),nq}")]
 	public class AccessToken : ValueObject
 	{
 		private const string REQUIRED_BEGINNING = "Atna|";
@@ -64,8 +66,8 @@ namespace AudibleApi.Authorization
 		}
 
 		public override string ToString()
-			=> "AccessToken. "
-			+ $"Value={TokenValue}. "
-			+ $"Expires={Expires}";
+			=> TokenValue is null
+				? $"AccessToken [REDACTED <null>]. Expires={Expires}"
+				: $"AccessToken [REDACTED length={TokenValue.Length}]. Expires={Expires}";
 	}
 }
