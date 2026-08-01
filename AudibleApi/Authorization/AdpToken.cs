@@ -1,11 +1,13 @@
 ﻿using Dinah.Core;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
 namespace AudibleApi.Authorization;
 
+[DebuggerDisplay("{ToString(),nq}")]
 public class AdpToken : StrongType<string>
 {
 	public AdpToken(string value) : base(value) { }
@@ -38,6 +40,11 @@ public class AdpToken : StrongType<string>
 		// serial seems to always be "Mg==" which is base64 encode
 		// of "2" but no reason this is necessary
 	}
+
+	public override string ToString()
+		=> Value is null
+			? "AdpToken [REDACTED <null>]"
+			: $"AdpToken [REDACTED length={Value.Length}]";
 
 	public static class adp_parser
 	{

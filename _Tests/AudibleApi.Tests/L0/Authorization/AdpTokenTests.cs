@@ -82,3 +82,17 @@ public class ValidateInput
 		dic["serial"].ShouldBe(serial);
 	}
 }
+
+[TestClass]
+public class ToString
+{
+	[TestMethod]
+	public void redacts_value()
+	{
+		var value = "{enc:abcdefg}{key:1234}{iv:56789}{name:QURQVG9rZW5FbmNyeXB0aW9uS2V5}{serial:Mg==}";
+		var text = new AdpToken(value).ToString();
+		text.ShouldBe($"AdpToken [REDACTED length={value.Length}]");
+		text.ShouldNotContain(value);
+		text.ShouldNotContain("abcdefg");
+	}
+}
