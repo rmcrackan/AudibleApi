@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -6,7 +7,30 @@ namespace AudibleApi;
 
 public static class Localization
 {
-	public static Locale Get(string? localeName) => Locales.SingleOrDefault(l => l.Name == localeName) ?? Locale.Empty;
+	/// <summary>
+	/// Resolve a locale by internal name (e.g. <c>germany</c>) or country code (e.g. <c>de</c>).
+	/// When matching by country code and both a modern and pre-amazon locale exist, prefers the modern one.
+	/// Returns <see cref="Locale.Empty"/> when nothing matches.
+	/// </summary>
+	public static Locale Get(string? localeName)
+	{
+		if (string.IsNullOrWhiteSpace(localeName))
+			return Locale.Empty;
+
+		var key = localeName.Trim();
+
+		var byName = Locales.FirstOrDefault(l => l.Name.Equals(key, StringComparison.OrdinalIgnoreCase));
+		if (byName is not null)
+			return byName;
+
+		// Prefer non-pre-amazon (WithUsername == false) when several locales share a country code.
+		var byCountryCode = Locales
+			.Where(l => l.CountryCode.Equals(key, StringComparison.OrdinalIgnoreCase))
+			.OrderBy(l => l.WithUsername)
+			.FirstOrDefault();
+
+		return byCountryCode ?? Locale.Empty;
+	}
 
 	public static ReadOnlyCollection<Locale> Locales { get; }
 
