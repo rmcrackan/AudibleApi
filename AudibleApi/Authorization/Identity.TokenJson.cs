@@ -116,7 +116,7 @@ public partial class Identity
 			var encrypt = state.ShouldEncrypt();
 			var tokenValue = accessToken.TokenValue;
 			if (encrypt)
-				tokenValue = Protect(tokenValue, locale, "ExistingAccessToken");
+				encrypt = TryProtect(tokenValue, locale, "ExistingAccessToken", out tokenValue);
 
 			var jo = new JObject
 			{
@@ -158,7 +158,9 @@ public partial class Identity
 			}
 
 			var encrypt = state.ShouldEncrypt();
-			var value = encrypt ? Protect(plaintext, locale, fieldName) : plaintext;
+			var value = plaintext;
+			if (encrypt)
+				encrypt = TryProtect(plaintext, locale, fieldName, out value);
 
 			var obj = new JObject { ["Value"] = value };
 			if (encrypt)
@@ -197,7 +199,12 @@ public partial class Identity
 				return new JValue(plaintext);
 			}
 
-			var protectedValue = Protect(plaintext, locale, fieldName);
+			if (!TryProtect(plaintext, locale, fieldName, out var protectedValue))
+			{
+				state.SetWritten(false);
+				return new JValue(plaintext);
+			}
+
 			state.SetWritten(true);
 			return new JObject
 			{
@@ -265,16 +272,17 @@ public partial class Identity
 					valueToken = JValue.CreateNull();
 					encrypt = false;
 				}
-				else if (encrypt)
+				else if (encrypt && TryProtect(cookie.Value, locale, aadField, out var protectedValue))
 				{
 					valueToken = new JObject
 					{
-						["Value"] = Protect(cookie.Value, locale, aadField),
+						["Value"] = protectedValue,
 						["IsEncrypted"] = true
 					};
 				}
 				else
 				{
+					encrypt = false;
 					valueToken = new JValue(cookie.Value);
 				}
 
@@ -312,15 +320,27 @@ public partial class Identity
 			return token.Value<bool>();
 		}
 
-		private static string Protect(string plaintext, string locale, string fieldName)
+		/// <summary>
+		/// Try to encrypt. On failure, log an error and return plaintext so persistence
+		/// does not break the host (encryption is preferred but not required).
+		/// </summary>
+		private static bool TryProtect(string plaintext, string locale, string fieldName, out string value)
 		{
 			try
 			{
-				return IdentityTokenStorage.Protect(plaintext, Aad(locale, fieldName));
+				value = IdentityTokenStorage.Protect(plaintext, Aad(locale, fieldName));
+				return true;
 			}
 			catch (Exception ex) when (ex is SecretProtectionException or OsSecretStoreUnavailableException or InvalidOperationException)
 			{
-				throw new IdentityTokenEncryptException(fieldName, ex);
+				Serilog.Log.Error(
+					new IdentityTokenEncryptException(fieldName, ex),
+					"Failed to encrypt identity field {FieldName} (locale {Locale}). Saving as plaintext so the app can continue. " +
+					"Encryption will be retried on the next write when a protector is available.",
+					fieldName,
+					locale);
+				value = plaintext;
+				return false;
 			}
 		}
 

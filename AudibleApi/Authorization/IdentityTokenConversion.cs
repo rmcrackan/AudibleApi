@@ -171,7 +171,18 @@ public static class IdentityTokenConversion
 			ConvertInMemory(identity);
 			json = JsonConvert.SerializeObject(identity, Formatting.Indented, Identity.GetJsonSerializerSettings());
 		});
-		return json ?? throw new InvalidOperationException("Identity conversion produced no JSON.");
+		var converted = json ?? throw new InvalidOperationException("Identity conversion produced no JSON.");
+
+		// Normal persistence may fall back to plaintext when Protect fails; explicit Encrypted
+		// conversion must not report success unless ciphertext was actually written.
+		if (targetMethod == TokenStorageMethod.Encrypted
+			&& GetAlignment(identity, TokenStorageMethod.Encrypted) != TokenStorageAlignment.AllMatch)
+		{
+			throw new InvalidOperationException(
+				"Encrypted conversion requires a working protector; identity tokens were not encrypted.");
+		}
+
+		return converted;
 	}
 
 	private static IdentityTokenConversionResult PersistReplacement(string path, string originalText, string newJson, TokenStorageAlignment alignmentBefore)

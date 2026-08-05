@@ -172,7 +172,8 @@ public class ConvertAndPersistSingleIdentity
 			File.WriteAllText(path, LegacyJson());
 			var before = File.ReadAllText(path);
 
-			// Remove protector after initial configure used by... we need conversion to encrypted without protector.
+			// Explicit Encrypted conversion must fail closed without a protector (unlike
+			// ordinary persistence, which falls back to plaintext on encrypt failure).
 			IdentityTokenStorage.Configure(TokenStorageMethod.Encrypted, protector: null);
 			var result = IdentityTokenConversion.ConvertAndPersist(path, TokenStorageMethod.Encrypted);
 

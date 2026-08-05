@@ -523,11 +523,39 @@ public class FailureSafety
 	}
 
 	[TestMethod]
-	public void encrypted_write_without_protector_fails_closed()
+	public void encrypted_write_without_protector_falls_back_to_plaintext()
 	{
 		IdentityTokenStorage.Configure(TokenStorageMethod.Encrypted, protector: null);
-		var ex = Should.Throw<IdentityTokenEncryptException>(() => Serialize(CreateRegisteredIdentity()));
-		ex.FieldName.ShouldNotBeNullOrWhiteSpace();
+		var jo = Serialize(CreateRegisteredIdentity());
+		jo.SelectTokens("$..IsEncrypted[?(@ == true)]").ShouldBeEmpty();
+		jo["ExistingAccessToken"]!["TokenValue"]!.Value<string>().ShouldBe(SampleAccessToken);
+		jo["RefreshToken"]!["Value"]!.Value<string>().ShouldBe(SampleRefreshToken);
+		AssertAllSecretsUsable(Load(jo));
+	}
+
+	[TestMethod]
+	public void encrypted_dirty_update_without_protector_persists_plaintext_without_throwing()
+	{
+		IdentityTokenStorage.Configure(TokenStorageMethod.Encrypted, protector: null);
+		var path = Path.Combine(Path.GetTempPath(), $"identity-enc-fallback-{Guid.NewGuid():N}.json");
+		try
+		{
+			File.WriteAllText(path, LegacyJson());
+			using (var persister = new IdentityPersister(path))
+			{
+				persister.Identity.Update(new AccessToken("Atna|_FALLBACK_REFRESH_", SampleExpires));
+			}
+
+			var onDisk = JObject.Parse(File.ReadAllText(path));
+			onDisk["ExistingAccessToken"]!["TokenValue"]!.Value<string>().ShouldBe("Atna|_FALLBACK_REFRESH_");
+			(onDisk["ExistingAccessToken"]!["IsEncrypted"]?.Value<bool>() ?? false).ShouldBeFalse();
+			onDisk.SelectTokens("$..IsEncrypted[?(@ == true)]").ShouldBeEmpty();
+		}
+		finally
+		{
+			if (File.Exists(path))
+				File.Delete(path);
+		}
 	}
 
 	[TestMethod]
