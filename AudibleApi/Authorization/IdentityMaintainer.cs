@@ -74,16 +74,27 @@ public class IdentityMaintainer : IIdentityMaintainer
 		{
 			await RefreshAccessTokenAsync();
 		}
-		catch
+		catch (Exception refreshEx)
 		{
+			// Do not log token values; message/type only.
+			Serilog.Log.Error(
+				refreshEx,
+				"Access token refresh failed ({ExceptionType}): {Message}",
+				refreshEx.GetType().FullName,
+				refreshEx.Message);
+
 			try
 			{
 				await DeregisterAsync();
 				await RegisterAsync();
 			}
-			catch (Exception ex)
+			catch (Exception recoveryEx)
 			{
-				throw new RegistrationException("Error ensuring valid state", ex);
+				// Preserve the original refresh failure; deregister/register is often a secondary symptom
+				// (e.g. expired access token -> "Unable to deregister").
+				throw new RegistrationException(
+					"Error ensuring valid state",
+					new AggregateException(refreshEx, recoveryEx));
 			}
 		}
 	}
