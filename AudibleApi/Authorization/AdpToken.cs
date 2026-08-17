@@ -1,4 +1,5 @@
 ﻿using Dinah.Core;
+using Dinah.Core.Security;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -41,10 +42,7 @@ public class AdpToken : StrongType<string>
 		// of "2" but no reason this is necessary
 	}
 
-	public override string ToString()
-		=> Value is null
-			? "AdpToken [REDACTED <null>]"
-			: $"AdpToken [REDACTED length={Value.Length}]";
+	public override string ToString() => SecretString.Redact(nameof(AdpToken), Value);
 
 	public static class adp_parser
 	{

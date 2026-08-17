@@ -1,4 +1,5 @@
 ﻿using Dinah.Core;
+using Dinah.Core.Security;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -66,8 +67,6 @@ namespace AudibleApi.Authorization
 		}
 
 		public override string ToString()
-			=> TokenValue is null
-				? $"AccessToken [REDACTED <null>]. Expires={Expires}"
-				: $"AccessToken [REDACTED length={TokenValue.Length}]. Expires={Expires}";
+			=> $"{SecretString.Redact(nameof(AccessToken), TokenValue)}. Expires={Expires}";
 	}
 }

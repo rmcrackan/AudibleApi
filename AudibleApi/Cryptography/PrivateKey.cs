@@ -1,4 +1,5 @@
 ﻿using Dinah.Core;
+using Dinah.Core.Security;
 using System;
 using System.Diagnostics;
 using System.Security.Cryptography;
@@ -32,10 +33,7 @@ public class PrivateKey : StrongType<string>
 			throw new ArgumentException("Improperly formatted RSA private key", nameof(value));
 	}
 
-	public override string ToString()
-		=> Value is null
-			? "PrivateKey [REDACTED <null>]"
-			: $"PrivateKey [REDACTED length={Value.Length}]";
+	public override string ToString() => SecretString.Redact(nameof(PrivateKey), Value);
 
 	public string SignMessage(string message)
 	{

@@ -1,4 +1,5 @@
 ﻿using Dinah.Core;
+using Dinah.Core.Security;
 using System;
 using System.Diagnostics;
 
@@ -19,8 +20,5 @@ public class RefreshToken : StrongType<string>
 			throw new ArgumentException("Improperly formatted refresh token", nameof(value));
 	}
 
-	public override string ToString()
-		=> Value is null
-			? "RefreshToken [REDACTED <null>]"
-			: $"RefreshToken [REDACTED length={Value.Length}]";
+	public override string ToString() => SecretString.Redact(nameof(RefreshToken), Value);
 }
