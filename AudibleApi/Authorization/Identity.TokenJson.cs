@@ -90,9 +90,9 @@ public partial class Identity
 
 			jo["ExistingAccessToken"] = WriteAccessToken(identity.ExistingAccessToken, identity.SecretPersistence.AccessToken, locale);
 
-			WriteStrongType(jo, "PrivateKey", identity.PrivateKey?.Value, identity.SecretPersistence.PrivateKey, locale);
-			WriteStrongType(jo, "AdpToken", identity.AdpToken?.Value, identity.SecretPersistence.AdpToken, locale);
-			WriteStrongType(jo, "RefreshToken", identity.RefreshToken?.Value, identity.SecretPersistence.RefreshToken, locale);
+			WriteStrongType(jo, "PrivateKey", identity.PrivateKey?.Reveal(), identity.SecretPersistence.PrivateKey, locale);
+			WriteStrongType(jo, "AdpToken", identity.AdpToken?.Reveal(), identity.SecretPersistence.AdpToken, locale);
+			WriteStrongType(jo, "RefreshToken", identity.RefreshToken?.Reveal(), identity.SecretPersistence.RefreshToken, locale);
 
 			jo["DeviceSerialNumber"] = identity.DeviceSerialNumber;
 			jo["DeviceType"] = identity.DeviceType;
@@ -114,7 +114,7 @@ public partial class Identity
 		private static JObject WriteAccessToken(AccessToken accessToken, IdentitySecretPersistence.FieldState state, string locale)
 		{
 			var encrypt = state.ShouldEncrypt();
-			var tokenValue = accessToken.TokenValue;
+			var tokenValue = accessToken.Reveal();
 			if (encrypt)
 				encrypt = TryProtect(tokenValue, locale, "ExistingAccessToken", out tokenValue);
 

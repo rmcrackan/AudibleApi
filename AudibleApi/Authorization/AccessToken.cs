@@ -15,13 +15,14 @@ namespace AudibleApi.Authorization
 		public static AccessToken Empty => new AccessToken(REQUIRED_BEGINNING, DateTime.MinValue);
 		public static AccessToken EmptyFuture => new AccessToken(REQUIRED_BEGINNING, DateTime.MaxValue);
 
-		public string TokenValue { get; }
+		public SecretString TokenValue { get; }
 		public DateTime Expires { get; private set; }
 
-		public AccessToken(string value, DateTime expires)
+		public AccessToken(SecretString value, DateTime expires)
 		{
-			ArgumentValidator.EnsureNotNullOrWhiteSpace(value, nameof(value));
-			if (!value.StartsWith(REQUIRED_BEGINNING))
+			var raw = value.Reveal();
+			ArgumentValidator.EnsureNotNullOrWhiteSpace(raw, nameof(value));
+			if (!raw.StartsWith(REQUIRED_BEGINNING))
 				throw new ArgumentException("Improperly formatted access token", nameof(value));
 
 			TokenValue = value;
@@ -66,7 +67,13 @@ namespace AudibleApi.Authorization
 			yield return Expires;
 		}
 
+		/// <summary>
+		/// The token itself, non-null because the constructor validated it. A method rather than a property so
+		/// that reflective logging cannot reach it.
+		/// </summary>
+		public string Reveal() => TokenValue.Reveal()!;
+
 		public override string ToString()
-			=> $"{SecretString.Redact(nameof(AccessToken), TokenValue)}. Expires={Expires}";
+			=> $"{SecretString.Redact(nameof(AccessToken), TokenValue.Reveal())}. Expires={Expires}";
 	}
 }

@@ -128,7 +128,7 @@ public class Authorize : IAuthorize
 		{
 			["app_name"] = Resources.AppName,
 			["app_version"] = Resources.AppVersion,
-			["source_token"] = refresh_token.Value,
+			["source_token"] = refresh_token.Reveal(),
 			["requested_token_type"] = "access_token",
 			["source_token_type"] = "refresh_token"
 		};

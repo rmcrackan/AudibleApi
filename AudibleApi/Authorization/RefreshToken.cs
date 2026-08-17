@@ -6,19 +6,26 @@ using System.Diagnostics;
 namespace AudibleApi.Authorization;
 
 [DebuggerDisplay("{ToString(),nq}")]
-public class RefreshToken : StrongType<string>
+public class RefreshToken : StrongType<SecretString>
 {
 	public const string REQUIRED_BEGINNING = "Atnr|";
 
-	public RefreshToken(string value) : base(value) { }
+	public RefreshToken(SecretString value) : base(value) { }
 
-	protected override void ValidateInput(string? value)
+	protected override void ValidateInput(SecretString value)
 	{
-		ArgumentValidator.EnsureNotNull(value, nameof(value));
+		var raw = value.Reveal();
+		ArgumentValidator.EnsureNotNull(raw, nameof(value));
 
-		if (!value.StartsWith(REQUIRED_BEGINNING))
+		if (!raw.StartsWith(REQUIRED_BEGINNING))
 			throw new ArgumentException("Improperly formatted refresh token", nameof(value));
 	}
 
-	public override string ToString() => SecretString.Redact(nameof(RefreshToken), Value);
+	/// <summary>
+	/// The token itself, non-null because the constructor validated it. A method rather than a property so
+	/// that reflective logging cannot reach it.
+	/// </summary>
+	public string Reveal() => Value.Reveal()!;
+
+	public override string ToString() => SecretString.Redact(nameof(RefreshToken), Value.Reveal());
 }
