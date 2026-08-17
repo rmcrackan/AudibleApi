@@ -1,3 +1,4 @@
+using Dinah.Core.Security;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -240,13 +241,13 @@ public static class IdentityTokenConversion
 			yield return persistence.AdpToken.LoadedEncrypted;
 		if (identity.PrivateKey is not null)
 			yield return persistence.PrivateKey.LoadedEncrypted;
-		if (!string.IsNullOrEmpty(identity.StoreAuthenticationCookie))
+		if (identity.StoreAuthenticationCookie.HasValue)
 			yield return persistence.StoreAuthenticationCookie.LoadedEncrypted;
 
 		var cookies = identity.Cookies.ToList();
 		for (var i = 0; i < cookies.Count; i++)
 		{
-			if (cookies[i].Value is null)
+			if (cookies[i].Value.Reveal() is null)
 				continue;
 			var encrypted = i < persistence.CookieLoadedEncrypted.Count && persistence.CookieLoadedEncrypted[i];
 			yield return encrypted;

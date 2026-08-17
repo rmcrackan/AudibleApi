@@ -19,7 +19,7 @@ internal static class Fixtures
 
 	public static Identity CreateRegisteredIdentity(bool twoCookies = false)
 	{
-		var cookies = new List<KeyValuePair<string, string?>>
+		var cookies = new List<KeyValuePair<string, SecretString>>
 		{
 			new(SampleCookieName, SampleCookieValue)
 		};

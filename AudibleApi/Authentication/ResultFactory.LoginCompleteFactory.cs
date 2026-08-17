@@ -1,4 +1,5 @@
 ﻿using AudibleApi.Authorization;
+using Dinah.Core.Security;
 using Dinah.Core.Net;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ internal abstract partial class ResultFactory
 		{
 			var cookies = authenticate.LoginClient.CookieJar
 				.EnumerateCookies(authenticate.Locale.LoginUri())
-				?.Select(c => new KeyValuePair<string, string?>(c.Name, c.Value))
+				?.Select(c => new KeyValuePair<string, SecretString>(c.Name, c.Value))
 				.ToList();
 
 			#region debug

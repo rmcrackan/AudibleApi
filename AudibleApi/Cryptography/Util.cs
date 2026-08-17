@@ -55,7 +55,7 @@ public static class Util
 		var date = dateTime.ToRfc3339String();
 		var body = request.Content?.ReadAsStringAsync().Result;
 
-		var dataString = $"{method}\n{url}\n{date}\n{body}\n{adpToken.Value}";
+		var dataString = $"{method}\n{url}\n{date}\n{body}\n{adpToken.Reveal()}";
 
 		var signature = $"{privateKey.SignMessage(dataString)}:{date}";
 

@@ -1,4 +1,5 @@
 ﻿using AudibleApi.Cryptography;
+using Dinah.Core.Security;
 using Dinah.Core;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
@@ -41,6 +42,7 @@ public static class RegistrationParser
 				cookie["Name"]?.ToString(),
 				cookie["Value"]?.ToString().Replace("\"", "")))
 			.OfType<KeyValuePair<string, string?>>()
+			.Select(cookie => new KeyValuePair<string, SecretString>(cookie.Key, cookie.Value))
 			.ToList();
 
 		identity.Update(

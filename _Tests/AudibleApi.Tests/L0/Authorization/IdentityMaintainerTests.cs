@@ -17,14 +17,14 @@ public class EnsureStateAsync
 		identity.Locale.Returns(Locales.Us);
 		identity.RefreshToken.Returns(new RefreshToken("Atnr|test-refresh"));
 		identity.ExistingAccessToken.Returns(new AccessToken("Atna|expired", DateTime.UtcNow.AddHours(-2)));
-		identity.Cookies.Returns(Array.Empty<KeyValuePair<string, string?>>());
+		identity.Cookies.Returns(Array.Empty<KeyValuePair<string, SecretString>>());
 
 		var authorize = Substitute.For<IAuthorize>();
 		authorize
 			.RefreshAccessTokenAsync(Arg.Any<RefreshToken>())
 			.Returns<Task<AccessToken>>(_ => throw refreshException);
 		authorize
-			.DeregisterAsync(Arg.Any<AccessToken>(), Arg.Any<IEnumerable<KeyValuePair<string, string?>>>())
+			.DeregisterAsync(Arg.Any<AccessToken>(), Arg.Any<IEnumerable<KeyValuePair<string, SecretString>>>())
 			.Returns(false);
 
 		var clock = Substitute.For<ISystemDateTime>();
@@ -64,7 +64,7 @@ public class EnsureStateAsync
 		maintainer.ShouldNotBeNull();
 
 		await authorize.DidNotReceive()
-			.DeregisterAsync(Arg.Any<AccessToken>(), Arg.Any<IEnumerable<KeyValuePair<string, string?>>>());
+			.DeregisterAsync(Arg.Any<AccessToken>(), Arg.Any<IEnumerable<KeyValuePair<string, SecretString>>>());
 		identity.Received(1).Update(newToken);
 	}
 

@@ -29,6 +29,19 @@ public class ReflectiveDump
 	}
 
 	[TestMethod]
+	public void finds_no_cookie_plaintext()
+	{
+		var dump = ReflectPublicValues(Fixtures.CreateRegisteredIdentity(twoCookies: true));
+
+		// a cookie's name is not a secret, and staying readable is what makes a log useful
+		dump.ShouldContain(Fixtures.SampleCookieName);
+
+		dump.ShouldNotContain(Fixtures.SampleCookieValue);
+		dump.ShouldNotContain(Fixtures.SampleCookieValue2);
+		dump.ShouldNotContain(Fixtures.SampleStoreAuthCookie);
+	}
+
+	[TestMethod]
 	public void finds_no_token_plaintext_on_the_tokens_themselves()
 	{
 		ReflectPublicValues(new RefreshToken(Fixtures.SampleRefreshToken))

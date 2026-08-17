@@ -1,5 +1,6 @@
 ﻿using AudibleApi.Cryptography;
 using Dinah.Core;
+using Dinah.Core.Security;
 using System.Collections.Generic;
 
 namespace AudibleApi.Authorization;
@@ -22,7 +23,7 @@ public interface IIdentity : IUpdatable
 
 	RefreshToken? RefreshToken { get; }
 
-	IEnumerable<KeyValuePair<string, string?>>? Cookies { get; }
+	IEnumerable<KeyValuePair<string, SecretString>>? Cookies { get; }
 
 	string? DeviceSerialNumber { get; }
 
@@ -34,11 +35,11 @@ public interface IIdentity : IUpdatable
 
 	string? DeviceName { get; }
 
-	string? StoreAuthenticationCookie { get; }
+	SecretString StoreAuthenticationCookie { get; }
 
 	void Update(AccessToken accessToken);
 
-	void Update(PrivateKey privateKey, AdpToken adpToken, AccessToken accessToken, RefreshToken refreshToken, IEnumerable<KeyValuePair<string, string?>>? cookies, string? deviceSerialNumber = null, string? deviceType = null, string? amazonAccountId = null, string? deviceName = null, string? storeAuthenticationCookie = null);
+	void Update(PrivateKey privateKey, AdpToken adpToken, AccessToken accessToken, RefreshToken refreshToken, IEnumerable<KeyValuePair<string, SecretString>>? cookies, string? deviceSerialNumber = null, string? deviceType = null, string? amazonAccountId = null, string? deviceName = null, SecretString storeAuthenticationCookie = default);
 
 	void Invalidate();
 }

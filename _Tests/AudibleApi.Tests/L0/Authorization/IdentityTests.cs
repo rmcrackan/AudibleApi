@@ -25,17 +25,17 @@ public class ctor_locale_accessToken_cookies
 		Assert.Throws<ArgumentNullException>(() => new Identity(
 			null!,
 			OAuth2.Empty,
-			new List<KeyValuePair<string, string?>>()));
+			new List<KeyValuePair<string, SecretString>>()));
 		Assert.Throws<ArgumentNullException>(() => new Identity(
 			Locale.Empty,
 			null!,
-			new List<KeyValuePair<string, string?>>()));
+			new List<KeyValuePair<string, SecretString>>()));
 	}
 
 	[TestMethod]
 	public void loads_cookies()
 	{
-		var idMgr = new Identity(Locale.Empty, OAuth2.Empty, new List<KeyValuePair<string, string?>> { new KeyValuePair<string, string?>("name1", "value1") });
+		var idMgr = new Identity(Locale.Empty, OAuth2.Empty, new List<KeyValuePair<string, SecretString>> { new KeyValuePair<string, SecretString>("name1", "value1") });
 
 		idMgr.Cookies.Count().ShouldBe(1);
 		idMgr.Cookies.Single().Key.ShouldBe("name1");

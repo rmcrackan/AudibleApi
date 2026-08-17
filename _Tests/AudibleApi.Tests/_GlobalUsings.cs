@@ -3,6 +3,7 @@ global using AudibleApi.Authentication;
 global using AudibleApi.Authorization;
 global using AudibleApi.Common;
 global using Dinah.Core;
+global using Dinah.Core.Security;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Newtonsoft.Json;
 global using Newtonsoft.Json.Linq;
