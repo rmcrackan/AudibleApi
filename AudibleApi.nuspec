@@ -11,17 +11,16 @@
         <language>en-US</language>
 		<readme>docs\README.md</readme>	
 		<license type="file">lic</license>
+		<!-- Hand-maintained: this file is what gets packed, not the csproj, so bumping a PackageReference
+		     does not change what the published package says it needs. Keep this in step with
+		     AudibleApi.Common's Dinah.Core reference. 10.2.2 is the floor for Dinah.Core.Security.SecretString,
+		     which the token types now hold their values in. -->
 		<dependencies>
 			<group targetFramework="net10.0">
-				<dependency id="Dinah.Core" version="10.2.1.1" />
+				<dependency id="Dinah.Core" version="10.2.3.1" />
 			</group>
 		</dependencies>
 	</metadata>
-	<dependencies>
-		<group targetFramework="net10.0">
-			<dependency id="AudibleApi.Common" />
-		</group>
-	</dependencies>
 	<files>
 		<file src="AudibleApi\bin\Release\net10.0\AudibleApi.dll" target="lib\net10.0\" />
 		<file src="AudibleApi\bin\Release\net10.0\AudibleApi.Common.dll" target="lib\net10.0\" />
