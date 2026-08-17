@@ -33,7 +33,7 @@ public static class Util
 
 		var signature = request.CalculateSignature(dateTime, adpToken, privateKey);
 
-		request.Headers.Add("x-adp-token", adpToken.Value);
+		request.Headers.Add("x-adp-token", adpToken.Reveal());
 		request.Headers.Add("x-adp-alg", "SHA256withRSA:1.0");
 		request.Headers.Add("x-adp-signature", signature);
 
@@ -55,7 +55,7 @@ public static class Util
 		var date = dateTime.ToRfc3339String();
 		var body = request.Content?.ReadAsStringAsync().Result;
 
-		var dataString = $"{method}\n{url}\n{date}\n{body}\n{adpToken.Value}";
+		var dataString = $"{method}\n{url}\n{date}\n{body}\n{adpToken.Reveal()}";
 
 		var signature = $"{privateKey.SignMessage(dataString)}:{date}";
 

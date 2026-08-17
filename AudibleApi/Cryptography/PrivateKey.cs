@@ -1,4 +1,5 @@
 ﻿using Dinah.Core;
+using Dinah.Core.Security;
 using System;
 using System.Diagnostics;
 using System.Security.Cryptography;
@@ -7,35 +8,39 @@ using System.Text;
 namespace AudibleApi.Cryptography;
 
 [DebuggerDisplay("{ToString(),nq}")]
-public class PrivateKey : StrongType<string>
+public class PrivateKey : StrongType<SecretString>
 {
 	public const string REQUIRED_BEGINNING = "-----BEGIN RSA PRIVATE KEY-----";
 	public const string REQUIRED_ENDING = "-----END RSA PRIVATE KEY-----";
 	private readonly RSACryptoServiceProvider RSACryptoService;
 
-	public PrivateKey(string value) : base(value)
+	public PrivateKey(SecretString value) : base(value)
 	{
-		RSACryptoService = CreateRsaProviderFromPrivateKey(value);
+		RSACryptoService = CreateRsaProviderFromPrivateKey(value.Reveal()!);
 	}
 
-	protected override void ValidateInput(string? value)
+	protected override void ValidateInput(SecretString value)
 	{
-		ArgumentValidator.EnsureNotNullOrWhiteSpace(value, nameof(value));
+		var raw = value.Reveal();
+		ArgumentValidator.EnsureNotNullOrWhiteSpace(raw, nameof(value));
 
-		if (Convert.TryFromBase64String(value.Trim(), new byte[value.Length], out _))
+		if (Convert.TryFromBase64String(raw.Trim(), new byte[raw.Length], out _))
 			return;
 
-		if (!value.Trim().StartsWith(REQUIRED_BEGINNING))
+		if (!raw.Trim().StartsWith(REQUIRED_BEGINNING))
 			throw new ArgumentException("Improperly formatted RSA private key", nameof(value));
 
-		if (!value.Trim().EndsWith(REQUIRED_ENDING))
+		if (!raw.Trim().EndsWith(REQUIRED_ENDING))
 			throw new ArgumentException("Improperly formatted RSA private key", nameof(value));
 	}
 
-	public override string ToString()
-		=> Value is null
-			? "PrivateKey [REDACTED <null>]"
-			: $"PrivateKey [REDACTED length={Value.Length}]";
+	/// <summary>
+	/// The key itself, non-null because the constructor validated it. A method rather than a property so that
+	/// reflective logging cannot reach it.
+	/// </summary>
+	public string Reveal() => Value.Reveal()!;
+
+	public override string ToString() => SecretString.Redact(nameof(PrivateKey), Value.Reveal());
 
 	public string SignMessage(string message)
 	{

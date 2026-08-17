@@ -1,4 +1,5 @@
 ﻿using AudibleApi.Cryptography;
+using Dinah.Core.Security;
 using Dinah.Core;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ namespace AudibleApi.Authorization;
 public partial class Identity
 {
 	[JsonConstructor]
-	protected Identity(string localeName, AccessToken existingAccessToken, PrivateKey privateKey, AdpToken adpToken, RefreshToken refreshToken, List<KeyValuePair<string, string?>> cookies)
+	protected Identity(string localeName, AccessToken existingAccessToken, PrivateKey privateKey, AdpToken adpToken, RefreshToken refreshToken, List<KeyValuePair<string, SecretString>> cookies)
 	{
 		LocaleName = localeName?.Trim() ?? string.Empty;
 		IsValid = !string.IsNullOrWhiteSpace(localeName);

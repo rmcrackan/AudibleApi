@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using Dinah.Core.Security;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ public interface IAuthorize
 {
 	Task<JObject> RegisterAsync(OAuth2 authorization);
 
-	Task<bool> DeregisterAsync(AccessToken accessToken, IEnumerable<KeyValuePair<string, string?>>? cookies);
+	Task<bool> DeregisterAsync(AccessToken accessToken, IEnumerable<KeyValuePair<string, SecretString>>? cookies);
 
 	Task<AccessToken> RefreshAccessTokenAsync(RefreshToken refresh_token);
 

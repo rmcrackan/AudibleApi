@@ -400,7 +400,7 @@ public class PartialUpdatePreservation
 			new AdpToken(SampleAdpToken),
 			new AccessToken(SampleAccessToken, SampleExpires),
 			new RefreshToken(SampleRefreshToken),
-			new List<KeyValuePair<string, string?>> { new(SampleCookieName, SampleCookieValue) },
+			new List<KeyValuePair<string, SecretString>> { new(SampleCookieName, SampleCookieValue) },
 			storeAuthenticationCookie: SampleStoreAuthCookie);
 
 		var after = Serialize(loaded);

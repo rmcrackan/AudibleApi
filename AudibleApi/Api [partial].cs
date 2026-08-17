@@ -64,7 +64,7 @@ public partial class Api : ApiUnauthenticated
 
 		var accessToken = await _identityMaintainer.GetAccessTokenAsync() ?? throw new InvalidOperationException("Identity maintainer access token is null");
 
-		request.Headers.Add("x-amz-access-token", accessToken.TokenValue);
+		request.Headers.Add("x-amz-access-token", accessToken.Reveal());
 
 		return await SendClientRequest(client, request);
 	}

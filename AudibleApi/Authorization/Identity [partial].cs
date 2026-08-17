@@ -1,5 +1,6 @@
 ﻿using AudibleApi.Cryptography;
 using Dinah.Core;
+using Dinah.Core.Security;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -37,9 +38,11 @@ public partial class Identity : IIdentity
 
 	public RefreshToken? RefreshToken { get; private set; }
 
-	// cookies are a list instead of Dictionary<string, string> b/c of duplicates
-	protected List<KeyValuePair<string, string?>>? _cookies { private get; set; }
-	public IEnumerable<KeyValuePair<string, string?>> Cookies => _cookies?.AsReadOnly() ?? [];
+	// cookies are a list instead of Dictionary<string, string> b/c of duplicates.
+	// values are session credentials, so they are held as secrets: the name identifies a cookie in a log, the
+	// value must never appear in one
+	protected List<KeyValuePair<string, SecretString>>? _cookies { private get; set; }
+	public IEnumerable<KeyValuePair<string, SecretString>> Cookies => _cookies?.AsReadOnly() ?? [];
 
 	[JsonProperty]
 	public string? DeviceSerialNumber { get; private set; }
@@ -57,7 +60,7 @@ public partial class Identity : IIdentity
 	public string? DeviceName { get; private set; }
 
 	[JsonProperty]
-	public string? StoreAuthenticationCookie { get; private set; }
+	public SecretString StoreAuthenticationCookie { get; private set; }
 
 	/// <summary>Per-field encryption persistence state. Not serialized.</summary>
 	[JsonIgnore]
@@ -72,7 +75,7 @@ public partial class Identity : IIdentity
 		_cookies = new();
 	}
 
-	public Identity(Locale locale, OAuth2 authorization, IEnumerable<KeyValuePair<string, string?>>? cookies)
+	public Identity(Locale locale, OAuth2 authorization, IEnumerable<KeyValuePair<string, SecretString>>? cookies)
 	{
 		LocaleName = ArgumentValidator.EnsureNotNull(locale, nameof(locale)).Name;
 		Authorization = ArgumentValidator.EnsureNotNull(authorization, nameof(authorization));
@@ -88,7 +91,7 @@ public partial class Identity : IIdentity
 		Updated?.Invoke(this, new EventArgs());
 	}
 
-	public void Update(PrivateKey privateKey, AdpToken adpToken, AccessToken accessToken, RefreshToken refreshToken, IEnumerable<KeyValuePair<string, string?>>? cookies, string? deviceSerialNumber = null, string? deviceType = null, string? amazonAccountId = null, string? deviceName = null, string? storeAuthenticationCookie = null)
+	public void Update(PrivateKey privateKey, AdpToken adpToken, AccessToken accessToken, RefreshToken refreshToken, IEnumerable<KeyValuePair<string, SecretString>>? cookies, string? deviceSerialNumber = null, string? deviceType = null, string? amazonAccountId = null, string? deviceName = null, SecretString storeAuthenticationCookie = default)
 	{
 		PrivateKey = ArgumentValidator.EnsureNotNull(privateKey, nameof(privateKey));
 		AdpToken = ArgumentValidator.EnsureNotNull(adpToken, nameof(adpToken));
@@ -101,7 +104,7 @@ public partial class Identity : IIdentity
 		DeviceType = deviceType ?? string.Empty;
 		AmazonAccountId = amazonAccountId ?? string.Empty;
 		DeviceName = deviceName ?? string.Empty;
-		StoreAuthenticationCookie = storeAuthenticationCookie ?? string.Empty;
+		StoreAuthenticationCookie = storeAuthenticationCookie.Reveal() ?? string.Empty;
 
 		SecretPersistence.MarkAllSecretsDirty();
 

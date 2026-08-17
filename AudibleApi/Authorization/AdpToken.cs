@@ -1,4 +1,5 @@
 ﻿using Dinah.Core;
+using Dinah.Core.Security;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,23 +9,24 @@ using System.Text;
 namespace AudibleApi.Authorization;
 
 [DebuggerDisplay("{ToString(),nq}")]
-public class AdpToken : StrongType<string>
+public class AdpToken : StrongType<SecretString>
 {
-	public AdpToken(string value) : base(value) { }
+	public AdpToken(SecretString value) : base(value) { }
 
-	protected override void ValidateInput(string? value)
+	protected override void ValidateInput(SecretString value)
 	{
-		ArgumentValidator.EnsureNotNull(value, "value");
+		var raw = value.Reveal();
+		ArgumentValidator.EnsureNotNull(raw, "value");
 
 		var ex = new ArgumentException("Improperly formatted ADP token");
 
-		if (!value.StartsWith("{"))
+		if (!raw.StartsWith("{"))
 			throw ex;
 
-		if (!value.EndsWith("}"))
+		if (!raw.EndsWith("}"))
 			throw ex;
 
-		var dic = adp_parser.Parse(value);
+		var dic = adp_parser.Parse(raw);
 
 		if (dic.Count != 5) throw ex;
 
@@ -41,10 +43,13 @@ public class AdpToken : StrongType<string>
 		// of "2" but no reason this is necessary
 	}
 
-	public override string ToString()
-		=> Value is null
-			? "AdpToken [REDACTED <null>]"
-			: $"AdpToken [REDACTED length={Value.Length}]";
+	/// <summary>
+	/// The token itself, non-null because the constructor validated it. A method rather than a property so
+	/// that reflective logging cannot reach it.
+	/// </summary>
+	public string Reveal() => Value.Reveal()!;
+
+	public override string ToString() => SecretString.Redact(nameof(AdpToken), Value.Reveal());
 
 	public static class adp_parser
 	{

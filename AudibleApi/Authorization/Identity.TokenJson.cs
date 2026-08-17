@@ -90,9 +90,9 @@ public partial class Identity
 
 			jo["ExistingAccessToken"] = WriteAccessToken(identity.ExistingAccessToken, identity.SecretPersistence.AccessToken, locale);
 
-			WriteStrongType(jo, "PrivateKey", identity.PrivateKey?.Value, identity.SecretPersistence.PrivateKey, locale);
-			WriteStrongType(jo, "AdpToken", identity.AdpToken?.Value, identity.SecretPersistence.AdpToken, locale);
-			WriteStrongType(jo, "RefreshToken", identity.RefreshToken?.Value, identity.SecretPersistence.RefreshToken, locale);
+			WriteStrongType(jo, "PrivateKey", identity.PrivateKey?.Reveal(), identity.SecretPersistence.PrivateKey, locale);
+			WriteStrongType(jo, "AdpToken", identity.AdpToken?.Reveal(), identity.SecretPersistence.AdpToken, locale);
+			WriteStrongType(jo, "RefreshToken", identity.RefreshToken?.Reveal(), identity.SecretPersistence.RefreshToken, locale);
 
 			jo["DeviceSerialNumber"] = identity.DeviceSerialNumber;
 			jo["DeviceType"] = identity.DeviceType;
@@ -100,7 +100,7 @@ public partial class Identity
 			jo["DeviceName"] = identity.DeviceName;
 
 			jo["StoreAuthenticationCookie"] = WriteStringSecret(
-				identity.StoreAuthenticationCookie,
+				identity.StoreAuthenticationCookie.Reveal(),
 				identity.SecretPersistence.StoreAuthenticationCookie,
 				locale,
 				"StoreAuthenticationCookie");
@@ -114,7 +114,7 @@ public partial class Identity
 		private static JObject WriteAccessToken(AccessToken accessToken, IdentitySecretPersistence.FieldState state, string locale)
 		{
 			var encrypt = state.ShouldEncrypt();
-			var tokenValue = accessToken.TokenValue;
+			var tokenValue = accessToken.Reveal();
 			if (encrypt)
 				encrypt = TryProtect(tokenValue, locale, "ExistingAccessToken", out tokenValue);
 
@@ -213,10 +213,10 @@ public partial class Identity
 			};
 		}
 
-		private static List<KeyValuePair<string, string?>> ReadCookies(JToken? token, string locale, IdentitySecretPersistence persistence)
+		private static List<KeyValuePair<string, SecretString>> ReadCookies(JToken? token, string locale, IdentitySecretPersistence persistence)
 		{
 			persistence.CookieLoadedEncrypted.Clear();
-			var list = new List<KeyValuePair<string, string?>>();
+			var list = new List<KeyValuePair<string, SecretString>>();
 			if (token is not JArray arr)
 				return list;
 
@@ -231,21 +231,21 @@ public partial class Identity
 				var valueToken = cookieObj["Value"];
 				if (valueToken is null || valueToken.Type == JTokenType.Null)
 				{
-					list.Add(new KeyValuePair<string, string?>(key, null));
+					list.Add(new KeyValuePair<string, SecretString>(key, null));
 					persistence.CookieLoadedEncrypted.Add(false);
 					continue;
 				}
 
 				if (valueToken.Type == JTokenType.String)
 				{
-					list.Add(new KeyValuePair<string, string?>(key, valueToken.Value<string>()));
+					list.Add(new KeyValuePair<string, SecretString>(key, valueToken.Value<string>()));
 					persistence.CookieLoadedEncrypted.Add(false);
 					continue;
 				}
 
 				var (raw, encrypted) = ReadObjectSecret(valueToken, aadField);
 				var plaintext = encrypted ? Decrypt(raw, locale, aadField) : raw;
-				list.Add(new KeyValuePair<string, string?>(key, plaintext));
+				list.Add(new KeyValuePair<string, SecretString>(key, plaintext));
 				persistence.CookieLoadedEncrypted.Add(encrypted);
 			}
 
@@ -267,12 +267,13 @@ public partial class Identity
 				var aadField = CookieAadField(cookie.Key);
 
 				JToken valueToken;
-				if (cookie.Value is null)
+				var cookieValue = cookie.Value.Reveal();
+				if (cookieValue is null)
 				{
 					valueToken = JValue.CreateNull();
 					encrypt = false;
 				}
-				else if (encrypt && TryProtect(cookie.Value, locale, aadField, out var protectedValue))
+				else if (encrypt && TryProtect(cookieValue, locale, aadField, out var protectedValue))
 				{
 					valueToken = new JObject
 					{
@@ -283,7 +284,9 @@ public partial class Identity
 				else
 				{
 					encrypt = false;
-					valueToken = new JValue(cookie.Value);
+					// the revealed string, not the SecretString: JValue takes object, so passing the secret
+					// itself would compile and quietly persist "[REDACTED ...]" in place of the cookie
+					valueToken = new JValue(cookieValue);
 				}
 
 				arr.Add(new JObject

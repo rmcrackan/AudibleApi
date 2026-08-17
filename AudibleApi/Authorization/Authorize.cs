@@ -1,4 +1,5 @@
 ﻿using Dinah.Core;
+using Dinah.Core.Security;
 using Dinah.Core.Net.Http;
 using Newtonsoft.Json.Linq;
 using System;
@@ -70,7 +71,7 @@ public class Authorize : IAuthorize
 		}
 	}
 
-	public async Task<bool> DeregisterAsync(AccessToken accessToken, IEnumerable<KeyValuePair<string, string?>>? cookies)
+	public async Task<bool> DeregisterAsync(AccessToken accessToken, IEnumerable<KeyValuePair<string, SecretString>>? cookies)
 	{
 		ArgumentValidator.EnsureNotNull(accessToken, nameof(accessToken));
 
@@ -87,7 +88,7 @@ public class Authorize : IAuthorize
 		}
 	}
 
-	private static HttpRequestMessage buildDeregisterRequest(Locale locale, AccessToken accessToken, IEnumerable<KeyValuePair<string, string?>>? cookies)
+	private static HttpRequestMessage buildDeregisterRequest(Locale locale, AccessToken accessToken, IEnumerable<KeyValuePair<string, SecretString>>? cookies)
 	{
 		var request = new HttpRequestMessage(HttpMethod.Post, "/auth/deregister");
 
@@ -99,12 +100,12 @@ public class Authorize : IAuthorize
 		request.Headers.Add("Accept", "application/json");
 		request.Headers.TryAddWithoutValidation("User-Agent", Resources.User_Agent);
 		request.Headers.Add("Accept-Language", "en_US");
-		request.Headers.Add("Authorization", $"Bearer {accessToken.TokenValue}");
+		request.Headers.Add("Authorization", $"Bearer {accessToken.Reveal()}");
 
 		if (cookies is not null && cookies.Any())
 		{
 			var cookiesAggregated = cookies
-				.Select(kvp => $"{kvp.Key}={kvp.Value}")
+				.Select(kvp => $"{kvp.Key}={kvp.Value.Reveal()}")
 				.Aggregate((a, b) => $"{a}; {b}");
 			request.Headers.Add("Cookie", cookiesAggregated);
 		}
@@ -128,7 +129,7 @@ public class Authorize : IAuthorize
 		{
 			["app_name"] = Resources.AppName,
 			["app_version"] = Resources.AppVersion,
-			["source_token"] = refresh_token.Value,
+			["source_token"] = refresh_token.Reveal(),
 			["requested_token_type"] = "access_token",
 			["source_token_type"] = "refresh_token"
 		};

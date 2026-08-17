@@ -42,8 +42,8 @@ public class Empty
 		// most important part is to get past this line w/o exceptions
 		var e = AccessToken.Empty;
 
-		e.TokenValue.Length.ShouldBeGreaterThan(2);
-		e.TokenValue.Length.ShouldBeLessThan(10);
+		e.Reveal().Length.ShouldBeGreaterThan(2);
+		e.Reveal().Length.ShouldBeLessThan(10);
 
 		e.Expires.ShouldBe(DateTime.MinValue);
 	}
@@ -71,8 +71,8 @@ public class ToString
 		var token = new AccessToken("Atna|foo", dateTime);
 		var text = token.ToString();
 
-		text.ShouldBe($"AccessToken [REDACTED length={token.TokenValue.Length}]. Expires={dateTime}");
+		text.ShouldBe($"AccessToken [REDACTED length={token.Reveal().Length}]. Expires={dateTime}");
 		text.ShouldNotContain("Atna|foo");
-		text.ShouldNotContain(token.TokenValue);
+		text.ShouldNotContain(token.Reveal());
 	}
 }
