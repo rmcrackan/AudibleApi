@@ -17,7 +17,7 @@
 		     which the token types now hold their values in. -->
 		<dependencies>
 			<group targetFramework="net10.0">
-				<dependency id="Dinah.Core" version="10.2.5.1" />
+				<dependency id="Dinah.Core" version="10.2.6.1" />
 			</group>
 		</dependencies>
 	</metadata>
