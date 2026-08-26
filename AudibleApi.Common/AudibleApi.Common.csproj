@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
 	<Nullable>enable</Nullable>
-    <Version>11.0.5.1</Version>
+    <Version>12.0.0.1</Version>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>
       $(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb
     </AllowedOutputExtensionsInPackageBuildOutputFolder>
