@@ -357,11 +357,12 @@ public partial class Api
 		var downloadUrl = response.Headers.Location?.AbsoluteUri
 			?? throw new Exception("No download URL in response");
 
-		// localize download link
+		// localize download link. the content belongs to the store it was bought from, not to whichever
+		// marketplace this identity happens to be registered with
 		var cdsRoot = "https://cds.audible.";
 		downloadUrl = downloadUrl.Replace(
 			$"{cdsRoot}com",
-			$"{cdsRoot}{Locale.TopDomain}");
+			$"{cdsRoot}{StoreLocale.TopDomain}");
 
 		return downloadUrl;
 	}

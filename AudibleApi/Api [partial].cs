@@ -17,15 +17,29 @@ public partial class Api : ApiUnauthenticated
 	private IIdentityMaintainer _identityMaintainer { get; }
 
 	public Api(IIdentityMaintainer identityMaintainer)
-		: base(ArgumentValidator.EnsureNotNull(identityMaintainer?.Locale, nameof(identityMaintainer)))
+		: this(identityMaintainer, storeLocale: null) { }
+
+	/// <param name="storeLocale">
+	/// The marketplace to read. Null means the identity's own marketplace. Pass another locale to read a
+	/// library this same login holds under a different storefront; the tokens are unaffected either way.
+	/// </param>
+	public Api(IIdentityMaintainer identityMaintainer, Locale? storeLocale)
+		: base(ArgumentValidator.EnsureNotNull(identityMaintainer?.Locale, nameof(identityMaintainer)), storeLocale)
 	{
-		_identityMaintainer = identityMaintainer;
+		_identityMaintainer = identityMaintainer!;
 	}
 
 	public Api(IIdentityMaintainer identityMaintainer, IHttpClientSharer sharer)
-		: base(ArgumentValidator.EnsureNotNull(identityMaintainer?.Locale, nameof(identityMaintainer)), sharer)
+		: this(identityMaintainer, null, sharer) { }
+
+	/// <param name="storeLocale">
+	/// The marketplace to read. Null means the identity's own marketplace. Pass another locale to read a
+	/// library this same login holds under a different storefront; the tokens are unaffected either way.
+	/// </param>
+	public Api(IIdentityMaintainer identityMaintainer, Locale? storeLocale, IHttpClientSharer sharer)
+		: base(ArgumentValidator.EnsureNotNull(identityMaintainer?.Locale, nameof(identityMaintainer)), storeLocale, sharer)
 	{
-		_identityMaintainer = identityMaintainer;
+		_identityMaintainer = identityMaintainer!;
 	}
 
 	public Task<HttpResponseMessage> AdHocAuthenticatedGetAsync(string requestUri)

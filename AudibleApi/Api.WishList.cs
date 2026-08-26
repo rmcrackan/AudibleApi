@@ -206,7 +206,7 @@ public partial class Api
 		{
 			wishlistOptions.PageNumber = page;
 			await semaphore.WaitAsync();
-			pageDlTasks.Add(getWishListPageAsync(semaphore, wishlistOptions.ToQueryString(Locale), page));
+			pageDlTasks.Add(getWishListPageAsync(semaphore, wishlistOptions.ToQueryString(StoreLocale), page));
 			page++;
 		}
 	}
@@ -237,7 +237,7 @@ public partial class Api
 			wishlistOptions.PageNumber = 0;
 			wishlistOptions.NumberOfResultPerPage = 0;
 
-			var url = $"{WISHLIST_PATH}?{wishlistOptions.ToQueryString(Locale)}";
+			var url = $"{WISHLIST_PATH}?{wishlistOptions.ToQueryString(StoreLocale)}";
 			var response = await AdHocAuthenticatedGetAsync(url);
 
 			var dto = await response.Content.ReadAsDtoAsync<WishListDtoV10>();
