@@ -9,20 +9,48 @@ public partial class ApiUnauthenticated
 {
 	public virtual bool IsAuthenticated => false;
 	public IHttpClientSharer Sharer { get; }
+
+	/// <summary>
+	/// The locale this identity is registered with: the marketplace whose Amazon/Audible auth domain issued
+	/// the tokens, and the only one they can be refreshed or re-registered against.
+	/// </summary>
 	protected Locale Locale { get; }
+
+	/// <summary>
+	/// <para>
+	/// The marketplace whose catalog is being read. Defaults to <see cref="Locale"/>, and for a single-marketplace
+	/// account it always equals it.
+	/// </para>
+	/// <para>
+	/// Audible honors one device registration across every marketplace, so a library held under a different
+	/// storefront is reachable by pointing the store host elsewhere while the identity keeps authenticating
+	/// against its own <see cref="Locale"/>. Anything that speaks to the store - the api host, the download CDN,
+	/// catalog language - follows this one; anything that proves who you are follows <see cref="Locale"/>.
+	/// </para>
+	/// </summary>
+	protected Locale StoreLocale { get; }
+
 	protected IHttpClientActions Client
-		=> Sharer.GetSharedHttpClient(Locale.AudibleApiUri());
+		=> Sharer.GetSharedHttpClient(StoreLocale.AudibleApiUri());
 
 	public ApiUnauthenticated(Locale locale)
+		: this(locale, storeLocale: null) { }
+
+	public ApiUnauthenticated(Locale locale, Locale? storeLocale)
 	{
 		StackBlocker.ApiTestBlocker();
 		Locale = ArgumentValidator.EnsureNotNull(locale, nameof(locale));
+		StoreLocale = storeLocale ?? Locale;
 		Sharer = new HttpClientSharer();
 	}
 
 	public ApiUnauthenticated(Locale locale, IHttpClientSharer sharer)
+		: this(locale, null, sharer) { }
+
+	public ApiUnauthenticated(Locale locale, Locale? storeLocale, IHttpClientSharer sharer)
 	{
 		Locale = ArgumentValidator.EnsureNotNull(locale, nameof(locale));
+		StoreLocale = storeLocale ?? Locale;
 		Sharer = ArgumentValidator.EnsureNotNull(sharer, nameof(sharer));
 	}
 
