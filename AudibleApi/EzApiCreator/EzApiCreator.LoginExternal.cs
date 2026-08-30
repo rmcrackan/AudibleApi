@@ -1,5 +1,4 @@
-﻿using AudibleApi.Authentication;
-using AudibleApi.Authorization;
+﻿using AudibleApi.Authorization;
 using System;
 using System.Threading.Tasks;
 
@@ -33,7 +32,7 @@ public static partial class EzApiCreator
 		Dinah.Core.ArgumentValidator.EnsureNotNull(locale, nameof(locale));
 		Dinah.Core.ArgumentValidator.EnsureNotNull(loginExternal, nameof(loginExternal));
 
-		var externalLogin = new ExternalLogin(locale, loginExternal.DeviceName);
+		var externalLogin = new ExternalLogin(locale);
 
 		var loginUrl = externalLogin.GetLoginUrl();
 		var signInCookies = externalLogin.GetSignInCookies();

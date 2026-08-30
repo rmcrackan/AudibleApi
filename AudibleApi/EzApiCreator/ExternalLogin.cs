@@ -2,17 +2,17 @@
 using Dinah.Core;
 using System.Net;
 
-namespace AudibleApi.Authentication;
+namespace AudibleApi;
 
 public class ExternalLogin
 {
 	private Locale _locale { get; }
 	private RegistrationOptions RegistrationOptions { get; }
 
-	public ExternalLogin(Locale locale, string deviceName)
+	public ExternalLogin(Locale locale)
 	{
 		_locale = ArgumentValidator.EnsureNotNull(locale, nameof(locale));
-		RegistrationOptions = new RegistrationOptions(deviceName);
+		RegistrationOptions = new RegistrationOptions();
 	}
 
 	/// <summary>

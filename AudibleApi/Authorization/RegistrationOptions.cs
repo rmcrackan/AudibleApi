@@ -14,15 +14,14 @@ namespace AudibleApi.Authorization;
 
 public record RegistrationOptions
 {
-	public string DeviceName { get; }
+	public string DeviceName => "Libation";
 	public string CodeVerifier { get; }
 	public string ChallengeCode { get; }
 	public string DeviceSerialNumber { get; }
 	public string ClientID { get; }
 
-	public RegistrationOptions(string? deviceName)
+	public RegistrationOptions()
 	{
-		DeviceName = deviceName ?? "Libation for iPhone";
 		DeviceSerialNumber = build_device_serial();
 		CodeVerifier = create_code_verifier();
 		ClientID = build_client_id(DeviceSerialNumber);

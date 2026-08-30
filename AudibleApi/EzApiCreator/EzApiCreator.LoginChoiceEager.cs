@@ -1,5 +1,4 @@
-﻿using AudibleApi.Authentication;
-using AudibleApi.Authorization;
+﻿using AudibleApi.Authorization;
 using System;
 using System.Threading.Tasks;
 
@@ -35,34 +34,16 @@ public static partial class EzApiCreator
 		Dinah.Core.ArgumentValidator.EnsureNotNull(locale, nameof(locale));
 		Dinah.Core.ArgumentValidator.EnsureNotNull(loginChoiceEager, nameof(loginChoiceEager));
 
-		var externalLogin = new ExternalLogin(locale, loginChoiceEager.LoginCallback.DeviceName);
+		var externalLogin = new ExternalLogin(locale);
 		var loginUrl = externalLogin.GetLoginUrl();
 		var signInCookies = externalLogin.GetSignInCookies();
 
-
 		var choiceIn = new ChoiceIn(loginUrl, signInCookies);
-		var choiceOut = await loginChoiceEager.StartAsync(choiceIn);
 
-		if (choiceOut is null)
-		{
-			// TODO: exceptions should not be used for control flow. fix this
-			throw new OperationCanceledException("Login attempt cancelled by user");
-		}
+        // TODO: exceptions should not be used for control flow. fix this
+        var choiceOut = await loginChoiceEager.StartAsync(choiceIn) ?? throw new OperationCanceledException("Login attempt cancelled by user");
 
-		if (choiceOut.LoginMethod is LoginMethod.Api)
-		{
-			Dinah.Core.ArgumentValidator.EnsureNotNull(choiceOut.Username, nameof(choiceOut.Username));
-			Dinah.Core.ArgumentValidator.EnsureNotNull(choiceOut.Password, nameof(choiceOut.Password));
-			return await loginEmailPasswordAsync(locale, loginChoiceEager.LoginCallback, choiceOut.Username, choiceOut.Password);
-		}
-		else if (choiceOut.LoginMethod is LoginMethod.External)
-		{
-			Dinah.Core.ArgumentValidator.EnsureNotNull(choiceOut.ResponseUrl, nameof(choiceOut.ResponseUrl));
-			return externalLogin.Login(choiceOut.ResponseUrl);
-		}
-		else
-		{
-			throw new Exception($"Unknown {nameof(LoginMethod)} value");
-		}
-	}
+        Dinah.Core.ArgumentValidator.EnsureNotNull(choiceOut, nameof(choiceOut));
+        return externalLogin.Login(choiceOut);
+    }
 }

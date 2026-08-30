@@ -7,6 +7,4 @@ public interface ILoginExternal
 	/// <param name="signInCookies">Cookies to be sent with the initial sign-in request</param>
 	/// <returns>URL or response page after login is successful</returns>
 	string GetResponseUrl(string loginUrl, System.Net.CookieCollection signInCookies);
-
-	string DeviceName { get; }
 }
