@@ -126,14 +126,6 @@ namespace StackBlockerTests_L1_Pass
 	}
 
 	[TestClass]
-	public class Authenticate_ctor
-	{
-		[TestMethod]
-		public void access_from_L1_passes()
-			=> new AudibleApi.Authentication.Authenticate(Localization.Get("us"), "");
-	}
-
-	[TestClass]
 	public class Api_ctor_identityMaintainer
 	{
 		class MockIdentityMaintainer : IIdentityMaintainer

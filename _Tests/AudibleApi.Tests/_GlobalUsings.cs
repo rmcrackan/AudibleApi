@@ -1,5 +1,4 @@
 ﻿global using AudibleApi;
-global using AudibleApi.Authentication;
 global using AudibleApi.Authorization;
 global using AudibleApi.Common;
 global using Dinah.Core;
