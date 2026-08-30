@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="MSTest" Version="4.3.3" />
-    <PackageReference Include="NSubstitute" Version="6.0.0" />
+    <PackageReference Include="NSubstitute" Version="6.2.0" />
     <PackageReference Include="Shouldly" Version="4.3.0" />
   </ItemGroup>
 
