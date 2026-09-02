@@ -315,7 +315,8 @@ public static class RejectionReason
 {
 	public const string ContentEligibility = "ContentEligibility";
 	public const string RequesterEligibility = "RequesterEligibility";
-	public const string GenericError = "GenericError";
+    public const string GenericError = "GenericError";
+    public const string CustomerThrottled = "CustomerThrottled";
 }
 
 /// <summary>

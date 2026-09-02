@@ -14,7 +14,13 @@ public class ContentLicenseDeniedException : AudibleApiException
 	public LicenseDenialReason? Membership { get; }
 	public LicenseDenialReason? AYCL { get; }
 
-	public ContentLicenseDeniedException(Uri? requestUri, ContentLicense? license) : this(requestUri, license, null) { }
+    public bool IsCustomerThrottled
+		=> Client?.RejectionReason == RejectionReason.CustomerThrottled
+		|| Ownership?.RejectionReason == RejectionReason.CustomerThrottled
+		|| Membership?.RejectionReason == RejectionReason.CustomerThrottled
+		|| AYCL?.RejectionReason == RejectionReason.CustomerThrottled;
+
+    public ContentLicenseDeniedException(Uri? requestUri, ContentLicense? license) : this(requestUri, license, null) { }
 
 	public ContentLicenseDeniedException(Uri? requestUri, ContentLicense? license, Exception? innerException) : base(requestUri, null, $"Content License denied for asin: [{license?.Asin ?? "[null]"}]", innerException)
 	{
