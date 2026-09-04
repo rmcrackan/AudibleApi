@@ -11,8 +11,9 @@ public static partial class EzApiCreator
 	/// <param name="identityFilePath">Load from and save to the file at this path</param>
 	/// <param name="loginChoiceEager">Object with callback method for allowing user to choose external or API login</param>
 	/// <param name="jsonPath">Optional JSONPath for location of identity tokens inside identity file</param>
+	/// <param name="registrationProfile">Optional device-registration recipe. Null uses <see cref="DeviceRegistrationProfile.Default"/>.</param>
 	/// <returns>Object which enables calls to the Audible API</returns>
-	public static async Task<Api> GetApiAsync(ILoginChoiceEager loginChoiceEager, Locale locale, string identityFilePath, string? jsonPath = null)
+	public static async Task<Api> GetApiAsync(ILoginChoiceEager loginChoiceEager, Locale locale, string identityFilePath, string? jsonPath = null, DeviceRegistrationProfile? registrationProfile = null)
 	{
 		StackBlocker.ApiTestBlocker();
 
@@ -24,17 +25,17 @@ public static partial class EzApiCreator
 		{
 			Dinah.Core.ArgumentValidator.EnsureNotNull(loginChoiceEager, nameof(loginChoiceEager));
 
-			var inMemoryIdentity = await choiceLoginAsync(locale, loginChoiceEager);
+			var inMemoryIdentity = await choiceLoginAsync(locale, loginChoiceEager, registrationProfile);
 			return await createApiAsync(inMemoryIdentity, identityFilePath, jsonPath);
 		}
 	}
 
-	private static async Task<Identity> choiceLoginAsync(Locale locale, ILoginChoiceEager loginChoiceEager)
+	private static async Task<Identity> choiceLoginAsync(Locale locale, ILoginChoiceEager loginChoiceEager, DeviceRegistrationProfile? registrationProfile)
 	{
 		Dinah.Core.ArgumentValidator.EnsureNotNull(locale, nameof(locale));
 		Dinah.Core.ArgumentValidator.EnsureNotNull(loginChoiceEager, nameof(loginChoiceEager));
 
-		var externalLogin = new ExternalLogin(locale);
+		var externalLogin = new ExternalLogin(locale, registrationProfile);
 		var loginUrl = externalLogin.GetLoginUrl();
 		var signInCookies = externalLogin.GetSignInCookies();
 

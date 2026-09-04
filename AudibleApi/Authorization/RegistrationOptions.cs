@@ -14,33 +14,52 @@ namespace AudibleApi.Authorization;
 
 public record RegistrationOptions
 {
-	public string DeviceName => "Libation";
+	public DeviceRegistrationProfile Profile { get; }
+	public string DeviceName => Profile.AmazonDeviceName;
 	public string CodeVerifier { get; }
 	public string ChallengeCode { get; }
 	public string DeviceSerialNumber { get; }
 	public string ClientID { get; }
 
-	public RegistrationOptions()
+	public RegistrationOptions(DeviceRegistrationProfile? profile = null)
 	{
-		DeviceSerialNumber = build_device_serial();
+		Profile = profile ?? DeviceRegistrationProfile.Default;
+		DeviceSerialNumber = build_device_serial(Profile);
 		CodeVerifier = create_code_verifier();
-		ClientID = build_client_id(DeviceSerialNumber);
+		ClientID = build_client_id(DeviceSerialNumber, Profile.DeviceType);
 		ChallengeCode = create_s256_code_challenge(CodeVerifier);
 	}
 
 	public Uri OAuthUrl(Locale locale)
 	{
-		// this helps dramatically with debugging
-		//According to static analysis of the Audible v25.38.26 apk,
-		//the return_to domain is always www.audible.TLD, even for private pool accounts.
-		var return_to = $"{locale.AudibleLoginUri().GetOrigin()}/ap/maplanding";
-		var assoc_handle = locale.WithUsername ? $"amzn_audible_android_aui_lap_{locale.CountryCode}" : $"amzn_audible_android_aui_{locale.CountryCode}";
-		var page_id = locale.WithUsername ? $"amzn_audible_android_privatepool_aui_v2_dark_{locale.CountryCode}" : $"amzn_audible_android_aui_v2_dark_us{locale.CountryCode}";
+		string return_to;
+		string assoc_handle;
+		string page_id;
+
+		if (Profile.UseIosLoginSurface)
+		{
+			// mkb79/Audible login.py: amazon maplanding except pre-Amazon username locales.
+			return_to = $"{locale.LoginUri().GetOrigin()}/ap/maplanding";
+			assoc_handle = locale.WithUsername
+				? $"amzn_audible_ios_lap_{locale.CountryCode}"
+				: $"amzn_audible_ios_{locale.CountryCode}";
+			page_id = locale.WithUsername ? "amzn_audible_ios_privatepool" : "amzn_audible_ios";
+		}
+		else
+		{
+			// According to static analysis of the Audible v25.38.26 apk,
+			// the return_to domain is always www.audible.TLD, even for private pool accounts.
+			return_to = $"{locale.AudibleLoginUri().GetOrigin()}/ap/maplanding";
+			assoc_handle = locale.WithUsername
+				? $"amzn_audible_android_aui_lap_{locale.CountryCode}"
+				: $"amzn_audible_android_aui_{locale.CountryCode}";
+			page_id = locale.WithUsername
+				? $"amzn_audible_android_privatepool_aui_v2_dark_{locale.CountryCode}"
+				: $"amzn_audible_android_aui_v2_dark_us{locale.CountryCode}";
+		}
 
 		var oauth_params = new Dictionary<string, string>
 		{
-			// these are NOT dependent on locale and do NOT use https
-			
 			{ "openid.pape.max_auth_age", "0"},
 			{ "openid.identity", "http://specs.openid.net/auth/2.0/identifier_select" },
 			{ "accountStatusPolicy", "P1"},
@@ -57,27 +76,37 @@ public record RegistrationOptions
 			{ "openid.oa2.scope", "device_auth_access"},
 			{ "openid.claimed_id", "http://specs.openid.net/auth/2.0/identifier_select" },
 			{ "openid.oa2.client_id", $"device:{ClientID}"},
-			{ "disableLoginPrepopulate", "1"},
 			{ "openid.ns", "http://specs.openid.net/auth/2.0"},
 		};
+
+		if (Profile.UseIosLoginSurface)
+			oauth_params["forceMobileLayout"] = "true";
+		else
+			oauth_params["disableLoginPrepopulate"] = "1";
 
 		return new Uri(locale.LoginUri(), $"/ap/signin?{urlencode(oauth_params)}");
 	}
 
 	public CookieCollection GetSignInCookies(Locale locale)
 	{
-		var frcStr = create_frc_cookie(locale, DeviceSerialNumber);
-		var mapMdStr = create_map_md_cookie();
 		var cookieDomain = $".{locale.LoginDomain()}.{locale.TopDomain}";
 
-		var initCookies = new CookieCollection
+		if (Profile.UseIosLoginSurface)
 		{
-			new Cookie("frc", frcStr, "/ap", cookieDomain),
-			new Cookie("map-md", mapMdStr, "/ap", cookieDomain),
+			return new CookieCollection
+			{
+				new Cookie("frc", create_ios_frc_cookie(), "/ap", cookieDomain),
+				new Cookie("map-md", create_ios_map_md_cookie(), "/ap", cookieDomain),
+				new Cookie("amzn-app-id", "MAPiOSLib/6.0/ToHideRetailLink", "/ap", cookieDomain),
+			};
+		}
+
+		return new CookieCollection
+		{
+			new Cookie("frc", create_android_frc_cookie(locale, DeviceSerialNumber), "/ap", cookieDomain),
+			new Cookie("map-md", create_android_map_md_cookie(), "/ap", cookieDomain),
 			new Cookie("sid", "", "/", cookieDomain),
 		};
-
-		return initCookies;
 	}
 
 	private static string urlencode(IEnumerable<KeyValuePair<string, string>> nameValuePairs)
@@ -85,10 +114,12 @@ public record RegistrationOptions
 		.Select(kvp => $"{System.Web.HttpUtility.UrlEncode(kvp.Key)}={System.Web.HttpUtility.UrlEncode(kvp.Value)}")
 		.Aggregate((a, b) => $"{a}&{b}");
 
-
-	//https://github.com/mkb79/Audible/blob/master/src/audible/login.py
-	private static string build_device_serial()
+	// https://github.com/mkb79/Audible/blob/master/src/audible/login.py
+	private static string build_device_serial(DeviceRegistrationProfile profile)
 	{
+		if (profile.UseIosDeviceSerial)
+			return Guid.NewGuid().ToString("N").ToUpperInvariant();
+
 		Span<byte> serial_bytes = stackalloc byte[20];
 		Random.Shared.NextBytes(serial_bytes);
 		return Convert.ToHexStringLower(serial_bytes);
@@ -101,9 +132,9 @@ public record RegistrationOptions
 		return Base64Url.EncodeToString(code_verifier);
 	}
 
-	private static string build_client_id(string deviceSerialNumber)
+	private static string build_client_id(string deviceSerialNumber, string deviceType)
 	{
-		var client_id_bytes = Encoding.UTF8.GetBytes($"{deviceSerialNumber}#{Resources.DeviceType}");
+		var client_id_bytes = Encoding.UTF8.GetBytes($"{deviceSerialNumber}#{deviceType}");
 		return Convert.ToHexStringLower(client_id_bytes);
 	}
 
@@ -113,23 +144,23 @@ public record RegistrationOptions
 		return Base64Url.EncodeToString(hash);
 	}
 
-	private static string create_map_md_cookie()
+	private string create_android_map_md_cookie()
 	{
 		var mapMd = new JObject
 		{
 			{ "device_registration_data",
 				new JObject {
-					{"software_version", Resources.SoftwareVersion }
+					{"software_version", Profile.SoftwareVersion }
 				}
 			},
 			{ "app_identifier",
 				new JObject {
-					{"package", Resources.AppName },
+					{"package", Profile.AppName },
 					{"SHA-256", null },
-					{"app_version", Resources.AppVersion },
-					{"app_version_name", Resources.AppVersionName },
+					{"app_version", Profile.AppVersion },
+					{"app_version_name", Profile.AppVersionName },
 					{"app_sms_hash", null },
-					{"map_version", Resources.MapVersion }
+					{"map_version", Profile.MapVersion }
 				}
 			},
 			{"app_info",
@@ -145,43 +176,72 @@ public record RegistrationOptions
 		return Convert.ToBase64String(Encoding.UTF8.GetBytes(mapMd.ToString(Newtonsoft.Json.Formatting.None)));
 	}
 
-	private static string create_frc_cookie(Locale locale, string deviceSn)
+	private static string create_ios_map_md_cookie()
 	{
-		IPAddress? ip;
-		try
+		var mapMd = new JObject
 		{
-			ip = NetworkInterface.GetAllNetworkInterfaces().Select(i => i.GetIPProperties()).SelectMany(GetAllIpAddresses)
-			.OrderBy(a => a.AddressFamily != System.Net.Sockets.AddressFamily.InterNetworkV6)
-			.OrderByDescending(a => !a.IsIPv6LinkLocal && !a.IsIPv6SiteLocal && !a.IsIPv6UniqueLocal).FirstOrDefault();
-		}
-		catch
-		{
-			ip = IPAddress.IPv6Any;
-		}
-
-		var ts = DateTimeOffset.Now.Offset;
-		var timeZone = (ts.Ticks < 0 ? "-" : "") + $"{ts:hh\\:mm}";
-
-		var deviceInto = new JObject{
-			{ "ApplicationName", "com.audible.application" },
-			{ "ApplicationVersion", "2090254511" },
-			{ "DeviceOSVersion", Resources.OsVersion },
-			{ "DeviceName", Resources.DeviceName },
-			{ "ScreenWidthPixels", "1344" },
-			{ "ThirdPartyDeviceId", deviceSn },
-			{ "FirstPartyDeviceId", deviceSn },
-			{ "ScreenHeightPixels", "2769" },
-			{ "DeviceLanguage", locale.Language },
-			{ "TimeZone", timeZone },
-			{ "Carrier", "T-Mobile" },
-			{ "IpAddress", ip?.ToString() ?? "0.0.0.0" }
+			{ "device_user_dictionary", new JArray() },
+			{ "device_registration_data", new JObject { { "software_version", "35602678" } } },
+			{ "app_identifier", new JObject
+				{
+					{ "app_version", "3.56.2" },
+					{ "bundle_id", "com.audible.iphone" }
+				}
+			}
 		};
 
-		return FrcEncoder.Encode(deviceSn, deviceInto.ToString(Newtonsoft.Json.Formatting.None));
+		return Convert.ToBase64String(Encoding.UTF8.GetBytes(mapMd.ToString(Newtonsoft.Json.Formatting.None))).TrimEnd('=');
+	}
+
+	private static string create_ios_frc_cookie()
+	{
+		Span<byte> token = stackalloc byte[313];
+		Random.Shared.NextBytes(token);
+		return Convert.ToBase64String(token.ToArray()).TrimEnd('=');
+	}
+
+	private string create_android_frc_cookie(Locale locale, string deviceSn)
+	{
+		var deviceInfo = new JObject
+		{
+			{ "ApplicationName", Profile.AppName },
+			{ "ApplicationVersion", Profile.FrcApplicationVersion },
+			{ "DeviceOSVersion", Profile.OsVersion },
+			{ "DeviceName", Profile.FrcDeviceName },
+			{ "ScreenWidthPixels", Profile.ScreenWidthPixels },
+			{ "ThirdPartyDeviceId", deviceSn },
+			{ "FirstPartyDeviceId", deviceSn },
+			{ "ScreenHeightPixels", Profile.ScreenHeightPixels },
+			{ "DeviceLanguage", locale.Language },
+			{ "TimeZone", format_offset(DateTimeOffset.Now.Offset) },
+			{ "Carrier", "T-Mobile" },
+		};
+
+		if (Profile.IncludeLocalIpInFrc)
+		{
+			IPAddress? ip;
+			try
+			{
+				ip = NetworkInterface.GetAllNetworkInterfaces().Select(i => i.GetIPProperties()).SelectMany(GetAllIpAddresses)
+					.OrderBy(a => a.AddressFamily != System.Net.Sockets.AddressFamily.InterNetworkV6)
+					.OrderByDescending(a => !a.IsIPv6LinkLocal && !a.IsIPv6SiteLocal && !a.IsIPv6UniqueLocal).FirstOrDefault();
+			}
+			catch
+			{
+				ip = IPAddress.IPv6Any;
+			}
+
+			deviceInfo["IpAddress"] = ip?.ToString() ?? "0.0.0.0";
+		}
+
+		return FrcEncoder.Encode(deviceSn, deviceInfo.ToString(Newtonsoft.Json.Formatting.None));
 
 		IEnumerable<IPAddress> GetAllIpAddresses(IPInterfaceProperties iPInterfaceProperties)
-		=> iPInterfaceProperties.DnsAddresses.Select(a => a)
-		.Concat(iPInterfaceProperties.GatewayAddresses.Select(a => a.Address))
-		.Concat(iPInterfaceProperties.UnicastAddresses.Select(a => a.Address));
+			=> iPInterfaceProperties.DnsAddresses.Select(a => a)
+			.Concat(iPInterfaceProperties.GatewayAddresses.Select(a => a.Address))
+			.Concat(iPInterfaceProperties.UnicastAddresses.Select(a => a.Address));
 	}
+
+	private static string format_offset(TimeSpan ts)
+		=> (ts.Ticks < 0 ? "-" : "") + $"{ts:hh\\:mm}";
 }

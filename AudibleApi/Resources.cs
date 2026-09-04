@@ -4,16 +4,8 @@ namespace AudibleApi;
 
 public static class Resources
 {
-	/*
-	internal const string User_Agent = "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148";
-	public const string Download_User_Agent = "Audible/671 CFNetwork/1240.0.4 Darwin/20.6.0";
-	internal const string DeviceType = "A2CZJZGLK2JJVM";
-	internal const string OsVersion = "15.0.0";
-	internal const string SoftwareVersion = "35602678";
-	internal const string AppVersion = "3.56.2";
-	internal const string AppName = "Audible";
-	internal const string DeviceModel = "iPhone";
-	*/
+	// iPhone registration constants live on DeviceRegistrationProfile.Mkb79IPhone.
+	// DeviceType here is the Android Audible app id; Widevine is gated on it.
 
 	//Android
 	public const string User_Agent = "Mozilla/5.0 (Linux; Android 14; sdk_gphone64_x86_64 Build/UPB5.230623.003; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/113.0.5672.136 Mobile Safari/537.36";
