@@ -35,7 +35,38 @@ public record OAuth2
 
 	public JObject GetRegistrationBody(Locale locale)
 	{
-		return new JObject
+		var profile = RegistrationOptions?.Profile ?? DeviceRegistrationProfile.Default;
+		var serial = RegistrationOptions?.DeviceSerialNumber;
+		JToken cookiesDomain = profile.UseIosLoginSurface
+			? $".amazon.{locale.TopDomain}"
+			: locale.AudibleLoginUri().ToString();
+
+		var registrationData = new JObject
+		{
+			{ "domain", profile.RegistrationDataDomain },
+			{ "device_type", profile.DeviceType },
+			{ "device_serial", serial },
+			{ "app_name",  profile.AppName },
+			{ "app_version", profile.AppVersion },
+			{ "device_model",  profile.DeviceModel },
+			{ "os_version",  profile.OsVersion },
+			{ "software_version",  profile.SoftwareVersion },
+			{ "device_name",  $"%FIRST_NAME%%FIRST_NAME_POSSESSIVE_STRING%%DUPE_STRATEGY_1ST%{profile.AmazonDeviceName}" },
+		};
+
+		var authData = new JObject
+		{
+			{ "authorization_code", Code },
+			{ "code_verifier", RegistrationOptions?.CodeVerifier },
+			{ "code_algorithm", "SHA-256" },
+			{ "client_domain", "DeviceLegacy" },
+			{ "client_id", RegistrationOptions?.ClientID },
+		};
+
+		if (profile.UseGlobalAuthentication)
+			authData["use_global_authentication"] = "true";
+
+		var body = new JObject
 		{
 			{ "requested_token_type", new JArray
 				{
@@ -47,44 +78,12 @@ public record OAuth2
 			},
 			{ "cookies", new JObject
 				{
-					{ "domain", locale.AudibleLoginUri() },
+					{ "domain", cookiesDomain },
 					{ "website_cookies", new JArray() }
 				}
 			},
-			{ "registration_data", new JObject
-				{
-					{ "domain", "DeviceLegacy" },
-					{ "device_type", Resources.DeviceType },
-					{ "device_serial", RegistrationOptions?.DeviceSerialNumber },
-					{ "app_name",  Resources.AppName },
-					{ "app_version", Resources.AppVersion },
-					{ "device_model",  Resources.DeviceModel },
-					{ "os_version",  Resources.OsVersion },
-					{ "software_version",  Resources.SoftwareVersion },
-					{ "device_name",  $"%FIRST_NAME%%FIRST_NAME_POSSESSIVE_STRING%%DUPE_STRATEGY_1ST%{RegistrationOptions?.DeviceName}" },
-				}
-			},
-			{ "device_metadata", new JObject
-				{
-					{ "device_os_family", Resources.OsFamily },
-					{ "device_type", Resources.DeviceType },
-					{ "device_serial", RegistrationOptions?.DeviceSerialNumber },
-					{ "manufacturer",  Resources.Manufacturer },
-					{ "model", Resources.DeviceModel },
-					{ "os_version", Resources.OsVersionNumber },
-					{ "product", Resources.DeviceProduct },
-				}
-			},
-			{ "auth_data", new JObject
-				{
-					{ "use_global_authentication", "true" },
-					{ "authorization_code", Code },
-					{ "code_verifier", RegistrationOptions?.CodeVerifier },
-					{ "code_algorithm", "SHA-256" },
-					{ "client_domain", "DeviceLegacy" },
-					{ "client_id", RegistrationOptions?.ClientID },
-				}
-			},
+			{ "registration_data", registrationData },
+			{ "auth_data", authData },
 			{ "requested_extensions", new JArray
 				{
 					"device_info",
@@ -92,5 +91,21 @@ public record OAuth2
 				}
 			}
 		};
+
+		if (profile.IncludeDeviceMetadata)
+		{
+			body["device_metadata"] = new JObject
+			{
+				{ "device_os_family", profile.OsFamily },
+				{ "device_type", profile.DeviceType },
+				{ "device_serial", serial },
+				{ "manufacturer",  profile.Manufacturer },
+				{ "model", profile.DeviceModel },
+				{ "os_version", profile.OsVersionNumber },
+				{ "product", profile.DeviceProduct },
+			};
+		}
+
+		return body;
 	}
 }

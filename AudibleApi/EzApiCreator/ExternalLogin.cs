@@ -9,10 +9,10 @@ public class ExternalLogin
 	private Locale _locale { get; }
 	private RegistrationOptions RegistrationOptions { get; }
 
-	public ExternalLogin(Locale locale)
+	public ExternalLogin(Locale locale, DeviceRegistrationProfile? registrationProfile = null)
 	{
 		_locale = ArgumentValidator.EnsureNotNull(locale, nameof(locale));
-		RegistrationOptions = new RegistrationOptions();
+		RegistrationOptions = new RegistrationOptions(registrationProfile);
 	}
 
 	/// <summary>
