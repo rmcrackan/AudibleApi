@@ -12,8 +12,13 @@ public enum DeviceRegistrationKind
 	/// <summary>Today's Android emulator registration. Default; Widevine-capable.</summary>
 	CurrentAndroid = 0,
 
-	/// <summary>mkb79/audible-cli iPhone registration. Not Widevine-capable.</summary>
-	Mkb79IPhone = 1,
+    //
+    // Note: this one isn't really needed, however keep it just in case we have an error in the future. If one or the other device registrations stops working, there's a backup already available.
+    // https://github.com/rmcrackan/Libation/issues/2021#issuecomment-5564352730
+    // iPhone does not support Widevine: https://github.com/rmcrackan/Libation/issues/2021#issuecomment-5564352730
+    //
+    /// <summary>mkb79/audible-cli iPhone registration. Not Widevine-capable.</summary>
+    Mkb79IPhone = 1,
 
 	/// <summary>
 	/// Same Android Audible app device type as <see cref="CurrentAndroid"/> (Widevine-capable)
