@@ -25,9 +25,7 @@ public partial class PrivateKey : StrongType<SecretString>, IDisposable
 	public void Dispose()
 	{
 		RSACryptoService.Dispose();
-		GC.SuppressFinalize(this);
 	}
-	~PrivateKey() => Dispose();
 
 	/// <summary>
 	/// Validates the input RSA private key by importing it into an <see cref="RSACryptoServiceProvider"/>.
