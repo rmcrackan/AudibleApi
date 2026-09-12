@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="AudibleApi.nuspec" />
+  </Folder>
   <Folder Name="/Tests/">
     <Project Path="_Tests/AudibleApi.Common.Tests/AudibleApi.Common.Tests.csproj" />
     <Project Path="_Tests/AudibleApi.Tests/AudibleApi.Tests.csproj" />
