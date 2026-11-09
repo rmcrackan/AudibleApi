@@ -1,4 +1,5 @@
-﻿using AudibleApi.Authorization;
+using AudibleApi.Authorization;
+using AudibleApi.Common;
 using AudibleApi.Cryptography;
 using Dinah.Core;
 using Dinah.Core.Net.Http;
@@ -48,6 +49,8 @@ public partial class Api : ApiUnauthenticated
 	public Task<HttpResponseMessage> AdHocAuthenticatedGetAsync(string requestUri, IHttpClientActions client)
 		=> AdHocAuthenticatedRequestAsync(requestUri, HttpMethod.Get, client);
 
+	public ApiAuthenticationMethod AuthenticationMethods { get; set; } = ApiAuthenticationMethod.AdpSignature | ApiAuthenticationMethod.BearerToken;
+
 	public async Task<HttpResponseMessage> AdHocAuthenticatedRequestAsync(string requestUri, HttpMethod method, IHttpClientActions client, HttpBody? requestBody = null)
 	{
 		ArgumentValidator.EnsureNotNullOrWhiteSpace(requestUri, nameof(requestUri));
@@ -61,12 +64,36 @@ public partial class Api : ApiUnauthenticated
 			ArgumentValidator.EnsureNotNull(requestBody, nameof(requestBody));
 			request.AddContent(requestBody);
 		}
-		var adpToken = await _identityMaintainer.GetAdpTokenAsync() ?? throw new InvalidOperationException("Identity maintainer ADP token is null");
-		var privateKey = await _identityMaintainer.GetPrivateKeyAsync() ?? throw new InvalidOperationException("Identity maintainer private key is null");
 
-		request.SignRequest(_identityMaintainer.SystemDateTime.UtcNow, adpToken, privateKey);
+		await ApplyAuthenticationAsync(request);
 
 		return await SendClientRequest(client, request);
+	}
+
+	public async Task ApplyAuthenticationAsync(HttpRequestMessage request)
+	{
+		ArgumentValidator.EnsureNotNull(request, nameof(request));
+
+		if (AuthenticationMethods.HasFlag(ApiAuthenticationMethod.AdpSignature))
+		{
+			var adpToken = await _identityMaintainer.GetAdpTokenAsync() ?? throw new InvalidOperationException("Identity maintainer ADP token is null");
+			var privateKey = await _identityMaintainer.GetPrivateKeyAsync() ?? throw new InvalidOperationException("Identity maintainer private key is null");
+
+			request.SignRequest(_identityMaintainer.SystemDateTime.UtcNow, adpToken, privateKey);
+		}
+
+		if (AuthenticationMethods.HasFlag(ApiAuthenticationMethod.BearerToken))
+		{
+			var accessToken = await _identityMaintainer.GetAccessTokenAsync();
+			if (accessToken is not null && !accessToken.IsEmpty)
+			{
+				request.Headers.TryAddWithoutValidation("x-amz-access-token", accessToken.Reveal());
+			}
+			else if (!AuthenticationMethods.HasFlag(ApiAuthenticationMethod.AdpSignature))
+			{
+				throw new InvalidOperationException("Identity maintainer access token is null or empty");
+			}
+		}
 	}
 
 	public async Task<HttpResponseMessage> AdHocAuthenticatedGetWithAccessTokenAsync(string requestUri, IHttpClientActions client)
@@ -77,9 +104,33 @@ public partial class Api : ApiUnauthenticated
 		var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
 
 		var accessToken = await _identityMaintainer.GetAccessTokenAsync() ?? throw new InvalidOperationException("Identity maintainer access token is null");
+		if (accessToken.IsEmpty)
+			throw new InvalidOperationException("Identity maintainer access token is empty");
 
 		request.Headers.Add("x-amz-access-token", accessToken.Reveal());
 
 		return await SendClientRequest(client, request);
+	}
+
+	public async Task<bool> HasRequiredTokensAsync(ApiAuthenticationMethod methods)
+	{
+		var defined = ApiAuthenticationMethod.AdpSignature | ApiAuthenticationMethod.BearerToken;
+		if ((methods & ~defined) != 0)
+			return false;
+
+		if (methods.HasFlag(ApiAuthenticationMethod.AdpSignature))
+		{
+			if (await _identityMaintainer.GetAdpTokenAsync() is null || await _identityMaintainer.GetPrivateKeyAsync() is null)
+				return false;
+		}
+
+		if (methods.HasFlag(ApiAuthenticationMethod.BearerToken))
+		{
+			var accessToken = await _identityMaintainer.GetAccessTokenAsync();
+			if (accessToken is null || accessToken.IsEmpty)
+				return false;
+		}
+
+		return true;
 	}
 }

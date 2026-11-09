@@ -1,4 +1,4 @@
-﻿using AudibleApi.Authorization;
+using AudibleApi.Authorization;
 using System;
 using System.Threading.Tasks;
 
@@ -13,20 +13,44 @@ public static partial class EzApiCreator
 	/// <param name="jsonPath">Optional JSONPath for location of identity tokens inside identity file</param>
 	/// <param name="registrationProfile">Optional device-registration recipe. Null uses <see cref="DeviceRegistrationProfile.Default"/>.</param>
 	/// <returns>Object which enables calls to the Audible API</returns>
-	public static async Task<Api> GetApiAsync(ILoginChoiceEager loginChoiceEager, Locale locale, string identityFilePath, string? jsonPath = null, DeviceRegistrationProfile? registrationProfile = null)
+	public static async Task<Api> GetApiAsync(
+		ILoginChoiceEager loginChoiceEager,
+		Locale locale,
+		string identityFilePath,
+		string? jsonPath = null,
+		DeviceRegistrationProfile? registrationProfile = null,
+		bool forceLogin = false,
+		AudibleApi.Common.ApiAuthenticationMethod? requiredAuthMethods = null)
 	{
 		StackBlocker.ApiTestBlocker();
 
 		try
 		{
-			return await GetApiAsync(locale, identityFilePath, jsonPath);
+			if (forceLogin)
+				throw new InvalidOperationException("Forced login requested");
+
+			var api = await GetApiAsync(locale, identityFilePath, jsonPath);
+			if (requiredAuthMethods.HasValue && !await api.HasRequiredTokensAsync(requiredAuthMethods.Value))
+			{
+				throw new InvalidOperationException($"Stored identity is missing tokens for required auth methods: {requiredAuthMethods.Value}");
+			}
+			if (requiredAuthMethods.HasValue)
+			{
+				api.AuthenticationMethods = requiredAuthMethods.Value;
+			}
+			return api;
 		}
 		catch (Exception debugEx) // TODO: exceptions should not be used for control flow. fix this
 		{
 			Dinah.Core.ArgumentValidator.EnsureNotNull(loginChoiceEager, nameof(loginChoiceEager));
 
 			var inMemoryIdentity = await choiceLoginAsync(locale, loginChoiceEager, registrationProfile);
-			return await createApiAsync(inMemoryIdentity, identityFilePath, jsonPath);
+			var api = await createApiAsync(inMemoryIdentity, identityFilePath, jsonPath);
+			if (requiredAuthMethods.HasValue)
+			{
+				api.AuthenticationMethods = requiredAuthMethods.Value;
+			}
+			return api;
 		}
 	}
 
