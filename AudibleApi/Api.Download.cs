@@ -1,4 +1,4 @@
-﻿using AudibleApi.Common;
+using AudibleApi.Common;
 using Dinah.Core;
 using Dinah.Core.Net.Http;
 using Newtonsoft.Json.Linq;
@@ -209,8 +209,12 @@ public partial class Api
 			}
 			catch (Exception ex2)
 			{
-				//Assume this exception will not contain PII.
-				Serilog.Log.Logger.Error(ex2, "Error getting download license");
+				// The AAX fallback also failed. Record the fallback details for diagnostics,
+				// but rethrow the primary ApiErrorException so callers receive the true root cause
+				// rather than a misleading secondary failure (e.g. "Book has no codec specified").
+				Serilog.Log.Logger.Warning(ex2, "AAX workaround also failed for asin: [{Asin}]. Rethrowing original license request exception.", asin);
+				ex.Data["AaxFallbackException"] = ex2.Message;
+				System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).Throw();
 				throw;
 			}
 		}
