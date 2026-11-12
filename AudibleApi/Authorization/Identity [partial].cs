@@ -1,4 +1,5 @@
-﻿using AudibleApi.Cryptography;
+using AudibleApi.Common;
+using AudibleApi.Cryptography;
 using Dinah.Core;
 using Dinah.Core.Security;
 using Newtonsoft.Json;
@@ -25,11 +26,12 @@ public partial class Identity : IIdentity
 	[JsonIgnore]
 	public bool IsValid { get; private set; }
 
+	private AccessToken? _existingAccessToken;
 	[JsonRequired]
 	public AccessToken ExistingAccessToken
 	{
-		get => field ?? throw new RegistrationException($"{nameof(ExistingAccessToken)} must be set from {nameof(Update)}() or from JSON deserialization.");
-		protected set => field = value;
+		get => _existingAccessToken ?? throw new RegistrationException($"{nameof(ExistingAccessToken)} must be set from {nameof(Update)}() or from JSON deserialization.");
+		protected set => _existingAccessToken = value;
 	}
 
 	public PrivateKey? PrivateKey { get; private set; }
@@ -125,5 +127,27 @@ public partial class Identity : IIdentity
 		Updated?.Invoke(this, new EventArgs());
 
 		IsValid = false;
+	}
+
+	public bool HasRequiredTokens(ApiAuthenticationMethod methods)
+	{
+		var defined = ApiAuthenticationMethod.AdpSignature | ApiAuthenticationMethod.BearerToken;
+		if ((methods & ~defined) != 0)
+			return false;
+
+		if (methods.HasFlag(ApiAuthenticationMethod.AdpSignature))
+		{
+			if (AdpToken is null || PrivateKey is null)
+				return false;
+		}
+
+		if (methods.HasFlag(ApiAuthenticationMethod.BearerToken))
+		{
+			bool hasUsableAccessToken = _existingAccessToken is not null && !_existingAccessToken.IsEmpty && _existingAccessToken.Expires > DateTime.UtcNow;
+			if (!hasUsableAccessToken && RefreshToken is null)
+				return false;
+		}
+
+		return true;
 	}
 }

@@ -1,4 +1,4 @@
-﻿using AudibleApi.Cryptography;
+using AudibleApi.Cryptography;
 using Dinah.Core;
 using Dinah.Core.Security;
 using System.Collections.Generic;
@@ -42,4 +42,6 @@ public interface IIdentity : IUpdatable
 	void Update(PrivateKey privateKey, AdpToken adpToken, AccessToken accessToken, RefreshToken refreshToken, IEnumerable<KeyValuePair<string, SecretString>>? cookies, string? deviceSerialNumber = null, string? deviceType = null, string? amazonAccountId = null, string? deviceName = null, SecretString storeAuthenticationCookie = default);
 
 	void Invalidate();
+
+	bool HasRequiredTokens(AudibleApi.Common.ApiAuthenticationMethod methods);
 }

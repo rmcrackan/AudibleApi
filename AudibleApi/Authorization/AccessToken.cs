@@ -18,6 +18,11 @@ namespace AudibleApi.Authorization
 		public SecretString TokenValue { get; }
 		public DateTime Expires { get; private set; }
 
+		/// <summary>
+		/// True when the token has no payload beyond the required prefix ("Atna|"), such as <see cref="Empty"/> or <see cref="EmptyFuture"/>.
+		/// </summary>
+		public bool IsEmpty => TokenValue.Reveal() == REQUIRED_BEGINNING;
+
 		public AccessToken(SecretString value, DateTime expires)
 		{
 			var raw = value.Reveal();

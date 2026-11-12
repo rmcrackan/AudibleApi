@@ -46,6 +46,16 @@ public class Empty
 		e.Reveal().Length.ShouldBeLessThan(10);
 
 		e.Expires.ShouldBe(DateTime.MinValue);
+		e.IsEmpty.ShouldBeTrue();
+	}
+
+	[TestMethod]
+	public void is_empty_checks()
+	{
+		AccessToken.Empty.IsEmpty.ShouldBeTrue();
+		AccessToken.EmptyFuture.IsEmpty.ShouldBeTrue();
+		new AccessToken("Atna|", DateTime.MinValue).IsEmpty.ShouldBeTrue();
+		new AccessToken("Atna|real_token_payload", DateTime.MaxValue).IsEmpty.ShouldBeFalse();
 	}
 }
 

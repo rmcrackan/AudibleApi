@@ -1,4 +1,4 @@
-﻿namespace AudibleApi.Common;
+namespace AudibleApi.Common;
 
 #region Item
 /// <summary>
@@ -347,6 +347,23 @@ public static class RecordType
 	public const string Clip = "audible.clip";
 	public const string LastHeard = "audible.last_heard";
 	public const string Note = "audible.note";
+}
+
+#endregion
+
+#region Authentication Methods
+
+/// <summary>
+/// Authentication methods for Audible API requests.
+/// </summary>
+[System.Flags]
+public enum ApiAuthenticationMethod
+{
+	None = 0,
+	/// <summary>Amazon Device Protocol signature using RSA private key and ADP token (x-adp-signature header)</summary>
+	AdpSignature = 1 << 0,
+	/// <summary>Standard OAuth access token (x-amz-access-token header)</summary>
+	BearerToken = 1 << 1
 }
 
 #endregion
