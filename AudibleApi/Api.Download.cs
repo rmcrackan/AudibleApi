@@ -182,41 +182,11 @@ public partial class Api
 		}
 		catch (ApiErrorException ex)
 		{
+			// Rethrown as is: callers such as Libation use this error (e.g. Sable 000307 with acr:null)
+			// to switch to Widevine.
 			//Assume this exception will not contain PII.
-			Serilog.Log.Logger.Error(ex, "Error getting download license. Try aax workaround.");
-			try
-			{
-				//This book doesn't exist as an aaxc. Fall back to old AAX workaround method and try again.
-				var url = await DownloadAaxWorkaroundAsync(asin);
-
-				var contentLic = new ContentLicense
-				{
-					DrmType = DrmType.Adrm,
-					Asin = asin,
-					ContentMetadata = await GetContentMetadataAsync(asin, chapterTitlesType),
-					Voucher = new VoucherDtoV10
-					{
-						Key = await GetActivationBytesAsync(),
-					}
-				};
-
-				if (contentLic.ContentMetadata is null)
-					throw new ApplicationException("Could not retrieve content metadata for AAX workaround.");
-
-				contentLic.ContentMetadata.ContentUrl = new ContentUrl { OfflineUrl = url };
-
-				return contentLic;
-			}
-			catch (Exception ex2)
-			{
-				// The AAX fallback also failed. Record the fallback details for diagnostics,
-				// but rethrow the primary ApiErrorException so callers receive the true root cause
-				// rather than a misleading secondary failure (e.g. "Book has no codec specified").
-				Serilog.Log.Logger.Warning(ex2, "AAX workaround also failed for asin: [{Asin}]. Rethrowing original license request exception.", asin);
-				ex.Data["AaxFallbackException"] = ex2.Message;
-				System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).Throw();
-				throw;
-			}
+			Serilog.Log.Logger.Error(ex, "Error getting download license");
+			throw;
 		}
 		catch (Exception ex)
 		{
@@ -390,10 +360,11 @@ public partial class Api
 			var codecs = availableCodecs?
 				.Select(ac => ac.EnhancedCodec)
 				.OfType<string>()
+				.Where(c => !string.IsNullOrWhiteSpace(c))
 				.ToList();
 
-			if (codecs?.Count is null or 0)
-				throw new ApplicationException("Book has no available codecs. Cannot continue with download. Full book data:\r\n" + bookJson);
+			if (codecs is { Count: > 0 })
+				return codecs;
 
 			// if no codec, try once more with all options enabled
 			libraryOptions = LibraryOptions.ResponseGroupOptions.ALL_OPTIONS;
