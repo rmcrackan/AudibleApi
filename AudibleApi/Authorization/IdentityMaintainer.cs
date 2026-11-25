@@ -1,6 +1,7 @@
 ﻿using AudibleApi.Cryptography;
 using Dinah.Core;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AudibleApi.Authorization;
@@ -12,6 +13,7 @@ public class IdentityMaintainer : IIdentityMaintainer
 
 	private IIdentity _identity { get; }
 	private IAuthorize _authorize { get; }
+	private readonly SemaphoreSlim _refreshLock = new(1, 1);
 
 	public string? DeviceSerialNumber => _identity.DeviceSerialNumber;
 
@@ -66,10 +68,14 @@ public class IdentityMaintainer : IIdentityMaintainer
 	}
 
 	/// <summary>
-	/// Ensures a full valid state. Loads missing values. Reloads expired values.
+	/// Reloads expired access tokens.
 	/// </summary>
 	protected async Task EnsureStateAsync()
 	{
+		if (!NeedsAccessTokenRefresh())
+			return;
+
+		await _refreshLock.WaitAsync();
 		try
 		{
 			await RefreshAccessTokenAsync();
@@ -77,35 +83,34 @@ public class IdentityMaintainer : IIdentityMaintainer
 		catch (Exception refreshEx)
 		{
 			// Do not log token values; message/type only.
+			// Never attempt DeregisterAsync()/RegisterAsync() here: OAuth2 PKCE registration requires
+			// a fresh interactive authorization code (_identity.Authorization is null for stored identities),
+			// and calling DeregisterAsync() when an access token just expired can succeed within server
+			// clock skew and permanently wipe stored credentials on a transient refresh failure.
 			Serilog.Log.Error(
 				refreshEx,
 				"Access token refresh failed ({ExceptionType}): {Message}",
 				refreshEx.GetType().FullName,
 				refreshEx.Message);
 
-			try
-			{
-				await DeregisterAsync();
-				await RegisterAsync();
-			}
-			catch (Exception recoveryEx)
-			{
-				// Preserve the original refresh failure; deregister/register is often a secondary symptom
-				// (e.g. expired access token -> "Unable to deregister").
-				throw new RegistrationException(
-					"Error ensuring valid state",
-					new AggregateException(refreshEx, recoveryEx));
-			}
+			throw new RegistrationException("Error ensuring valid state", refreshEx);
+		}
+		finally
+		{
+			_refreshLock.Release();
 		}
 	}
 
+	private bool NeedsAccessTokenRefresh()
+		=> _identity.RefreshToken is not null && SystemDateTime.UtcNow >= _identity.ExistingAccessToken.Expires;
+
 	protected async Task RefreshAccessTokenAsync()
 	{
-		if (_identity.RefreshToken is null || SystemDateTime.UtcNow < _identity.ExistingAccessToken.Expires)
+		if (!NeedsAccessTokenRefresh())
 			return;
 
 		// is expired. refresh
-		_identity.Update(await _authorize.RefreshAccessTokenAsync(_identity.RefreshToken));
+		_identity.Update(await _authorize.RefreshAccessTokenAsync(_identity.RefreshToken!));
 	}
 
 	protected async Task RegisterAsync()
@@ -116,6 +121,9 @@ public class IdentityMaintainer : IIdentityMaintainer
 		RegistrationParser.ParseRegistrationIntoIdentity(authRegister, _identity, SystemDateTime);
 	}
 
+	/// <summary>
+	/// Deregisters the device and invalidates the current identity. Retained for protected subclass use.
+	/// </summary>
 	protected async Task DeregisterAsync()
 	{
 		var success = await _authorize.DeregisterAsync(_identity.ExistingAccessToken, _identity.Cookies);
